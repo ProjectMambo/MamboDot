@@ -1,0 +1,195 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 34,
+    "margin-top": 5,
+    "margin-left": 5,
+    "margin-right": 5,
+    "spacing": 4,
+
+    //--- LEFT ---
+    "modules-left": [
+        "group/utils",
+        "custom/vpn",
+        "group/hardware",
+        "hyprland/window"
+    ],
+
+    "group/utils": {
+        "orientation": "horizontal",
+        "modules": [
+            "idle_inhibitor",
+            "custom/cam",
+            "custom/mic"
+        ]
+    },
+
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        },
+        "tooltip-format": "Awake for 5d 10h 49m"
+    },
+
+    "custom/cam": {
+        "format": "󰄀",
+        "exec": "echo 'Camera Status'",
+        "interval": 60
+    },
+
+    "custom/mic": {
+        "format": "",
+        "exec": "echo 'Mic Status'",
+        "interval": 60
+    },
+    
+    "custom/vpn": {
+        "format": "󰖂",
+        "exec": "echo 'VPN Status'",
+        "interval": 60
+    },
+
+    "group/hardware": {
+        "orientation": "horizontal",
+        "modules": [
+            "memory",
+            "cpu",
+            "disk"
+        ]
+    },
+
+    "memory": {
+        "format": "󰐰 {percentage}%",
+        "tooltip-format": "RAM: {used:0.1f}GiB / {total:0.1f}GiB\nSwap: {swapUsed:0.1f}GiB / {swapTotal:0.1f}GiB",
+        "on-click": "alacritty -e btop",
+        "interval": 30
+    },
+
+    "cpu": {
+        "format": " {usage}%",
+        "interval": 2
+    },
+
+    "disk": {
+        "format": " {percentage_used}%",
+        "path": "/"
+    },
+
+    "hyprland/window": {
+        "format": "{}",
+        "max-length": 35,
+        "rewrite": {
+            "": "Hyprland"
+        }
+    },
+
+    //--- CENTER ---
+    "modules-center": [
+        "clock#date",
+        "hyprland/workspaces",
+        "clock#time",
+        "custom/special"
+    ],
+
+    "hyprland/workspaces": {
+        "format": "{name}",
+        "on-click": "activate",
+        "sort-by-number": true,
+        "persistent-workspaces": {
+            "*": 5
+        }
+    },
+
+    "clock#date": {
+        "format": "{:%a, %d %b}",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    },
+
+    "clock#time": {
+        "format": "{:%H:%M:%S}",
+        "tooltip": false,
+        "interval": 1
+    },
+
+    "hyprland/special-workspace": {
+        "format": "󰠿",
+        "on-click": "hyprctl dispatch togglespecialworkspace"
+    },
+
+    "custom/special": {
+        "format": "󰠿",
+        "on-click": "hyprctl dispatch togglespecialworkspace",
+        "tooltip": false
+    },
+
+    //--- RIGHT ---
+    "modules-right": [
+        "tray",
+        "group/status"
+    ],
+
+    "tray": {
+        "icon-size": 18,
+        "spacing": 10
+    },
+
+    "group/status": {
+        "orientation": "horizontal",
+        "modules": [
+            "network",
+            "bluetooth",
+            "pulseaudio",
+            "backlight",
+            "battery"
+        ]
+    },
+
+    "network": {
+        "format-wifi": "{icon}",
+        "format-ethernet": "󰈀",
+        "format-disconnected": "󰖪",
+        "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
+        "tooltip-format": "SSID: {essid}\nSignal: {signalStrength}%",
+        "on-click": "nm-connection-editor"
+    },
+
+    "bluetooth": {
+        "format": "",
+        "tooltip-format": "{device_alias} {device_battery_percentage}%",
+        "on-click": "blueman-manager"
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "default": ["", "", ""]
+        },
+        "on-scroll-up": "pamixer -i 1",
+        "on-scroll-down": "pamixer -d 1",
+        "on-click": "pavucontrol"
+    },
+
+    "backlight": {
+        "device": "nvidia_wmi_ec_backlight",
+        "format": "{icon} {percent}%",
+        "format-icons": ["", "", "", "", "", "", "", "", ""],
+        "on-scroll-up": "brightnessctl set 1%+",
+        "on-scroll-down": "brightnessctl set 1%-",
+        "interval": 2
+    },
+
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": " {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-icons": ["", "", "", "", ""]
+    }
+}

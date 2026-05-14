@@ -1,0 +1,137 @@
+@import "colors.css";
+
+/* --- Global Reset --- */
+* {
+    font-family: "JetBrainsMono Nerd Font Mono", sans-serif;
+    font-size: 14px;
+    border: none;
+    border-radius: 0;
+}
+
+/* --- Bar Style --- */
+#waybar {
+    background-color: @bg-dark-rgba;
+    border: 2px solid @terminal-black-rgba;
+    border-image: linear-gradient(45deg, @gold-rgba, @cyan-rgba) 1;
+    color: @fg-rgba;
+}
+
+/* --- Modules Style --- */
+#utils, #hardware,
+#custom-vpn,
+#clock.date, #clock.time,
+#custom-special,
+#status, #tray {
+    background-color: @bg-rgba;
+    padding: 2 12px;
+    margin: 4 2px;
+    border-radius: 0;
+    border: 2px solid @surface-rgba;
+    border-image: linear-gradient(45deg, @gold-rgba, @cyan-rgba) 1;
+}
+
+/* --- Left Section --- */
+#utils > widget > * {
+    background: transparent; /* Remove background from internal modules */
+    border: none;            /* Remove individual borders */
+    margin: 0;
+}
+
+#idle_inhibitor { padding-right: 5px; }
+#idle_inhibitor.activated {   color: @gold-rgba; }
+#idle_inhibitor.deactivated { color: @comment-rgba; }
+#custom-cam { color: @red-rgba;    padding: 0 5px; }
+#custom-mic { color: @orange-rgba; padding-left: 5px; }
+
+#custom-vpn { color: @purple-rgba; }
+
+#hardware > widget > * {
+    background: transparent; 
+    border: none;
+    margin: 0;
+}
+
+#memory { color: @purple-rgba; padding-right: 5px; }
+#cpu    { color: @cyan-rgba;   padding: 0 5px; }
+#disk   { color: @blue-rgba;   padding-left: 5px; }
+
+#window {
+    margin-left: 4px;
+    background-color: transparent; 
+}
+
+/* --- Center Section --- */
+#workspaces button {
+    color: @comment-rgba;
+    padding: 0 6px;
+}
+#workspaces button.active {
+    color: @gold-rgba;
+    /* You can add a border-bottom here if you like the "tab" look */
+}
+#workspaces button.urgent {
+    color: @red-rgba;
+}
+
+#clock.date { color: @sky-rgba; }
+#clock.time { color: @fg-rgba; font-weight: bold; }
+#custom-special { color: @yellow-rgba; }
+
+/* --- Right Section --- */
+
+#status > widget > * {
+    background: transparent; /* Remove background from internal modules */
+    border: none;            /* Remove individual borders */
+    margin: 0;
+}
+
+/* Network States */
+#network { color: @green-rgba; padding-right: 5px; }
+#network.disconnected { color: @red-rgba; }
+#network.ethernet { color: @aqua-rgba; }
+
+/* Bluetooth States */
+#bluetooth { color: @blue-rgba; padding: 0 5px; }
+#bluetooth.connected { color: @teal-rgba; }
+#bluetooth.off { color: @comment-rgba; }
+
+/* Audio States */
+#pulseaudio { color: @blue-rgba; padding: 0 5px; }
+#pulseaudio.muted { color: @comment-rgba; }
+
+/* Backlight */
+#backlight { color: @yellow-rgba; padding: 0 5px; }
+
+/* Battery States - Color shifts based on state */
+#battery { color: @green-rgba; padding-left: 5px; }
+#battery.charging { color: @teal-rgba; }
+#battery.plugged { color: @aqua-rgba; }
+#battery.warning:not(.charging) { color: @orange-rgba; }
+#battery.critical:not(.charging) { color: @red-rgba; animation-name: blink; animation-duration: 1s; animation-timing-function: linear; animation-iteration-count: infinite; animation-direction: alternate; }
+
+/* leftmost and rightmost widgets need extra margin to add space */
+.modules-left > widget:first-child > #utils {
+    margin-left: 4;
+}
+
+.modules-right > widget:last-child > #status {
+    margin-right: 4;
+}
+
+/* --- Tooltip Styling --- */
+tooltip {
+    background: @bg-dark-rgba;
+    border: 2px solid @surface-rgba;
+}
+tooltip label {
+    color: @fg-rgba;
+    padding: 8px;
+}
+
+/* --- Animations --- */
+@keyframes blink {
+    to {
+        background-color: @red-rgba;
+        color: @bg-dark-rgba;
+    }
+}

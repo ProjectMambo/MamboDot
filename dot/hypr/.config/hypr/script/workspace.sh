@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-NUM_WORKSPACE=5
+NUM_WORKSPACE=8
 action=$1
 target_workspace=$2
 current_workspace=$(hyprctl activeworkspace -j | jq '.id')

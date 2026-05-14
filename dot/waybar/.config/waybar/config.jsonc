@@ -79,7 +79,7 @@
 
     "hyprland/window": {
         "format": "{}",
-        "max-length": 35,
+        "max-length": 45,
         "rewrite": {
             "": "Hyprland"
         }

@@ -1,4 +1,4 @@
-@import "colors.css";
+@import "mamboheritage.css";
 
 /* --- Global Reset --- */
 * {
@@ -10,10 +10,10 @@
 
 /* --- Bar Style --- */
 #waybar {
-    background-color: @bg-dark-rgba;
-    border: 2px solid @terminal-black-rgba;
-    border-image: linear-gradient(45deg, @gold-rgba, @cyan-rgba) 1;
-    color: @fg-rgba;
+    background-color: @bg_dark;
+    border: 2px solid @bg;
+    border-image: linear-gradient(45deg, @copper, @muted_gold, @yellow) 1;
+    color: @fg;
 }
 
 /* --- Modules Style --- */
@@ -22,12 +22,12 @@
 #clock.date, #clock.time,
 #custom-special,
 #status, #tray {
-    background-color: @bg-rgba;
+    background-color: @bg;
     padding: 2 12px;
     margin: 4 2px;
     border-radius: 0;
-    border: 2px solid @surface-rgba;
-    border-image: linear-gradient(45deg, @gold-rgba, @cyan-rgba) 1;
+    border: 2px solid @surface;
+    border-image: linear-gradient(45deg, @copper, @muted_gold, @yellow) 1;
 }
 
 /* --- Left Section --- */
@@ -38,12 +38,12 @@
 }
 
 #idle_inhibitor { padding-right: 5px; }
-#idle_inhibitor.activated {   color: @gold-rgba; }
-#idle_inhibitor.deactivated { color: @comment-rgba; }
-#custom-cam { color: @red-rgba;    padding: 0 5px; }
-#custom-mic { color: @orange-rgba; padding-left: 5px; }
+#idle_inhibitor.activated {   color: @copper; }
+#idle_inhibitor.deactivated { color: @deep_oak; }
+#custom-cam { color: @red;    padding: 0 5px; }
+#custom-mic { color: @orange; padding-left: 5px; }
 
-#custom-vpn { color: @purple-rgba; }
+#custom-vpn { color: @purple; }
 
 #hardware > widget > * {
     background: transparent; 
@@ -51,9 +51,9 @@
     margin: 0;
 }
 
-#memory { color: @purple-rgba; padding-right: 5px; }
-#cpu    { color: @cyan-rgba;   padding: 0 5px; }
-#disk   { color: @blue-rgba;   padding-left: 5px; }
+#memory { color: @purple; padding-right: 5px; }
+#cpu    { color: @cyan;   padding: 0 5px; }
+#disk   { color: @blue;   padding-left: 5px; }
 
 #window {
     margin-left: 4px;
@@ -62,20 +62,20 @@
 
 /* --- Center Section --- */
 #workspaces button {
-    color: @comment-rgba;
+    color: @comment;
     padding: 0 6px;
 }
 #workspaces button.active {
-    color: @gold-rgba;
+    color: @fg;
     /* You can add a border-bottom here if you like the "tab" look */
 }
 #workspaces button.urgent {
-    color: @red-rgba;
+    color: @red;
 }
 
-#clock.date { color: @sky-rgba; }
-#clock.time { color: @fg-rgba; font-weight: bold; }
-#custom-special { color: @yellow-rgba; }
+#clock.date { color: @cyan; }
+#clock.time { color: @fg; font-weight: bold; }
+#custom-special { color: @yellow; }
 
 /* --- Right Section --- */
 
@@ -86,28 +86,28 @@
 }
 
 /* Network States */
-#network { color: @green-rgba; padding-right: 5px; }
-#network.disconnected { color: @red-rgba; }
-#network.ethernet { color: @aqua-rgba; }
+#network { color: @green; padding-right: 5px; }
+#network.disconnected { color: @red; }
+#network.ethernet { color: @cyan; }
 
 /* Bluetooth States */
-#bluetooth { color: @blue-rgba; padding: 0 5px; }
-#bluetooth.connected { color: @teal-rgba; }
-#bluetooth.off { color: @comment-rgba; }
+#bluetooth { color: @forest_shadow; padding: 0 5px; }
+#bluetooth.connected { color: @blue; }
+#bluetooth.off { color: @comment; }
 
 /* Audio States */
-#pulseaudio { color: @blue-rgba; padding: 0 5px; }
-#pulseaudio.muted { color: @comment-rgba; }
+#pulseaudio { color: @orange; padding: 0 5px; }
+#pulseaudio.muted { color: @comment; }
 
 /* Backlight */
-#backlight { color: @yellow-rgba; padding: 0 5px; }
+#backlight { color: @yellow; padding: 0 5px; }
 
 /* Battery States - Color shifts based on state */
-#battery { color: @green-rgba; padding-left: 5px; }
-#battery.charging { color: @teal-rgba; }
-#battery.plugged { color: @aqua-rgba; }
-#battery.warning:not(.charging) { color: @orange-rgba; }
-#battery.critical:not(.charging) { color: @red-rgba; animation-name: blink; animation-duration: 1s; animation-timing-function: linear; animation-iteration-count: infinite; animation-direction: alternate; }
+#battery { color: @green; padding-left: 5px; }
+#battery.charging { color: @cyan; }
+#battery.plugged { color: @blue; }
+#battery.warning:not(.charging) { color: @orange; }
+#battery.critical:not(.charging) { color: @red; animation-name: blink; animation-duration: 1s; animation-timing-function: linear; animation-iteration-count: infinite; animation-direction: alternate; }
 
 /* leftmost and rightmost widgets need extra margin to add space */
 .modules-left > widget:first-child > #utils {
@@ -120,18 +120,18 @@
 
 /* --- Tooltip Styling --- */
 tooltip {
-    background: @bg-dark-rgba;
-    border: 2px solid @surface-rgba;
+    background: @bg_dark;
+    border: 2px solid @bg;
 }
 tooltip label {
-    color: @fg-rgba;
+    color: @fg;
     padding: 8px;
 }
 
 /* --- Animations --- */
 @keyframes blink {
     to {
-        background-color: @red-rgba;
+        background-color: @red;
         color: @bg-dark-rgba;
     }
 }

@@ -1,0 +1,91 @@
+{
+  // ==========================================
+  // 1. YOUR CUSTOM LOOK & FEEL
+  // ==========================================
+  "files.autoSave": "afterDelay",
+  "material-code.primaryColor": "#131C27",
+  "workbench.colorTheme": "Dark Modern",
+  "editor.fontFamily": "'JetBrainsMono Nerd Font', 'monospace', monospace",
+  "editor.fontLigatures": true, // Enables beautiful symbol connections for Nerd Fonts
+  "editor.lineHeight": 22,      // Gives your code lines a cleaner, readable spacing
+
+  // ==========================================
+  // 2. RUST DEVELOPMENT
+  // ==========================================
+  "rust-analyzer.cargo.buildScripts.enable": true,
+  "rust-analyzer.procMacro.enable": true,
+  "rust-analyzer.check.command": "clippy",
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.semanticHighlighting.enabled": true
+  },
+
+  // ==========================================
+  // 3. GLOBAL EDITOR SETTINGS
+  // ==========================================
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // ==========================================
+  // 4. WEB DEVELOPMENT (NEXT.JS & TAILWIND)
+  // ==========================================
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "tailwindCSS.emmetCompletions": true,
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "javascriptreact",
+    "typescriptreact": "typescriptreact"
+  },
+
+  // ==========================================
+  // 5. HYPRLAND & WAYBAR DOTFILES
+  // ==========================================
+  "files.associations": {
+    "config": "jsonc",
+    "*.jsonc": "jsonc",
+    "*.conf": "hyprlang",
+    "hyprland.conf": "hyprlang",
+    "*.sh": "shellscript"
+  },
+
+  // Layout styling for Waybar's JSON configuration files
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+
+  // CSS targeting both Next.js/Tailwind and Waybar GTK configs
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "css.lint.unknownAtRules": "ignore",
+    "css.lint.validProperties": [
+      "all",
+      "background-image",
+      "border-radius",
+      "background-clip",
+      "-gtk-icon-transform",
+      "-gtk-icon-shadow",
+      "-gtk-icon-effect",
+      "-gtk-icon-palette"
+    ]
+  },
+
+  // Workspace stubs mapping if you use the Lua flavor of Hyprland
+  "Lua.workspace.library": [
+    "/usr/share/hypr/stubs"
+  ],
+  
+  "servers": {}
+}

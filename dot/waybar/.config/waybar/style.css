@@ -12,7 +12,7 @@
 #waybar {
     background-color: @bg_dark;
     border: 2px solid @bg;
-    border-image: linear-gradient(45deg, @copper, @muted_gold, @yellow) 1;
+    border-image: linear-gradient(45deg, @copper, @muted_gold, @orange) 1;
     color: @fg;
 }
 

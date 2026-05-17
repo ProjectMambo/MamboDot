@@ -79,7 +79,7 @@
 
     "hyprland/window": {
         "format": "{}",
-        "max-length": 45,
+        "max-length": 40,
         "rewrite": {
             "": "Hyprland"
         }
@@ -98,7 +98,7 @@
         "on-click": "activate",
         "sort-by-number": true,
         "persistent-workspaces": {
-            "*": 8
+            "*": 10
         }
     },
 

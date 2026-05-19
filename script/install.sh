@@ -29,6 +29,12 @@ else
     echo -e "${YELLOW}[!] Warning: Code OSS installation script not found${NC}" >&2
 fi
 
+# fcitx5 -d
+# fcitx5-configtool
+# add language
+
+source ~/.zshenv
+
 echo -e "${BLUE}------------------------------------------${NC}"
 echo -e " Tool:   ${GREEN}MamboDot${NC}"
 echo -e " Source: $PROJECT_DIR"

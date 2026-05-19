@@ -1,6 +1,11 @@
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
+# Set Fcitx5 as the input method
+export GTK_IM_MODULE=fcitx5
+export QT_IM_MODULE=fcitx5
+export XMODIFIERS=@im=fcitx5
+
 # Set Neovim as the default editor for everything
 export EDITOR='nvim'
 export VISUAL='nvim'

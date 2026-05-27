@@ -1,8 +1,8 @@
 # MamboDot
 <p align="left">
-  <img src="https://img.shields.io/badge/OS-Arch_Linux-1793D1?style=flat-square&logo=arch-linux&logoColor=white" />
-  <img src="https://img.shields.io/badge/WM-Hyprland-33CCFF?style=flat-square&logo=wayland&logoColor=white" />
-  <img src="https://img.shields.io/badge/Managed_With-GNU_Stow-4A4A4A?style=flat-square&logo=gnu&logoColor=white" />
+  <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=flat-square&logo=arch-linux&logoColor=white" alt="Arch Linux" />
+  <img src="https://img.shields.io/badge/Hyprland-33CCFF?style=flat-square&logo=hyprland&logoColor=white" alt="Hyprland" />
+  <img src="https://img.shields.io/badge/GNU_Stow-4A4A4A?style=flat-square&logo=gnu&logoColor=white" alt="GNU Stow" />
 </p>
 <p align="left">
   <img src="https://img.shields.io/badge/Maintenance-Active-brightgreen?style=flat-square" />

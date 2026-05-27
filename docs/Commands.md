@@ -7,12 +7,12 @@ tp [option]
 ```
 
 ## Available Options
-| Option | Arguments | Description |
-|---|---|---|
-| [target_name] | None | Teleports directly to the specified target directory shortcut. |
-| -a | [target_name] [target_path] | Adds a new shortcut mapping a target name to a specific directory path. |
-| -d | [target_name] | Deletes an existing shortcut mapping. |
-| -l | None | Lists all currently saved shortcut targets and their paths. |
+| Option        | Arguments                   | Description                                                             |
+| ------------- | --------------------------- | ----------------------------------------------------------------------- |
+| [target_name] | None                        | Teleports directly to the specified target directory shortcut.          |
+| -a            | [target_name] [target_path] | Adds a new shortcut mapping a target name to a specific directory path. |
+| -d            | [target_name]               | Deletes an existing shortcut mapping.                                   |
+| -l            | None                        | Lists all currently saved shortcut targets and their paths.             |
 > [!NOTE]
 > The [target_name] is not case sensitive, any input will be formatted to all lower caps.
 

@@ -6,7 +6,7 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-NUM_WORKSPACE=8 # Number of workspaces for each monitor
+NUM_WORKSPACE=10 # Number of workspaces for each monitor
 ACTION=$1 # Workspace action
 TARGET_WORKSPACE=$2 # Target workspace id/name
 CURRENT_WORKSPACE=$(hyprctl activeworkspace -j | jq '.id') # Current workspace id

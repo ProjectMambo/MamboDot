@@ -19,7 +19,7 @@
     "[rust]": {
         "editor.defaultFormatter": "rust-lang.rust-analyzer",
         "editor.semanticHighlighting.enabled": true,
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
 
     // ==========================================
@@ -30,7 +30,7 @@
     "editor.detectIndentation": false,
     "editor.guides.indentation": true,
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit"
+        "source.fixAll.eslint": "explicit",
     },
 
     // ==========================================
@@ -38,24 +38,24 @@
     // ==========================================
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
     "[javascriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
     "tailwindCSS.emmetCompletions": true,
     "tailwindCSS.includeLanguages": {
         "plaintext": "javascriptreact",
-        "typescriptreact": "typescriptreact"
+        "typescriptreact": "typescriptreact",
     },
 
     // ==========================================
@@ -66,13 +66,13 @@
         "*.jsonc": "jsonc",
         "*.conf": "hyprlang",
         "hyprland.conf": "hyprlang",
-        "*.sh": "shellscript"
+        "*.sh": "shellscript",
     },
 
     // Layout styling for Waybar's JSON configuration files
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
 
     // CSS targeting both Next.js/Tailwind and Waybar GTK configs
@@ -88,12 +88,14 @@
             "-gtk-icon-transform",
             "-gtk-icon-shadow",
             "-gtk-icon-effect",
-            "-gtk-icon-palette"
-        ]
+            "-gtk-icon-palette",
+        ],
     },
 
     // Workspace stubs mapping if you use the Lua flavor of Hyprland
     "Lua.workspace.library": ["/usr/share/hypr/stubs"],
 
-    "servers": {}
+    "servers": {},
+    "js/ts.updateImportsOnFileMove.enabled": "always",
+    "console-ninja.featureSet": "Community",
 }

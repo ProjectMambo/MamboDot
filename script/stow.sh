@@ -45,7 +45,7 @@ for package in */; do
             target_path="$HOME/$relative_target"
 
             if [ -e "$target_path" ] || [ -L "$target_path" ]; then
-                if [ ! -L "$target_path" ]; then
+                if [ ! -L "$target_path" ] && [ ! -L "$(dirname "$target_path")" ]; then
                     echo -e "${YELLOW}[!] Overwriting conflict:${NC} $relative_target"
                     rm -f "$target_path"
                 fi

@@ -19,6 +19,5 @@ rust-lang.rust-analyzer
 tamasfe.even-better-toml
 timonwong.shellcheck
 usernamehw.errorlens
-wallabyjs.console-ninja
 webfreak.debug
 zlorn.vstuc

@@ -16,6 +16,7 @@ pkief.material-icon-theme
 pulkitgangwar.nextjs-snippets
 ritwickdey.liveserver
 rust-lang.rust-analyzer
+sumneko.lua
 tamasfe.even-better-toml
 timonwong.shellcheck
 usernamehw.errorlens

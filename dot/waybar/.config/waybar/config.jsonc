@@ -12,77 +12,68 @@
         "group/utils",
         "custom/vpn",
         "group/hardware",
-        "hyprland/window"
+        "hyprland/window",
     ],
 
     "group/utils": {
         "orientation": "horizontal",
-        "modules": [
-            "idle_inhibitor",
-            "custom/cam",
-            "custom/mic"
-        ]
+        "modules": ["idle_inhibitor", "custom/cam", "custom/mic"],
     },
 
     "idle_inhibitor": {
         "format": "{icon}",
         "format-icons": {
             "activated": "",
-            "deactivated": ""
+            "deactivated": "",
         },
-        "tooltip-format": "Awake for 5d 10h 49m"
+        "tooltip-format": "Awake for 5d 10h 49m",
     },
 
     "custom/cam": {
         "format": "󰄀",
         "exec": "echo 'Camera Status'",
-        "interval": 60
+        "interval": 60,
     },
 
     "custom/mic": {
         "format": "",
         "exec": "echo 'Mic Status'",
-        "interval": 60
+        "interval": 60,
     },
-    
+
     "custom/vpn": {
         "format": "󰖂",
         "exec": "echo 'VPN Status'",
-        "interval": 60
+        "interval": 60,
     },
 
     "group/hardware": {
         "orientation": "horizontal",
-        "modules": [
-            "memory",
-            "cpu",
-            "disk"
-        ]
+        "modules": ["memory", "cpu", "disk"],
     },
-
     "memory": {
         "format": "󰐰 {percentage}%",
         "tooltip-format": "RAM: {used:0.1f}GiB / {total:0.1f}GiB\nSwap: {swapUsed:0.1f}GiB / {swapTotal:0.1f}GiB",
         "on-click": "alacritty -e btop",
-        "interval": 30
+        "interval": 30,
     },
 
     "cpu": {
         "format": " {usage}%",
-        "interval": 2
+        "interval": 2,
     },
 
     "disk": {
         "format": " {percentage_used}%",
-        "path": "/"
+        "path": "/",
     },
 
     "hyprland/window": {
         "format": "{}",
         "max-length": 40,
         "rewrite": {
-            "": "Hyprland"
-        }
+            "": "Hyprland",
+        },
     },
 
     //--- CENTER ---
@@ -90,7 +81,7 @@
         "clock#date",
         "hyprland/workspaces",
         "clock#time",
-        "custom/special"
+        "custom/special",
     ],
 
     "hyprland/workspaces": {
@@ -98,41 +89,40 @@
         "on-click": "activate",
         "sort-by-number": true,
         "persistent-workspaces": {
-            "*": 10
-        }
+            "*": 10,
+        },
+        "on-scroll-up": "hyprctl dispatch workspace e+1",
+        "on-scroll-down": "hyprctl dispatch workspace e-1",
     },
 
     "clock#date": {
         "format": "{:%a, %d %b}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
     },
 
     "clock#time": {
         "format": "{:%H:%M:%S}",
         "tooltip": false,
-        "interval": 1
+        "interval": 1,
     },
 
     "hyprland/special-workspace": {
         "format": "󰠿",
-        "on-click": "hyprctl dispatch togglespecialworkspace"
+        "on-click": "hyprctl dispatch 'hl.dsp.workspace.toggle_special(\"minimized\")'",
     },
 
     "custom/special": {
         "format": "󰠿",
-        "on-click": "hyprctl dispatch togglespecialworkspace",
-        "tooltip": false
+        "on-click": "hyprctl dispatch 'hl.dsp.workspace.toggle_special(\"minimized\")'",
+        "tooltip": false,
     },
 
     //--- RIGHT ---
-    "modules-right": [
-        "tray",
-        "group/status"
-    ],
+    "modules-right": ["tray", "group/status"],
 
     "tray": {
         "icon-size": 18,
-        "spacing": 10
+        "spacing": 10,
     },
 
     "group/status": {
@@ -142,8 +132,8 @@
             "bluetooth",
             "pulseaudio",
             "backlight",
-            "battery"
-        ]
+            "battery",
+        ],
     },
 
     "network": {
@@ -152,13 +142,13 @@
         "format-disconnected": "󰖪",
         "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
         "tooltip-format": "SSID: {essid}\nSignal: {signalStrength}%",
-        "on-click": "nm-connection-editor"
+        "on-click": "nm-connection-editor",
     },
 
     "bluetooth": {
-        "format": "",
+        "format": "",
         "tooltip-format": "{device_alias} {device_battery_percentage}%",
-        "on-click": "blueman-manager"
+        "on-click": "blueman-manager",
     },
 
     "pulseaudio": {
@@ -166,11 +156,11 @@
         "format-muted": "",
         "format-icons": {
             "headphone": "",
-            "default": ["", "", ""]
+            "default": ["", "", ""],
         },
         "on-scroll-up": "pamixer -i 1",
         "on-scroll-down": "pamixer -d 1",
-        "on-click": "pavucontrol"
+        "on-click": "pavucontrol",
     },
 
     "backlight": {
@@ -179,17 +169,17 @@
         "format-icons": ["", "", "", "", "", "", "", "", ""],
         "on-scroll-up": "brightnessctl set 1%+",
         "on-scroll-down": "brightnessctl set 1%-",
-        "interval": 2
+        "interval": 2,
     },
 
     "battery": {
         "states": {
             "warning": 30,
-            "critical": 15
+            "critical": 15,
         },
         "format": "{icon} {capacity}%",
-        "format-charging": " {capacity}%",
-        "format-plugged": " {capacity}%",
-        "format-icons": ["", "", "", "", ""]
-    }
+        "format-charging": " {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-icons": ["", "", "", "", ""],
+    },
 }

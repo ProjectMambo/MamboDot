@@ -13,11 +13,11 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 # Generate themes
 THEME_HYPRLAND="$PROJECT_DIR/dot/hypr/.config/hypr/themes"
 mkdir -p "$THEME_HYPRLAND"
-mambogen "mamboheritage" "Hyprland" "$THEME_HYPRLAND"
+mbcolor mamboheritage hyprland -o "$THEME_HYPRLAND"
 
 THEME_WAYBAR="$PROJECT_DIR/dot/waybar/.config/waybar"
 mkdir -p "$THEME_WAYBAR"
-mambogen "mamboheritage" "Waybar" "$THEME_WAYBAR"
+mbcolor mamboheritage waybar -o "$THEME_WAYBAR"
 
 # Install code oss extensions
 CODE_OSS_SCRIPT="$SCRIPT_DIR/code-oss/install_extensions.sh"
@@ -32,6 +32,8 @@ fi
 # fcitx5 -d
 # fcitx5-configtool
 # add language
+
+update-desktop-database ~/.local/share/applications
 
 source ~/.zshenv
 

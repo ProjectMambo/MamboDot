@@ -39,20 +39,10 @@ for package in */; do
     echo -e "${BLUE}------------------------------------------${NC}"
 
     if [ "$MODE" == "stow" ]; then
-        # Remove conflicting files
-        find "$package" -type f | while read -r file; do
-            relative_target="${file#"$package/"}"
-            target_path="$HOME/$relative_target"
-
-            if [ -e "$target_path" ] || [ -L "$target_path" ]; then
-                if [ ! -L "$target_path" ] && [ ! -L "$(dirname "$target_path")" ]; then
-                    echo -e "${YELLOW}[!] Overwriting conflict:${NC} $relative_target"
-                    rm -f "$target_path"
-                fi
-            fi
-        done
-
-        stow -v -R -t "$HOME" "$package"
+        # -R: Restow (re-links)
+        # --adopt: If a file exists in $HOME, move it into your dotfile repo
+        #          and replace the original with a symlink.
+        stow -v -R --adopt -t "$HOME" "$package"
         
     elif [ "$MODE" == "unstow" ]; then
         stow -v -D -t "$HOME" "$package"

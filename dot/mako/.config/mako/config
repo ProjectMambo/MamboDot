@@ -1,0 +1,26 @@
+# Mako Notification Daemon Config
+
+# --- Timing ---
+# Automatically close after 3 seconds (3000ms)
+default-timeout=3000
+# Don't let apps force notifications to stay open forever
+ignore-timeout=0
+
+# --- Style ---
+width=300
+height=150
+margin=10
+padding=10
+border-size=2
+border-radius=10
+
+# Colors (Match your Hyprland aesthetic)
+background-color=#1e1e2e
+text-color=#cdd6f4
+border-color=#f5c2e7
+
+# --- Behavior ---
+# Put notifications on the top-right
+anchor=top-right
+# Show icons
+icons=1

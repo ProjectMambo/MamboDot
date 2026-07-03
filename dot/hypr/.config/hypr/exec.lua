@@ -3,9 +3,9 @@
 -- =============================================================================
 hl.on("hyprland.start", function()
     hl.exec_cmd(
-        "dbus-update-activation-environment --systemd XDG_DATA_HOME XDG_DATA_DIRS XDG_CACHE_HOME XDG_CONFIG_HOME")
-    hl.exec_cmd("systemctl --user import-environment XDG_DATA_HOME XDG_DATA_DIRS XDG_CACHE_HOME XDG_CONFIG_HOME")
-    hl.exec_cmd("systemctl --user start plasma-kglobalaccel.serviceyX")
+        "dbus-update-activation-environment --systemd XDG_DATA_HOME XDG_DATA_DIRS XDG_CACHE_HOME XDG_CONFIG_HOME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+    hl.exec_cmd("systemctl --user import-environment XDG_DATA_HOME XDG_DATA_DIRS XDG_CACHE_HOME XDG_CONFIG_HOME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+    hl.exec_cmd("systemctl --user start plasma-kglobalaccel.serviceyX, hyprland-session.target")
     hl.exec_cmd("kbuildsycoca6 --noincremental")
     hl.exec_cmd("waybar")
     hl.exec_cmd("hyprlock")

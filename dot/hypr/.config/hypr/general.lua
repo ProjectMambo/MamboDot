@@ -54,6 +54,7 @@ hl.config({
     },
     input = {
         kb_layout = "us",
+        kb_variant = ",qwerty",
         follow_mouse = 1,
         mouse_refocus = true,
         sensitivity = 0,

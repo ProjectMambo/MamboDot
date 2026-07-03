@@ -27,15 +27,15 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("lightctl down"), { repeating =
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy"))
 hl.bind(mod .. s .. " + S", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy"))
 
--- Presets
-hl.bind(mod .. a .. " + KP_Insert", function() preset.launch(preset.default) end)
-
 -- --- APPS ---
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(vars.apps.terminal))
 hl.bind(mod .. " + W", hl.dsp.exec_cmd(vars.apps.browser))
 hl.bind(mod .. " + E", hl.dsp.exec_cmd(vars.apps.fileManager))
 hl.bind(mod .. " + R", hl.dsp.exec_cmd(vars.apps.notes))
 hl.bind(mod .. " + T", hl.dsp.exec_cmd(vars.apps.code))
+
+-- Presets
+hl.bind(mod .. a .. " + KP_Insert", preset.launch(preset.default))
 
 -- --- WINDOWS ---
 hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })

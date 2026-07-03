@@ -102,7 +102,7 @@
 }
 #clock.time {
     color: @burnt_charcoal;
-    font-weight: bold;
+    font-weight: 500;
 }
 #custom-special {
     color: @brand;

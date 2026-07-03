@@ -3,6 +3,7 @@
 -- =============================================================================
 local vars = require("variables")
 local ws = require("script.workspace")
+local preset = require("script.preset")
 local mod = "SUPER"
 local s = " + SHIFT"
 local c = " + CTRL"
@@ -12,7 +13,8 @@ local a = " + ALT"
 hl.bind(mod .. " + super_l", hl.dsp.exec_cmd("pkill rofi || rofi -show drun -show-icons -terminal kitty"))
 hl.bind(mod .. " + space", hl.dsp.exec_cmd("fcitx5-remote -t"))
 hl.bind(mod .. " + delete", hl.dsp.exec_cmd("rofi -show power-menu -modi power-menu:rofi-power-menu"))
-hl.bind(mod .. s .. c .. " + R", hl.dsp.exec_cmd("hyprctl reload"))
+hl.bind(mod .. s .. " + delete", hl.dsp.exec_cmd("hyprlock"))
+hl.bind(mod .. s .. c .. " + R", hl.dsp.exec_cmd("hyprctl reload && notify-send 'Hyprland Reloaded!'"))
 hl.bind(mod .. " + B", hl.dsp.exec_cmd("pgrep waybar && pkill waybar || waybar &"))
 hl.bind(mod .. s .. c .. " + B", hl.dsp.exec_cmd("pkill waybar && waybar &"))
 
@@ -24,6 +26,9 @@ hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("lightctl up"), { repeating = tru
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("lightctl down"), { repeating = true })
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy"))
 hl.bind(mod .. s .. " + S", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy"))
+
+-- Presets
+hl.bind(mod .. a .. " + KP_Insert", function() preset.launch(preset.default) end)
 
 -- --- APPS ---
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(vars.apps.terminal))

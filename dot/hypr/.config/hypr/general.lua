@@ -3,7 +3,7 @@
 -- =============================================================================
 
 local vars = require("variables")
-local colors = vars.theme
+local theme = vars.theme
 
 hl.config({
     general = {
@@ -11,8 +11,8 @@ hl.config({
         gaps_out = 5,
         border_size = 2,
         col = {
-            active_border = colors.red,
-            inactive_border = colors.red,
+            active_border = theme.color.drk.overgrown_fern,
+            inactive_border = theme.color.drk.wild_plum,
         },
         layout = "dwindle",
         no_focus_fallback = false,
@@ -37,18 +37,18 @@ hl.config({
     },
     group = {
         col = {
-            border_active = colors.copper_a,
-            border_inactive = colors.deep_oak_a,
+            border_active = theme.color.drk.deep_teal,
+            border_inactive = theme.color.drk.baked_brick,
         },
         groupbar = {
             font_size = 10,
             height = 12,
-            text_color = colors.fg_a,
+            text_color = theme.color.drk.river_silt,
             render_titles = true,
             gradients = true,
             col = {
-                active = colors.bg_a,
-                inactive = colors.deep_oak_a,
+                active = theme.color.drk.deep_teal,
+                inactive = theme.color.drk.baked_brick,
             },
         },
     },

@@ -4,30 +4,70 @@
 local home = os.getenv("HOME")
 local M = {}
 
--- Set Environment Variables
-hl.env("XDG_DATA_HOME", home .. "/.local/share")
-hl.env("XDG_DATA_DIRS", "/usr/local/share:/usr/share:" .. home .. "/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share")
-hl.env("XDG_CACHE_HOME", home .. "/.cache")
-hl.env("XDG_MENU_PREFIX", "arch-")
+-- Helper to recursively load themes
+local function load_themes(t)
+    for k, v in pairs(t) do
+        if type(v) == "table" then
+            load_themes(v)
+        else
+            t[k] = require(v)
+        end
+    end
+    return t
+end
 
--- Define Paths
+-- Environment Variables
+M.env = {
+    -- XDG Base Directories
+    XDG_DATA_HOME               = home .. "/.local/share",
+    XDG_DATA_DIRS               = "/usr/local/share:/usr/share:" ..
+        home .. "/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share",
+    XDG_CACHE_HOME              = home .. "/.cache",
+    XDG_MENU_PREFIX             = "arch-",
+
+    -- KDE/Qt Integration (Fixes theme/contrast issues)
+    QT_QPA_PLATFORMTHEME        = "kde",
+    QT_STYLE_OVERRIDE           = "Breeze",
+    XDG_CURRENT_DESKTOP         = "KDE",
+    XDG_SESSION_TYPE            = "wayland",
+    QT_AUTO_SCREEN_SCALE_FACTOR = "1",
+    KDE_FULL_SESSION = "true", 
+    GTK_THEME = "Breeze-Dark",
+}
+for k, v in pairs(M.env) do
+    hl.env(k, v)
+end
+
+-- Paths
 local projectDir = home .. "/ProjectMambo/MamboDot"
-M.hyprDir = projectDir .. "/dot/hypr/.config/hypr"
-M.scriptDir = projectDir .. "/script/hypr"
-M.themesDir = M.hyprDir .. "/themes"
+M.paths = {
+    hypr   = projectDir .. "/dot/hypr/.config/hypr",
+    script = projectDir .. "/script/hypr",
+    themes = projectDir .. "/dot/hypr/.config/hypr/themes"
+}
 
--- Define Apps
-M.terminal = "kitty"
-M.browser = "zen-browser"
-M.fileManager = "dolphin"
-M.notesEditor = "obsidian"
-M.codeEditor = "code"
+-- Apps
+M.apps = {
+    terminal    = "kitty",
+    browser     = "zen-browser",
+    fileManager = "dolphin",
+    notes       = "obsidian",
+    code        = "code"
+}
 
--- Define Misc
+-- Misc
 M.scratchpadName = "minimized"
-M.theme = require("themes.mamboheritage")
 
--- Define Scripts
-M.wsScript = M.scriptDir .. "/hypr-workspace.lua"
+-- Themes (Grouped & Loaded)
+M.theme = load_themes({
+    ui = {
+        lgt = "themes.mamboorchelight",
+        drk = "themes.mamboorchedark",
+    },
+    color = {
+        lgt = "themes.mambooutbacklight",
+        drk = "themes.mambooutbackdark",
+    }
+})
 
 return M

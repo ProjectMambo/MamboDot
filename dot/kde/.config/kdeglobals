@@ -1,0 +1,30 @@
+[General]
+BrowserApplication=zen.desktop
+# Use these to set your font families
+fixed=JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0
+font=Cantarell,10,-1,5,50,0,0,0,0,0
+menuFont=Cantarell,10,-1,5,50,0,0,0,0,0
+toolBarFont=Cantarell,10,-1,5,50,0,0,0,0,0
+ColorScheme=BreezeDark
+
+[UiSettings]
+ColorScheme=BreezeDark
+
+[Icons]
+Theme=breeze-dark
+
+[KDE]
+# Sets your global widget/application style
+widgetStyle=Breeze
+
+[KFileDialog Settings]
+Automatically select filename extension=true
+Show hidden files=true
+Sort by=Name
+Sort directories first=true
+View Style=DetailTree
+
+[WM]
+# Window manager related settings (often synced with your color scheme)
+activeBackground=61,61,62
+activeForeground=255,255,255

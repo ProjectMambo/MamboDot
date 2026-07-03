@@ -1,0 +1,13 @@
+@define-color bg rgba(250,247,242,1.0);
+@define-color bg_surface rgba(243,236,226,1.0);
+@define-color border rgba(225,213,195,1.0);
+@define-color fg rgba(28,17,17,1.0);
+@define-color fg_muted rgba(92,77,74,1.0);
+@define-color comment rgba(118,93,63,1.0);
+@define-color brand rgba(169,54,34,1.0);
+@define-color brand_hover rgba(130,39,39,1.0);
+@define-color interactive rgba(61,82,74,1.0);
+@define-color interactive_hover rgba(92,112,90,1.0);
+@define-color success rgba(92,112,90,1.0);
+@define-color warning rgba(211,167,116,1.0);
+@define-color error rgba(169,54,34,1.0);

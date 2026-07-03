@@ -49,6 +49,12 @@ for package in */; do
     fi
 done
 
+update-desktop-database ~/.local/share/applications
+kquitapp6 plasmashell && kstart6 plasmashell
+kbuildsycoca6 --noincremental
+source ~/.zshenv
+hyprctl reload
+
 echo -e "\n${BLUE}------------------------------------------${NC}"
 echo -e "${GREEN}[+] Sync complete!${NC}"
 echo -e "${BLUE}------------------------------------------${NC}"

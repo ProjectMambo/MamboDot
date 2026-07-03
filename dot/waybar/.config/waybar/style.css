@@ -1,137 +1,202 @@
-@import "mamboheritage.css";
+@import "mamboorchedark.css";
+@import "mambooutbackdark.css";
 
 /* --- Global Reset --- */
 * {
-    font-family: "JetBrainsMono Nerd Font Mono", sans-serif;
-    font-size: 14px;
+    font-family: "MamboFont", "JetBrainsMono Nerd Font Mono", sans-serif;
+    font-size: 18px;
     border: none;
     border-radius: 0;
 }
 
 /* --- Bar Style --- */
 #waybar {
-    background-color: @bg_dark;
-    border: 2px solid @bg;
-    border-image: linear-gradient(45deg, @copper, @muted_gold, @orange) 1;
-    color: @fg;
+    background-color: @bg;
+    border: 2px solid @dried_bark;
+    color: @burnt_charcoal;
 }
 
 /* --- Modules Style --- */
-#utils, #hardware,
+#utils,
+#hardware,
 #custom-vpn,
-#clock.date, #clock.time,
+#clock.date,
+#clock.time,
 #custom-special,
-#status, #tray {
+#status,
+#tray {
     background-color: @bg;
-    padding: 2 12px;
-    margin: 4 2px;
+    padding: 0 12px;
+    margin: 4px 2px;
     border-radius: 0;
-    border: 2px solid @surface;
-    border-image: linear-gradient(45deg, @copper, @muted_gold, @yellow) 1;
+    border: 2px solid @canyon_floor;
 }
 
 /* --- Left Section --- */
 #utils > widget > * {
-    background: transparent; /* Remove background from internal modules */
-    border: none;            /* Remove individual borders */
-    margin: 0;
-}
-
-#idle_inhibitor { padding-right: 5px; }
-#idle_inhibitor.activated {   color: @copper; }
-#idle_inhibitor.deactivated { color: @deep_oak; }
-#custom-cam { color: @red;    padding: 0 5px; }
-#custom-mic { color: @orange; padding-left: 5px; }
-
-#custom-vpn { color: @purple; }
-
-#hardware > widget > * {
-    background: transparent; 
+    background: transparent;
     border: none;
     margin: 0;
 }
 
-#memory { color: @purple; padding-right: 5px; }
-#cpu    { color: @cyan;   padding: 0 5px; }
-#disk   { color: @blue;   padding-left: 5px; }
+#idle_inhibitor {
+    padding-right: 5px;
+}
+#idle_inhibitor.activated {
+    color: @success;
+}
+#idle_inhibitor.deactivated {
+    color: @error;
+}
+#custom-cam {
+    color: @dried_bark;
+    padding: 0 5px;
+}
+#custom-mic {
+    color: @termite_mound;
+    padding-left: 5px;
+}
+
+#custom-vpn {
+    color: @sunken_timber;
+}
+
+#hardware > widget > * {
+    background: transparent;
+    border: none;
+    margin: 0;
+}
+
+#memory {
+    color: @desert_sage;
+    padding-right: 5px;
+}
+#cpu {
+    color: @tumbleweed;
+    padding: 0 5px;
+}
+#disk {
+    color: @eucalyptus_smoke;
+    padding-left: 5px;
+}
 
 #window {
     margin-left: 4px;
-    background-color: transparent; 
+    background-color: transparent;
 }
 
 /* --- Center Section --- */
 #workspaces button {
-    color: @comment;
+    color: @termite_mound;
     padding: 0 6px;
 }
 #workspaces button.active {
-    color: @fg;
-    /* You can add a border-bottom here if you like the "tab" look */
+    color: @burnt_charcoal;
 }
 #workspaces button.urgent {
-    color: @red;
+    color: @brand;
 }
 
-#clock.date { color: @cyan; }
-#clock.time { color: @fg; font-weight: bold; }
-#custom-special { color: @yellow; }
+#clock.date {
+    color: @burnt_charcoal;
+}
+#clock.time {
+    color: @burnt_charcoal;
+    font-weight: bold;
+}
+#custom-special {
+    color: @brand;
+}
 
 /* --- Right Section --- */
-
 #status > widget > * {
-    background: transparent; /* Remove background from internal modules */
-    border: none;            /* Remove individual borders */
+    background: transparent;
+    border: none;
     margin: 0;
 }
 
 /* Network States */
-#network { color: @green; padding-right: 5px; }
-#network.disconnected { color: @red; }
-#network.ethernet { color: @cyan; }
-
-/* Bluetooth States */
-#bluetooth { color: @forest_shadow; padding: 0 5px; }
-#bluetooth.connected { color: @blue; }
-#bluetooth.off { color: @comment; }
-
-/* Audio States */
-#pulseaudio { color: @orange; padding: 0 5px; }
-#pulseaudio.muted { color: @comment; }
-
-/* Backlight */
-#backlight { color: @yellow; padding: 0 5px; }
-
-/* Battery States - Color shifts based on state */
-#battery { color: @green; padding-left: 5px; }
-#battery.charging { color: @cyan; }
-#battery.plugged { color: @blue; }
-#battery.warning:not(.charging) { color: @orange; }
-#battery.critical:not(.charging) { color: @red; animation-name: blink; animation-duration: 1s; animation-timing-function: linear; animation-iteration-count: infinite; animation-direction: alternate; }
-
-/* leftmost and rightmost widgets need extra margin to add space */
-.modules-left > widget:first-child > #utils {
-    margin-left: 4;
+#network {
+    color: @dry_moss;
+    padding-right: 5px;
+}
+#network.disconnected {
+    color: @crimson_creek;
+}
+#network.ethernet {
+    color: @bluestone;
 }
 
+/* Bluetooth States */
+#bluetooth {
+    color: @termite_mound;
+    padding: 0 5px;
+}
+#bluetooth.connected {
+    color: @bluestone;
+}
+#bluetooth.off {
+    color: @baked_brick;
+}
+
+/* Audio States */
+#pulseaudio {
+    color: @burnt_ochre;
+    padding: 0 5px;
+}
+#pulseaudio.muted {
+    color: @crimson_creek;
+}
+
+/* Backlight */
+#backlight {
+    color: @dry_straw;
+    padding: 0 5px;
+}
+
+/* Battery States */
+#battery {
+    color: @river_ooze;
+    padding-left: 5px;
+}
+#battery.charging {
+    color: @lichen_crust;
+}
+#battery.plugged {
+    color: @savannah_dusk;
+}
+#battery.warning:not(.charging) {
+    color: @berry_bramble;
+}
+#battery.critical:not(.charging) {
+    color: @brand;
+    animation-name: blink;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+/* --- Margins --- */
+.modules-left > widget:first-child > #utils {
+    margin-left: 4px;
+}
 .modules-right > widget:last-child > #status {
-    margin-right: 4;
+    margin-right: 4px;
 }
 
 /* --- Tooltip Styling --- */
 tooltip {
-    background: @bg_dark;
-    border: 2px solid @bg;
+    background: @bg;
+    border: 2px solid @dried_bark;
 }
 tooltip label {
-    color: @fg;
-    padding: 8px;
+    color: @burnt_charcoal;
+    padding: 2px 4px;
 }
 
 /* --- Animations --- */
 @keyframes blink {
     to {
-        background-color: @red;
-        color: @bg-dark-rgba;
+        background-color: @bg;
+        color: @dried_bark;
     }
 }

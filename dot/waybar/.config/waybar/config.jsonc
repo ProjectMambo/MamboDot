@@ -23,26 +23,26 @@
     "idle_inhibitor": {
         "format": "{icon}",
         "format-icons": {
-            "activated": "",
-            "deactivated": "",
+            "activated": "",
+            "deactivated": "",
         },
         "tooltip-format": "Awake for 5d 10h 49m",
     },
 
     "custom/cam": {
-        "format": "󰄀",
+        "format": "",
         "exec": "echo 'Camera Status'",
         "interval": 60,
     },
 
     "custom/mic": {
-        "format": "",
+        "format": "",
         "exec": "echo 'Mic Status'",
         "interval": 60,
     },
 
     "custom/vpn": {
-        "format": "󰖂",
+        "format": "",
         "exec": "echo 'VPN Status'",
         "interval": 60,
     },
@@ -59,12 +59,12 @@
     },
 
     "cpu": {
-        "format": " {usage}%",
+        "format": "{usage}%",
         "interval": 2,
     },
 
     "disk": {
-        "format": " {percentage_used}%",
+        "format": "{percentage_used}%",
         "path": "/",
     },
 
@@ -106,13 +106,8 @@
         "interval": 1,
     },
 
-    "hyprland/special-workspace": {
-        "format": "󰠿",
-        "on-click": "hyprctl dispatch 'hl.dsp.workspace.toggle_special(\"minimized\")'",
-    },
-
     "custom/special": {
-        "format": "󰠿",
+        "format": "",
         "on-click": "hyprctl dispatch 'hl.dsp.workspace.toggle_special(\"minimized\")'",
         "tooltip": false,
     },
@@ -146,17 +141,17 @@
     },
 
     "bluetooth": {
-        "format": "",
+        "format": "",
         "tooltip-format": "{device_alias} {device_battery_percentage}%",
         "on-click": "blueman-manager",
     },
 
     "pulseaudio": {
-        "format": "{icon} {volume}%",
+        "format": "{icon}{volume}%",
         "format-muted": "",
         "format-icons": {
             "headphone": "",
-            "default": ["", "", ""],
+            "default": ["", "", "", "", ""],
         },
         "on-scroll-up": "pamixer -i 1",
         "on-scroll-down": "pamixer -d 1",
@@ -165,8 +160,8 @@
 
     "backlight": {
         "device": "nvidia_wmi_ec_backlight",
-        "format": "{icon} {percent}%",
-        "format-icons": ["", "", "", "", "", "", "", "", ""],
+        "format": "{icon}{percent}%",
+        "format-icons": ["", "", "", "", ""],
         "on-scroll-up": "brightnessctl set 1%+",
         "on-scroll-down": "brightnessctl set 1%-",
         "interval": 2,
@@ -177,9 +172,9 @@
             "warning": 30,
             "critical": 15,
         },
-        "format": "{icon} {capacity}%",
+        "format": "{icon}{capacity}%",
         "format-charging": " {capacity}%",
         "format-plugged": " {capacity}%",
-        "format-icons": ["", "", "", "", ""],
+        "format-icons": ["", "", "", "", ""],
     },
 }

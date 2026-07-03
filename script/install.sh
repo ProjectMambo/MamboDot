@@ -13,11 +13,17 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 # Generate themes
 THEME_HYPRLAND="$PROJECT_DIR/dot/hypr/.config/hypr/themes"
 mkdir -p "$THEME_HYPRLAND"
-mbcolor mamboheritage hyprland -o "$THEME_HYPRLAND"
+mbcolor mamboorchelight hyprland -o "$THEME_HYPRLAND"
+mbcolor mamboorchedark hyprland -o "$THEME_HYPRLAND"
+mbcolor mambooutbacklight hyprland -o "$THEME_HYPRLAND"
+mbcolor mambooutbackdark hyprland -o "$THEME_HYPRLAND"
 
 THEME_WAYBAR="$PROJECT_DIR/dot/waybar/.config/waybar"
 mkdir -p "$THEME_WAYBAR"
-mbcolor mamboheritage waybar -o "$THEME_WAYBAR"
+mbcolor mamboorchelight waybar -o "$THEME_WAYBAR"
+mbcolor mamboorchedark waybar -o "$THEME_WAYBAR"
+mbcolor mambooutbacklight waybar -o "$THEME_WAYBAR"
+mbcolor mambooutbackdark waybar -o "$THEME_WAYBAR"
 
 # Install code oss extensions
 CODE_OSS_SCRIPT="$SCRIPT_DIR/code-oss/install_extensions.sh"
@@ -33,9 +39,19 @@ fi
 # fcitx5-configtool
 # add language
 
+if command -v mbfont &> /dev/null; then
+    FONT_DIR=~/.local/share/fonts/mambofont
+    mkdir -p "$FONT_DIR"
+    mbfont compile 0.0.0 -o "$FONT_DIR" -t ttf
+fi
+fc-cache -fv
+fc-list | grep -i "mambofont"
+
 update-desktop-database ~/.local/share/applications
+kbuildsycoca6 --noincremental
 
 source ~/.zshenv
+hyprctl reload
 
 echo -e "${BLUE}------------------------------------------${NC}"
 echo -e " Tool:   ${GREEN}MamboDot${NC}"

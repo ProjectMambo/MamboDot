@@ -27,7 +27,7 @@ local function resolve_dispatch(target, make_dispatch)
         return function()
             local current = get_active_workspace()
             if not current then
-                io.stderr:write("[workspace] could not determine active workspace\n")
+                hl.dispatch(hl.dsp.exec_cmd("notify-send '[workspace] could not determine active workspace\n'"))
                 return
             end
             local ws = wrap(current, target)
@@ -69,7 +69,7 @@ function M.interchange(target)
     return function()
         local current = get_active_workspace()
         if not current then
-            io.stderr:write("[workspace] could not determine active workspace\n")
+            hl.dispatch(hl.dsp.exec_cmd("notify-send '[workspace] could not determine active workspace\n'"))
             return
         end
         local dest = wrap(current, target)

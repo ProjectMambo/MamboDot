@@ -10,6 +10,7 @@ M.default = {
     { ws = 3,           app = "dolphin",     check = "org.kde.dolphin" },
     { ws = 10,          app = "obsidian" },
     { ws = "minimized", app = "spotify" },
+    { ws = "minimized", app = "steam" },
 }
 
 -- Returns a function that launches applications from the provided
@@ -46,7 +47,7 @@ function M.launch(preset)
 
             -- Add to launch queue if not found
             if not is_open then
-                os.execute("notify-send 'Launching " .. entry.app .. "'")
+                hl.dispatch(hl.dsp.exec_cmd("notify-send 'Launching " .. entry.app .. "'"))
                 hl.dispatch(hl.dsp.exec_cmd(entry.app, { workspace = search_ws }))
                 to_open = to_open + 1
             end
@@ -57,7 +58,7 @@ function M.launch(preset)
 
         -- Notify the user how many apps were launched
         local notify = tostring(to_open) .. ((to_open < 2) and " app" or " apps") .. " to launch"
-        os.execute("notify-send '" .. notify .. "'")
+        hl.dispatch(hl.dsp.exec_cmd("notify-send '" .. notify .. "'"))
     end
 end
 

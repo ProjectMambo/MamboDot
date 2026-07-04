@@ -1,5 +1,7 @@
 [General]
 BrowserApplication=zen.desktop
+TerminalApplication=kitty
+TerminalService=kitty.desktop
 ColorScheme=BreezeDark
 fixed=JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0
 font=Cantarell,10,-1,5,50,0,0,0,0,0

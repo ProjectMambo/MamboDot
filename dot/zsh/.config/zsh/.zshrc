@@ -6,6 +6,8 @@ export GTK_IM_MODULE=fcitx5
 export QT_IM_MODULE=fcitx5
 export XMODIFIERS=@im=fcitx5
 
+export ELECTRON_TRASH="gio"
+
 # Set Neovim as the default editor for everything
 export EDITOR='nvim'
 export VISUAL='nvim'

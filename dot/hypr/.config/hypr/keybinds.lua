@@ -68,8 +68,8 @@ hl.bind(mod .. " + D", hl.dsp.window.fullscreen({ mode = "maximized", action = "
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" })) -- Fullscreen
 hl.bind(mod .. " + P", hl.dsp.window.pin())                                                  -- Pin
 
-hl.bind(mod .. s .. " + equal", hl.dsp.layout("splitratio 0.1"))                             -- Split Ratio Up
-hl.bind(mod .. s .. " + minus", hl.dsp.layout("splitratio -0.1"))                            -- Split Ratio Down
+hl.bind(mod .. s .. " + equal", hl.dsp.layout("splitratio -0.1"))                            -- Split Ratio Up
+hl.bind(mod .. s .. " + minus", hl.dsp.layout("splitratio 0.1"))                             -- Split Ratio Down
 
 -- Focus in Direction
 hl.bind(mod .. " + H", hl.dsp.focus({ direction = "l" }))
@@ -104,13 +104,13 @@ for i = 1, 10 do
 end
 
 -- Left/Right
-hl.bind(mod .. " + semicolon", ws.workspace("l"))                       -- Switch to Workspace l/r
-hl.bind(mod .. " + apostrophe", ws.workspace("r"))
-hl.bind(mod .. s .. " + semicolon", ws.movetoworkspace("l"))            -- Move to Workspace l/r
-hl.bind(mod .. s .. " + apostrophe", ws.movetoworkspace("r"))
-hl.bind(mod .. s .. a .. " + semicolon", ws.movetoworkspacesilent("l")) -- Move to Workspace Silent l/r
+hl.bind(mod .. " + semicolon", ws.workspace("l"), { repeating = true })            -- Switch to Workspace l/r
+hl.bind(mod .. " + apostrophe", ws.workspace("r"), { repeating = true })
+hl.bind(mod .. s .. " + semicolon", ws.movetoworkspace("l"), { repeating = true }) -- Move to Workspace l/r
+hl.bind(mod .. s .. " + apostrophe", ws.movetoworkspace("r"), { repeating = true })
+hl.bind(mod .. s .. a .. " + semicolon", ws.movetoworkspacesilent("l"))            -- Move to Workspace Silent l/r
 hl.bind(mod .. s .. a .. " + apostrophe", ws.movetoworkspacesilent("r"))
-hl.bind(mod .. a .. " + semicolon", ws.interchange("l"))                -- Interchange with Workspace l/r
+hl.bind(mod .. a .. " + semicolon", ws.interchange("l"))                           -- Interchange with Workspace l/r
 hl.bind(mod .. a .. " + apostrophe", ws.interchange("r"))
 
 -- Special

@@ -1,8 +1,8 @@
 [General]
 BrowserApplication=zen.desktop
+ColorScheme=BreezeDark
 TerminalApplication=kitty
 TerminalService=kitty.desktop
-ColorScheme=BreezeDark
 fixed=JetBrainsMono Nerd Font,10,-1,5,50,0,0,0,0,0
 font=Cantarell,10,-1,5,50,0,0,0,0,0
 menuFont=Cantarell,10,-1,5,50,0,0,0,0,0
@@ -16,10 +16,20 @@ ShowDeleteCommand=false
 widgetStyle=Breeze
 
 [KFileDialog Settings]
+Allow Expansion=false
 Automatically select filename extension=true
+Breadcrumb Navigation=true
+Decoration position=2
+Show Full Path=false
+Show Inline Previews=true
+Show Preview=false
+Show Speedbar=true
 Show hidden files=true
 Sort by=Name
 Sort directories first=true
+Sort hidden files last=false
+Sort reversed=false
+Speedbar Width=125
 View Style=DetailTree
 
 [PreviewSettings]

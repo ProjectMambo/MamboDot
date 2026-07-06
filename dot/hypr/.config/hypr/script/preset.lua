@@ -6,11 +6,12 @@ local M = {}
 -- and the application class name to verify.
 M.default = {
     { ws = 1,           app = "zen-browser", check = "zen" },
-    { ws = 2,           app = "code-oss" },
     { ws = 3,           app = "dolphin",     check = "org.kde.dolphin" },
+    { ws = 9,           app = "webcord" },
     { ws = 10,          app = "obsidian" },
     { ws = "minimized", app = "spotify" },
     { ws = "minimized", app = "steam" },
+    { ws = 2,           app = "code-oss" },
 }
 
 -- Returns a function that launches applications from the provided

@@ -18,3 +18,18 @@ hl.window_rule({
     },
     border_color = theme.color.drk.dry_straw,
 })
+
+hl.window_rule({
+    match = { 
+        class = "kitty" 
+    },
+    float = true,
+    size = { 1100, 700 } -- Width, Height in pixels
+})
+hl.window_rule({
+    match = { 
+        class = "org.kde.dolphin" 
+    },
+    float = true,
+    size = { 1100, 700 } -- Width, Height in pixels
+})

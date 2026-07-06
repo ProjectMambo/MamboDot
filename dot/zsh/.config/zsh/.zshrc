@@ -5,6 +5,7 @@ export ZSH="$HOME/.oh-my-zsh"
 export GTK_IM_MODULE=fcitx5
 export QT_IM_MODULE=fcitx5
 export XMODIFIERS=@im=fcitx5
+export XDG_CURRENT_DESKTOP=KDE
 
 export ELECTRON_TRASH="gio"
 
@@ -35,6 +36,8 @@ alias vi='nvim'
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 # Use arrow keys in the tab menu
 zstyle ':completion:*' menu select
+
+fastfetch
 
 # Custom Teleport (tp) Directory Bookmarker
 tp() {

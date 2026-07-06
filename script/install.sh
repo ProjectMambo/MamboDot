@@ -10,6 +10,8 @@ NC='\033[0m' # No Color
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
+chmod +x "$PROJECT_DIR/dot/waybar/.config/waybar/script/uptime.sh"
+
 # Generate themes
 THEME_HYPRLAND="$PROJECT_DIR/dot/hypr/.config/hypr/themes"
 mkdir -p "$THEME_HYPRLAND"

@@ -2,86 +2,46 @@
     "layer": "top",
     "position": "top",
     "height": 34,
-    "margin-top": 5,
-    "margin-left": 5,
-    "margin-right": 5,
-    "spacing": 4,
+    "margin-top": 4,
+    "margin-left": 4,
+    "margin-right": 4,
+    "spacing": 0,
 
     //--- LEFT ---
-    "modules-left": [
-        "group/utils",
-        "custom/vpn",
-        "group/hardware",
-        "hyprland/window",
-    ],
-
-    "group/utils": {
-        "orientation": "horizontal",
-        "modules": ["idle_inhibitor", "custom/cam", "custom/mic"],
-    },
-
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": "",
-        },
-    },
-
-    "custom/cam": {
-        "format": "",
-        "exec": "echo 'Camera Status'",
-        "interval": 60,
-    },
-
-    "custom/mic": {
-        "format": "",
-        "exec": "echo 'Mic Status'",
-        "interval": 60,
-    },
-
-    "custom/vpn": {
-        "format": "",
-        "exec": "echo 'VPN Status'",
-        "interval": 60,
-    },
+    "modules-left": ["group/hardware", "hyprland/window"],
 
     "group/hardware": {
         "orientation": "horizontal",
         "modules": ["memory", "cpu", "disk"],
     },
+
     "memory": {
-        "format": "󰐰 {percentage}%",
+        "format": "<span font='18' rise='-3000'>󰐰</span> {percentage}%",
         "tooltip-format": "RAM: {used:0.1f}GiB / {total:0.1f}GiB\nSwap: {swapUsed:0.1f}GiB / {swapTotal:0.1f}GiB",
         "on-click": "alacritty -e btop",
         "interval": 30,
     },
 
     "cpu": {
-        "format": "{usage}%",
+        "format": "<span font='18' rise='-3000'></span> {usage}%",
         "interval": 2,
     },
 
     "disk": {
-        "format": "{percentage_used}%",
-        "path": "/",
+        "format": "<span font='18' rise='-3000'></span> {percentage_used}%",
+        "paths": "/",
     },
 
     "hyprland/window": {
         "format": "{}",
-        "max-length": 40,
+        "max-length": 50,
         "rewrite": {
             "": "Hyprland",
         },
     },
 
     //--- CENTER ---
-    "modules-center": [
-        "clock#date",
-        "hyprland/workspaces",
-        "clock#time",
-        "custom/special",
-    ],
+    "modules-center": ["clock#date", "hyprland/workspaces", "clock#time"],
 
     "hyprland/workspaces": {
         "format": "{name}",
@@ -96,19 +56,19 @@
 
     "clock#date": {
         "format": "{:%a, %d %b}",
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "tooltip-format": "<big>{:%Y %B %d}</big>\n<tt><small>{calendar}</small></tt>",
+        "calendar": {
+            "mode": "month",
+            "format": {
+                "today": "<span color='#D44B36'><b>{}</b></span>",
+            },
+        },
     },
 
     "clock#time": {
         "format": "{:%H:%M:%S}",
-        "tooltip": false,
+        "tooltip-format": "Timezone: GMT{:%Z}",
         "interval": 1,
-    },
-
-    "custom/special": {
-        "format": "",
-        "on-click": "hyprctl dispatch 'hl.dsp.workspace.toggle_special(\"minimized\")'",
-        "tooltip": false,
     },
 
     //--- RIGHT ---
@@ -119,19 +79,41 @@
         "spacing": 10,
     },
 
+    "custom/cam": {
+        "format": "<span font='18' rise='-3000'>󰄀</span>",
+        "exec": "echo 'Camera Status'",
+        "interval": 60,
+    },
+
+    "custom/mic": {
+        "format": "<span font='18' rise='-3000'></span>",
+        "exec": "echo 'Mic Status'",
+        "interval": 60,
+    },
+
     "group/status": {
         "orientation": "horizontal",
         "modules": [
+            "custom/uptime",
             "network",
             "bluetooth",
             "pulseaudio",
-            "backlight",
             "battery",
         ],
     },
 
+    "custom/uptime": {
+        "exec": "~/.config/waybar/script/uptime.sh",
+        "return-type": "json",
+        "interval": 60,
+        "on-click": "~/.config/waybar/script/uptime.sh --toggle && pkill -RTMIN+8 waybar",
+        "signal": 8,
+        "format": "<span font='JetBrainsMono Nerd Font Mono 18' rise='-3000'>{}</span>",
+        "tooltip": true,
+    },
+
     "network": {
-        "format-wifi": "{icon}",
+        "format-wifi": "<span font='18' rise='-3000'>{icon}</span>",
         "format-ethernet": "󰈀",
         "format-disconnected": "󰖪",
         "format-icons": ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"],
@@ -140,30 +122,21 @@
     },
 
     "bluetooth": {
-        "format": "",
+        "format": "<span font='16' rise='-3000'></span>",
         "tooltip-format": "{device_alias} {device_battery_percentage}%",
         "on-click": "blueman-manager",
     },
 
     "pulseaudio": {
-        "format": "{icon}{volume}%",
+        "format": "<span font='18' rise='-3000'>{icon}</span> {volume}%",
         "format-muted": "",
         "format-icons": {
             "headphone": "",
-            "default": ["", "", "", "", ""],
+            "default": ["", "", ""],
         },
         "on-scroll-up": "pamixer -i 1",
         "on-scroll-down": "pamixer -d 1",
         "on-click": "pavucontrol",
-    },
-
-    "backlight": {
-        "device": "nvidia_wmi_ec_backlight",
-        "format": "{icon}{percent}%",
-        "format-icons": ["", "", "", "", ""],
-        "on-scroll-up": "brightnessctl set 1%+",
-        "on-scroll-down": "brightnessctl set 1%-",
-        "interval": 2,
     },
 
     "battery": {
@@ -171,9 +144,9 @@
             "warning": 30,
             "critical": 15,
         },
-        "format": "{icon}{capacity}%",
-        "format-charging": " {capacity}%",
-        "format-plugged": " {capacity}%",
-        "format-icons": ["", "", "", "", ""],
+        "format": "<span font='18' rise='-3000'>{icon}</span> {capacity}%",
+        "format-charging": " {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-icons": ["", "", "", "", ""],
     },
 }

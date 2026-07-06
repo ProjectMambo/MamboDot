@@ -20,16 +20,25 @@ hl.window_rule({
 })
 
 hl.window_rule({
-    match = { 
-        class = "kitty" 
+    match = {
+        class = "kitty"
     },
     float = true,
     size = { 1100, 700 } -- Width, Height in pixels
 })
 hl.window_rule({
-    match = { 
-        class = "org.kde.dolphin" 
+    match = {
+        class = "org.kde.dolphin"
     },
     float = true,
     size = { 1100, 700 } -- Width, Height in pixels
+})
+
+hl.window_rule({
+    match = {
+        class = "feh"
+    },
+    float = true,
+    size = { 1100, 700 }, -- Width, Height in pixels
+    move = { "monitor_w * 0.5 - 550", "monitor_h * 0.5 - 326", relative = false }
 })

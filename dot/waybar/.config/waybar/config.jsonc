@@ -12,7 +12,7 @@
 
     "group/hardware": {
         "orientation": "horizontal",
-        "modules": ["memory", "cpu", "disk"],
+        "modules": ["memory", "cpu", "disk", "custom/gpu"],
     },
 
     "memory": {
@@ -32,9 +32,18 @@
         "paths": "/",
     },
 
+    "custom/gpu": {
+        "exec": "~/.config/waybar/script/gpuinfo.sh",
+        "return-type": "json",
+        "interval": 5,
+        "format": "<span font='JetBrainsMono Nerd Font Mono 18' rise='-3000'>󰘚</span> {}",
+        "signal": 9,
+        "tooltip": true,
+    },
+
     "hyprland/window": {
         "format": "{}",
-        "max-length": 50,
+        "max-length": 40,
         "rewrite": {
             "": "Hyprland",
         },
@@ -131,7 +140,12 @@
         "format": "<span font='18' rise='-3000'>{icon}</span> {volume}%",
         "format-muted": "",
         "format-icons": {
-            "headphone": "",
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
             "default": ["", "", ""],
         },
         "on-scroll-up": "pamixer -i 1",
@@ -148,5 +162,6 @@
         "format-charging": " {capacity}%",
         "format-plugged": " {capacity}%",
         "format-icons": ["", "", "", "", ""],
+        "tooltip-format": "Time: {time}\nHealth: {health}%",
     },
 }

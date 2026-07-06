@@ -33,7 +33,27 @@ hl.window_rule({
     float = true,
     size = { 1100, 700 } -- Width, Height in pixels
 })
-
+hl.window_rule({
+    match = {
+        class = "org.pulseaudio.pavucontrol"
+    },
+    float = true,
+    size = { 500, 700 } -- Width, Height in pixels
+})
+hl.window_rule({
+    match = {
+        class = "blueman-manager"
+    },
+    float = true,
+    size = { 500, 700 } -- Width, Height in pixels
+})
+hl.window_rule({
+    match = {
+        class = "nm-connection-editor"
+    },
+    float = true,
+    size = { 500, 700 } -- Width, Height in pixels
+})
 hl.window_rule({
     match = {
         class = "feh"

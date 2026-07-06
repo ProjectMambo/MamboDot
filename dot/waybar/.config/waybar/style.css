@@ -53,6 +53,10 @@
 }
 #disk {
     color: @eucalyptus_smoke;
+    padding: 0 4px;
+}
+#custom-gpu {
+    color: @dusty_mauve;
     padding-left: 4px;
 }
 

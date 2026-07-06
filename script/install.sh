@@ -11,6 +11,7 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 chmod +x "$PROJECT_DIR/dot/waybar/.config/waybar/script/uptime.sh"
+chmod +x "$PROJECT_DIR/dot/waybar/.config/waybar/script/gpuinfo.sh"
 
 # Generate themes
 THEME_HYPRLAND="$PROJECT_DIR/dot/hypr/.config/hypr/themes"

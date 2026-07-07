@@ -12,6 +12,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 chmod +x "$PROJECT_DIR/dot/waybar/.config/waybar/script/uptime.sh"
 chmod +x "$PROJECT_DIR/dot/waybar/.config/waybar/script/gpuinfo.sh"
+chmod +x ~/.local/bin/powermenu.sh
 
 # Generate themes
 THEME_HYPRLAND="$PROJECT_DIR/dot/hypr/.config/hypr/themes"

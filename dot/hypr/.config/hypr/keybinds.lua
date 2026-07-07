@@ -19,7 +19,7 @@ hl.bind(c .. mod .. " + super_l",                                               
         hl.dispatch(hl.dsp.exec_cmd("pkill rofi || prime-run rofi -show drun -show-icons -terminal kitty"))
     end)
 hl.bind(mod .. " + space", hl.dsp.exec_cmd("fcitx5-remote -t"), { repeating = true })                  -- Language
-hl.bind(mod .. " + delete", hl.dsp.exec_cmd("rofi -show power-menu -modi power-menu:rofi-power-menu")) -- Power Menu
+hl.bind(mod .. " + delete", hl.dsp.exec_cmd("~/.local/bin/powermenu.sh")) -- Power Menu
 hl.bind(mod .. s .. " + delete", hl.dsp.exec_cmd("hyprlock"))                                          -- Lock
 hl.bind(mod .. s .. c .. " + R", ref.refresh)                                                          -- Refresh Configs
 hl.bind(mod .. " + B", hl.dsp.exec_cmd("pgrep waybar && pkill waybar || waybar &"))                    -- Toggle Waybar

@@ -1,6 +1,5 @@
 configuration {
     modi: "run,drun,window";
-    font: "Mambo Font 16";
     icon-theme: "Oranchelo";
     show-icons: true;
     terminal: "kitty";

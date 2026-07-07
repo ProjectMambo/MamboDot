@@ -11,6 +11,7 @@ function M.refresh()
     hl.dispatch(hl.dsp.exec_cmd("source ~/.zshenv"))
     hl.dispatch(hl.dsp.exec_cmd("waybar &"))
     hl.dispatch(hl.dsp.exec_cmd("hyprctl reload"))
+    hl.dispatch(hl.dsp.exec_cmd("systemctl --user daemon-reload"))
 end
 
 return M

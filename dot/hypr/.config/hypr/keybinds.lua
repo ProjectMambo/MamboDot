@@ -5,6 +5,7 @@ local vars = require("variables")
 local ws = require("script.workspace")
 local preset = require("script.preset")
 local ref = require("script.refresh")
+local player = require("script.player")
 local mod = " + SUPER"
 local s = " + SHIFT"
 local c = " + CTRL"
@@ -17,7 +18,7 @@ hl.bind(c .. mod .. " + super_l",                                               
         hl.dispatch(hl.dsp.exec_cmd("notify-send 'Prime-Run'"))
         hl.dispatch(hl.dsp.exec_cmd("pkill rofi || prime-run rofi -show drun -show-icons -terminal kitty"))
     end)
-hl.bind(mod .. " + space", hl.dsp.exec_cmd("fcitx5-remote -t"))                                        -- Language
+hl.bind(mod .. " + space", hl.dsp.exec_cmd("fcitx5-remote -t"), { repeating = true })                  -- Language
 hl.bind(mod .. " + delete", hl.dsp.exec_cmd("rofi -show power-menu -modi power-menu:rofi-power-menu")) -- Power Menu
 hl.bind(mod .. s .. " + delete", hl.dsp.exec_cmd("hyprlock"))                                          -- Lock
 hl.bind(mod .. s .. c .. " + R", ref.refresh)                                                          -- Refresh Configs
@@ -36,13 +37,25 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("lightctl down"), { repeating =
 hl.bind(mod .. a .. " + minus", hl.dsp.exec_cmd("lightctl down"), { repeating = true })
 hl.bind(mod .. " + V", hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy")) -- Clipboard History
 
+-- Player
+hl.bind(mod .. " + KP_Delete", player.run(""))                                         -- Info
+hl.bind(mod .. " + KP_Insert", player.run("playerctl play-pause"))                     -- Play/Pause
+hl.bind(mod .. " + left", player.run("playerctl position 5-"), { repeating = true })   -- Skip Backward
+hl.bind(mod .. " + right", player.run("playerctl position 5+"), { repeating = true })  -- Skip Forward
+hl.bind(mod .. a .. " + left", player.run("playerctl prev"), { repeating = true })     -- Previous Track
+hl.bind(mod .. a .. " + right", player.run("playerctl next"), { repeating = true })    -- Next Track
+hl.bind(mod .. " + up", player.run("playerctl volume 0.05+"), { repeating = true })    -- Volume Up
+hl.bind(mod .. " + down", player.run("playerctl volume 0.05-"), { repeating = true })  -- Volume Down
+hl.bind(mod .. a .. " + up", player.run("playerctld shift"), { repeating = true })     -- Next Player
+hl.bind(mod .. a .. " + down", player.run("playerctld unshift"), { repeating = true }) -- Previous Player
+
 -- Screen Snap
 hl.bind(mod .. " + S", hl.dsp.exec_cmd("env HQF_ACTION=temp quickshell -c HyprQuickFrame -n"))                           -- Clipboard (Region)
 hl.bind(mod .. a .. " + S", hl.dsp.exec_cmd("env HQF_MODE=window HQF_ACTION=temp quickshell -c HyprQuickFrame -n"))      -- Clipboard (Window)
 hl.bind(mod .. s .. " + S", hl.dsp.exec_cmd("env HQF_ACTION=edit quickshell -c HyprQuickFrame -n"))                      -- Edit (Region)
-hl.bind(mod .. a .. s .. " + S", hl.dsp.exec_cmd("env HQF_MODE=window HQF_ACTION=edit quickshell -c HyprQuickFrame -n")) -- Edit (Window)
+hl.bind(mod .. s .. a .. " + S", hl.dsp.exec_cmd("env HQF_MODE=window HQF_ACTION=edit quickshell -c HyprQuickFrame -n")) -- Edit (Window)
 hl.bind(mod .. c .. " + S", hl.dsp.exec_cmd("quickshell -c HyprQuickFrame -n"))                                          -- File (Region)
-hl.bind(mod .. a .. c .. " + S", hl.dsp.exec_cmd("env HQF_MODE=window quickshell -c HyprQuickFrame -n"))                 -- File (Window)
+hl.bind(mod .. c .. a .. " + S", hl.dsp.exec_cmd("env HQF_MODE=window quickshell -c HyprQuickFrame -n"))                 -- File (Window)
 
 -- Cursor
 hl.bind(mod .. " + comma", hl.dsp.exec_cmd("wl-kbptr -o modes=floating,click -o mode_floating.source=detect")) -- Clickable
@@ -52,8 +65,8 @@ hl.bind(mod .. " + period", hl.dsp.exec_cmd("wl-kbptr"))                        
 hl.bind(mod .. " + Q", hl.dsp.exec_cmd(vars.apps.terminal))    -- Kitty
 hl.bind(mod .. " + W", hl.dsp.exec_cmd(vars.apps.browser))     -- Zen
 hl.bind(mod .. " + E", hl.dsp.exec_cmd(vars.apps.fileManager)) -- Dolphin
-hl.bind(mod .. " + R", hl.dsp.exec_cmd(vars.apps.notes))       -- Obsidian
-hl.bind(mod .. " + T", hl.dsp.exec_cmd(vars.apps.code))        -- Code-Oss
+hl.bind(mod .. " + R", hl.dsp.exec_cmd(vars.apps.notepad))     -- Featherpad
+hl.bind(mod .. " + T", hl.dsp.exec_cmd(vars.apps.calculator))  -- Qalculate-QT
 
 -- Presets
 hl.bind(mod .. a .. " + KP_Insert", preset.launch(preset.default)) -- Preset 1
@@ -68,8 +81,8 @@ hl.bind(mod .. " + D", hl.dsp.window.fullscreen({ mode = "maximized", action = "
 hl.bind(mod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" })) -- Fullscreen
 hl.bind(mod .. " + P", hl.dsp.window.pin())                                                  -- Pin
 
-hl.bind(mod .. s .. " + equal", hl.dsp.layout("splitratio -0.1"))                            -- Split Ratio Up
-hl.bind(mod .. s .. " + minus", hl.dsp.layout("splitratio 0.1"))                             -- Split Ratio Down
+hl.bind(mod .. s .. " + equal", hl.dsp.layout("splitratio 0.1"))                             -- Split Ratio Up
+hl.bind(mod .. s .. " + minus", hl.dsp.layout("splitratio -0.1"))                            -- Split Ratio Down
 
 -- Focus in Direction
 hl.bind(mod .. " + H", hl.dsp.focus({ direction = "l" }))

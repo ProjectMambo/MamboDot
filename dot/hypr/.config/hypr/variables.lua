@@ -50,8 +50,8 @@ M.apps = {
     terminal    = "kitty",
     browser     = "zen-browser",
     fileManager = "dolphin",
-    notes       = "obsidian",
-    code        = "code"
+    notepad     = "featherpad",
+    calculator  = "qalculate-qt"
 }
 
 -- Misc

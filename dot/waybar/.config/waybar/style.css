@@ -10,7 +10,6 @@
 }
 
 /* --- Bar Style --- */
-/* --- Bar Style --- */
 #waybar {
     background-color: transparent;
     color: @fg;
@@ -21,19 +20,28 @@
 .modules-center,
 .modules-right {
     background-color: @bg;
+    padding: 0 2px;
 }
 
 /* --- Modules Style --- */
 #utils,
-#hardware,
 #clock.date,
-#clock.time,
-#status,
-#tray {
+#clock.time {
     background-color: @border;
     padding: 0 12px;
     margin: 4px 2px;
     border: @bg;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+#hardware,
+#status,
+#tray {
+    background-color: @border;
+    padding: 0;
+    margin: 4px 2px;
+    border: @bg;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* --- Left Section --- */
@@ -45,26 +53,31 @@
 
 #memory {
     color: @desert_sage;
-    padding-right: 4px;
+    padding: 0 8px;
 }
 #cpu {
     color: @tumbleweed;
-    padding: 0 4px;
+    padding: 0 8px;
 }
 #disk {
     color: @eucalyptus_smoke;
-    padding: 0 4px;
+    padding: 0 8px;
 }
 #custom-gpu {
     color: @dusty_mauve;
-    padding-left: 4px;
+    padding: 0 8px;
 }
 
 #window {
     margin-left: 8px;
-    margin-right: 12px;
+    margin-right: 8px;
     color: @burnt_charcoal;
     background-color: transparent;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+#window:hover {
+    color: @dried_bark;
+    transition: none;
 }
 
 /* --- Center Section --- */
@@ -78,6 +91,7 @@
     text-shadow: none;
     color: @termite_mound;
     padding: 0 6px;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 #workspaces button.active {
     color: @burnt_charcoal;
@@ -89,16 +103,19 @@
     transition: none;
     color: @crushed_clay;
 }
+#workspaces button.active:hover {
+    color: @dusk_shadow;
+}
 #workspaces button.urgent {
     color: @brand;
 }
 
 #clock.date {
-    margin-left: 4px;
+    margin-left: 2px;
     color: @burnt_charcoal;
 }
 #clock.time {
-    margin-right: 4px;
+    margin-right: 2px;
     color: @burnt_charcoal;
     font-weight: 500;
 }
@@ -110,13 +127,47 @@
     margin: 0;
 }
 
+/* --- Tray --- */
 #tray {
-    margin-left: 4px;
+    margin-left: 2px;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+#tray > widget > * {
+    padding: 0 8px;
+    margin: 0;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+#tray > widget:hover > * {
+    background-color: @fg_muted;
+    box-shadow: none;
+    text-shadow: none;
+    transition: none;
+}
+
+/* Tray dropdown menu */
+#tray menu {
+    background: @bg;
+    border: 2px solid @dried_bark;
+    padding: 4px;
+}
+#tray menu menuitem {
+    color: @burnt_charcoal;
+    padding: 4px 8px;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+#tray menu menuitem:hover {
+    background-color: @fg_muted;
+    color: @crushed_clay;
+    transition: none;
+}
+#tray menu separator {
+    background-color: @border;
+    margin: 4px 0;
 }
 
 #custom-uptime {
-    padding-right: 4px;
     color: @wild_plum;
+    padding: 0 8px;
 }
 #custom-uptime.disabled {
     color: @dry_straw;
@@ -125,7 +176,7 @@
 /* Network States */
 #network {
     color: @dry_moss;
-    padding: 0 4px;
+    padding: 0 8px;
 }
 #network.disconnected {
     color: @crimson_creek;
@@ -137,7 +188,7 @@
 /* Bluetooth States */
 #bluetooth {
     color: @termite_mound;
-    padding: 0 4px;
+    padding: 0 8px;
 }
 #bluetooth.connected {
     color: @bluestone;
@@ -149,7 +200,7 @@
 /* Audio States */
 #pulseaudio {
     color: @burnt_ochre;
-    padding: 0 4px;
+    padding: 0 8px;
 }
 #pulseaudio.muted {
     color: @crimson_creek;
@@ -158,7 +209,7 @@
 /* Battery States */
 #battery {
     color: @river_ooze;
-    padding-left: 4px;
+    padding: 0 8px;
 }
 #battery.charging {
     color: @lichen_crust;
@@ -176,12 +227,105 @@
     animation-iteration-count: infinite;
 }
 
-/* --- Margins --- */
-.modules-left > widget:first-child > #hardware {
-    margin-left: 4px;
+/* --- Hover Effects (shared, workspaces-button style) --- */
+#memory,
+#cpu,
+#disk,
+#custom-gpu,
+#custom-uptime,
+#network,
+#bluetooth,
+#pulseaudio,
+#battery,
+#clock.date,
+#clock.time {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.modules-right > widget:last-child > #status {
-    margin-right: 4px;
+
+#memory:hover,
+#cpu:hover,
+#disk:hover,
+#custom-gpu:hover,
+#custom-uptime:hover,
+#network:hover,
+#bluetooth:hover,
+#pulseaudio:hover,
+#battery:hover,
+#clock.date:hover,
+#clock.time:hover {
+    background-color: @fg_muted;
+    box-shadow: none;
+    text-shadow: none;
+    transition: none;
+}
+
+/* Darker text variants on hover, per widget */
+#memory:hover {
+    color: @swamp_murk;
+}
+#cpu:hover {
+    color: @savannah_dusk;
+}
+#disk:hover {
+    color: @storm_canopy;
+}
+#custom-gpu:hover {
+    color: @berry_bramble;
+}
+
+#custom-uptime:hover {
+    color: @dusk_shadow;
+}
+#custom-uptime.disabled:hover {
+    color: @roasted_cumin;
+}
+
+#network:hover {
+    color: @ancient_pine;
+}
+#network.disconnected:hover {
+    color: @crimson_creek;
+}
+#network.ethernet:hover {
+    color: @night_monsoon;
+}
+
+#bluetooth:hover {
+    color: @weathered_wood;
+}
+#bluetooth.connected:hover {
+    color: @storm_canopy;
+}
+#bluetooth.off:hover {
+    color: @crimson_creek;
+}
+
+#pulseaudio:hover {
+    color: @ember_glow;
+}
+#pulseaudio.muted:hover {
+    color: @crimson_creek;
+}
+
+#battery:hover {
+    color: @sunken_timber;
+}
+#battery.charging:hover {
+    color: @dry_moss;
+}
+#battery.plugged:hover {
+    color: @savannah_dusk;
+}
+#battery.warning:not(.charging):hover {
+    color: @dusk_shadow;
+}
+#battery.critical:not(.charging):hover {
+    color: @crimson_creek;
+}
+
+#clock.date:hover,
+#clock.time:hover {
+    color: @dusk_shadow;
 }
 
 /* --- Tooltip Styling --- */

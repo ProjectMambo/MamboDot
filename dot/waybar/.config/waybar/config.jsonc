@@ -85,7 +85,7 @@
 
     "tray": {
         "icon-size": 18,
-        "spacing": 10,
+        "spacing": 0,
     },
 
     "custom/cam": {

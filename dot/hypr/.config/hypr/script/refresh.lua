@@ -1,17 +1,19 @@
+local f = require("script.helper")
 local M = {}
 
 function M.refresh()
-    hl.dispatch(hl.dsp.exec_cmd("notify-send 'Refreshing...'"))
-    hl.dispatch(hl.dsp.exec_cmd("pkill waybar|mako|avizo-service|hyprpaper"))
-    hl.dispatch(hl.dsp.exec_cmd("mako &"))
-    hl.dispatch(hl.dsp.exec_cmd("avizo-service &"))
-    hl.dispatch(hl.dsp.exec_cmd("hyprpaper &"))
-    hl.dispatch(hl.dsp.exec_cmd("update-desktop-database ~/.local/share/applications"))
-    hl.dispatch(hl.dsp.exec_cmd("kbuildsycoca6 --noincremental"))
-    hl.dispatch(hl.dsp.exec_cmd("source ~/.zshenv"))
-    hl.dispatch(hl.dsp.exec_cmd("waybar &"))
-    hl.dispatch(hl.dsp.exec_cmd("hyprctl reload"))
-    hl.dispatch(hl.dsp.exec_cmd("systemctl --user daemon-reload"))
+    return f.new()
+        :notify("Refreshing...")
+        :exec({
+            "pkill waybar|mako|avizo-service|hyprpaper",
+            "mako", "avizo-service", "hyprpaper",
+            "update-desktop-database ~/.local/share/applications",
+            "kbuildsycoca6 --noincremental",
+            "source ~/.zshenv",
+            "waybar", "hyprctl reload",
+            "systemctl --user daemon-reload"
+        })
+        :done()
 end
 
 return M

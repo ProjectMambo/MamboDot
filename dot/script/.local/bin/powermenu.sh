@@ -7,7 +7,7 @@ declare -A actions=(
     [" Reboot"]="systemctl reboot"
     [" Reboot to Windows"]="sudo grub-reboot 'Windows Boot Manager (on /dev/nvme1n1p1)' && systemctl reboot"
     [" Suspend"]="systemctl suspend"
-    [" Logout"]="hyprctl dispatch exit"
+    [" Logout"]="hyprshutdown"
     [" Lock"]="/usr/bin/hyprlock"
 )
 

@@ -1,20 +1,23 @@
 -- =============================================================================
 -- EXECUTION
 -- =============================================================================
-hl.on("hyprland.start", function()
-    hl.exec_cmd(
-        "dbus-update-activation-environment --systemd XDG_DATA_HOME XDG_DATA_DIRS XDG_CACHE_HOME XDG_CONFIG_HOME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-    hl.exec_cmd(
-        "systemctl --user import-environment XDG_DATA_HOME XDG_DATA_DIRS XDG_CACHE_HOME XDG_CONFIG_HOME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-    hl.exec_cmd("systemctl --user start plasma-kglobalaccel.serviceyX, hyprland-session.target")
-    hl.exec_cmd("playerctld daemon")
-    hl.exec_cmd("kbuildsycoca6 --noincremental")
-    hl.exec_cmd("waybar")
-    hl.exec_cmd("hyprlock")
-    hl.exec_cmd("hyprpaper")
-    hl.exec_cmd("hypridle")
-    hl.exec_cmd("avizo-service")
-    hl.exec_cmd("mako")
-    hl.exec_cmd("wl-paste --type text --watch cliphist store")
-    hl.exec_cmd("wl-paste --type image --watch cliphist store")
-end)
+local f = require("script.helper")
+
+hl.on("hyprland.start",
+    f.new()
+    :boot({
+        "dbus-update-activation-environment --systemd XDG_DATA_HOME XDG_DATA_DIRS XDG_CACHE_HOME XDG_CONFIG_HOME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP",
+        "systemctl --user import-environment XDG_DATA_HOME XDG_DATA_DIRS XDG_CACHE_HOME XDG_CONFIG_HOME WAYLAND_DISPLAY XDG_CURRENT_DESKTOP",
+        "systemctl --user start plasma-kglobalaccel.service",
+        "systemctl --user start hyprland-session.target",
+    })
+    :exec({
+        "playerctld daemon",
+        "kbuildsycoca6 --noincremental",
+        "hyprlock", "waybar", "hyprpaper", "hypridle", "avizo-service", "mako",
+        "/usr/lib/hyprpolkitagent/hyprpolkitagent",
+        "wl-paste --type text --watch cliphist store",
+        "wl-paste --type image --watch cliphist store"
+    })
+    :done()
+)

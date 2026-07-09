@@ -1,15 +1,16 @@
 -- Module for managing workspace application presets
+local f = require("script.helper")
 local M = {}
 
 -- Define the default configuration for workspace-application mappings.
 -- Each entry contains the target workspace number (or special name)
 -- and the application class name to verify.
 M.default = {
-    { ws = 1,           app = "zen-browser", check = "zen" },
-    { ws = 2,           app = "code-oss" },
-    { ws = 10,          app = "obsidian" },
-    { ws = "minimized", app = "spotify" },
+    { ws = "minimized", app = "spotify",     check = "Spotify" },
     { ws = "minimized", app = "steam" },
+    { ws = 1,           app = "zen-browser", check = "zen" },
+    { ws = 10,          app = "obsidian" },
+    { ws = 2,           app = "code-oss" },
 }
 
 -- Returns a function that launches applications from the provided
@@ -19,45 +20,35 @@ M.default = {
 function M.launch(preset)
     return function()
         -- Retrieve currently open windows to prevent duplicate launches
-        local open = hl.get_windows()
-        local to_open = 0
+        local windows = hl.get_windows()
         local active = hl.get_active_workspace()
+        local to_open = 0
 
         -- Iterate through the preset to identify which apps are missing
         for _, entry in ipairs(preset) do
-            local is_open = false
-            local target_ws = tostring(entry.ws)
-            local search_ws
+            local target_ws = f.safe(entry.ws)
+            local is_running = false
 
-            -- Normalize workspace target for the execution engine
-            if type(entry.ws) == "string" then
-                search_ws = "special:" .. target_ws
-            else
-                search_ws = entry.ws
-            end
-
-            -- Check if the application is already running
-            for _, window in pairs(open) do
-                if window.class == entry.app or window.class == entry.check then
-                    is_open = true
+            for _, window in pairs(windows) do
+                if window.class == entry.check or window.class == entry.app then
+                    is_running = true
                     break
                 end
             end
 
-            -- Add to launch queue if not found
-            if not is_open then
-                hl.dispatch(hl.dsp.exec_cmd("notify-send 'Launching " .. entry.app .. "'"))
-                hl.dispatch(hl.dsp.exec_cmd(entry.app, { workspace = search_ws }))
+            if not is_running then
+                f.new()
+                    :notify("Launching " .. entry.app)
+                    :exec(entry.app, { workspace = target_ws })
+                    :run()
                 to_open = to_open + 1
             end
         end
 
-        -- Return focus to the original workspace
-        hl.dispatch(hl.dsp.focus({ workspace = active }))
-
-        -- Notify the user how many apps were launched
-        local notify = tostring(to_open) .. ((to_open < 2) and " app" or " apps") .. " to launch"
-        hl.dispatch(hl.dsp.exec_cmd("notify-send '" .. notify .. "'"))
+        f.new()
+            :focus({ workspace = active })
+            :notify(string.format("%s app%s to launch", tostring(to_open), ((to_open < 2) and "" or "s")))
+            :run()
     end
 end
 

@@ -134,9 +134,19 @@ function M.is_special(ws)
     return ws.name:find("special:", 1, true)
 end
 
--- M.active: returns the currently active workspace.
-function M.active()
+-- M.active_ws: returns the currently active workspace.
+function M.active_ws()
     return hl.get_active_workspace()
+end
+
+-- M.active_win: returns the currently active/focused window.
+function M.active_win()
+    return hl.get_active_window()
+end
+
+-- M.active_mon: returns the currently active monitor.
+function M.active_mon()
+    return hl.get_active_monitor()
 end
 
 -- M.windows: returns the list of windows on workspace `ws` (empty table
@@ -153,7 +163,7 @@ function M.safe(ws)
     if type(ws) == "number" then
         return tostring(ws)
     elseif ws == "l" or ws == "r" then
-        local current = M.active()
+        local current = M.active_ws()
         if not current and M.is_special(current) then
             M.new():notify("Could not determine active non-special workspace", "Fallback to workspace 1"):run()
             return "1"
@@ -165,10 +175,93 @@ function M.safe(ws)
 end
 
 -- ============================================================
+-- PUBLIC HELPERS — window geometry (corner/size math for floating
+-- windows, standalone, not part of the Builder chain)
+-- ============================================================
+
+-- M.BASE_RESOLUTION: reference resolution that M.SIZES proportions are
+-- computed against.
+M.BASE_RESOLUTION = { x = 1920, y = 1080 }
+
+-- M.SIZES: the size steps (as a proportion of M.BASE_RESOLUTION) that
+-- M.get_next_size() cycles through.
+M.SIZES = { 0.1, 0.2, 0.3, 0.4, 0.6 }
+
+-- M.CORNER_OFFSET: pixel gap kept between a corner-anchored window and
+-- the monitor edge.
+M.CORNER_OFFSET = 2
+
+-- M.CORNERS: clockwise ordering of corner names, used by
+-- M.get_corner_index()/M.get_pos() and for stepping "next"/"prev".
+M.CORNERS = { "ul", "ur", "br", "bl" }
+
+-- M.size: returns { x, y } pixel dimensions for a window at proportion
+-- `prop` of `dimension` (defaults to M.BASE_RESOLUTION).
+function M.size(prop, dimension)
+    local dim = dimension or M.BASE_RESOLUTION
+    return { x = dim.x * prop, y = dim.y * prop }
+end
+
+-- M.get_corner_index: returns which corner (1=ul, 2=ur, 3=br, 4=bl) of
+-- monitor `mon` window `win`'s center currently falls in.
+function M.get_corner_index(win, mon)
+    local cx = win.at.x + (win.size.x / 2)
+    local cy = win.at.y + (win.size.y / 2)
+    local mw, mh = mon.width, mon.height
+    if cx < mw / 2 and cy < mh / 2 then return 1 end
+    if cx >= mw / 2 and cy < mh / 2 then return 2 end
+    if cx >= mw / 2 and cy >= mh / 2 then return 3 end
+    return 4
+end
+
+-- M.get_pos: returns the { x, y } top-left position that anchors window
+-- `win` to corner `c` ("ul"/"ur"/"br"/"bl") of monitor `mon`, keeping
+-- M.CORNER_OFFSET pixels of gap from the edges.
+function M.get_corner_pos(c, win, mon)
+    local w, h = win.size.x, win.size.y
+    local mw, mh = mon.width, mon.height
+    if c == "ul" then
+        return { x = M.CORNER_OFFSET, y = M.CORNER_OFFSET }
+    elseif c == "ur" then
+        return { x = mw - w - M.CORNER_OFFSET, y = M.CORNER_OFFSET }
+    elseif c == "br" then
+        return { x = mw - w - M.CORNER_OFFSET, y = mh - h - M.CORNER_OFFSET }
+    else
+        return { x = M.CORNER_OFFSET, y = mh - h - M.CORNER_OFFSET }
+    end
+end
+
+function M.get_center_pos(win)
+    local x, y = win.at.x, win.at.y
+    local w, h = win.size.x, win.size.y
+    return { x = x + w / 2, y = y + h / 2 }
+end
+
+-- M.get_next_size: given a window's current pixel size and a direction
+-- (1 = grow, -1 = shrink), returns the next proportion from M.SIZES and
+-- the proportion matching the window's current step (both clamped to
+-- the ends of the list). Matches the current size against M.SIZES
+-- within a small tolerance to find the starting index — this is only
+-- used to determine which step you're near, not to derive the target
+-- pixel size (that's scaled from the window's actual current size).
+function M.get_next_size(current_w, current_h, dir)
+    local current_prop = current_w / M.BASE_RESOLUTION.x
+    local idx = 2
+    for i, p in ipairs(M.SIZES) do
+        if math.abs(p - current_prop) < 0.05 then
+            idx = i
+            break
+        end
+    end
+    local next_idx = math.max(1, math.min(#M.SIZES, idx + dir))
+    return M.SIZES[next_idx], M.SIZES[idx]
+end
+
+-- ============================================================
 -- BUILDER — deferred action chain
 --
--- exec / boot / capture / focus / move / move_all / special / notify /
--- sleep / done / run
+-- exec / boot / capture / focus / move / move_all / special / resize /
+-- float / pin / notify / sleep / done / run
 --
 -- Each of these (except done/run) queues a zero-arg action into
 -- self._actions and returns self, so calls can be chained. Nothing runs
@@ -228,6 +321,31 @@ end
 -- Builder:special: queues a toggle of the given special workspace.
 function Builder:special(ws)
     table.insert(self._actions, make_single_action(ws, dsp(hl.dsp.workspace.toggle_special)))
+    return self
+end
+
+-- Builder:resize: queues a window-resize dispatch using the given rules
+-- table (e.g. { x = ..., y = ... }).
+function Builder:resize(rules)
+    table.insert(self._actions, make_single_action(rules, dsp(hl.dsp.window.resize)))
+    return self
+end
+
+-- Builder:float: queues a float-toggle dispatch using the given rules
+-- table.
+function Builder:float(rules)
+    table.insert(self._actions, make_single_action(rules, dsp(hl.dsp.window.float)))
+    return self
+end
+
+-- Builder:pin: queues a pin-toggle dispatch using the given rules table.
+function Builder:pin(rules)
+    table.insert(self._actions, make_single_action(rules, dsp(hl.dsp.window.pin)))
+    return self
+end
+
+function Builder:cursor(rules)
+    table.insert(self._actions, make_single_action(rules, dsp(hl.dsp.cursor.move)))
     return self
 end
 

@@ -24,7 +24,7 @@ end
 -- Swap all windows between current workspace and target workspace
 function M.interchange(target)
     return function()
-        local current = f.safe(f.active().id)
+        local current = f.safe(f.active_ws().id)
         local dest = f.safe(target)
         local temp = f.safe(f.TEMP_WORKSPACE)
         f.new()

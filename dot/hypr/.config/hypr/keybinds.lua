@@ -7,6 +7,7 @@ local ws = require("script.workspace")
 local preset = require("script.preset")
 local ref = require("script.refresh")
 local player = require("script.player")
+local flt = require("script.floating")
 
 local mod = " + SUPER"
 local s = " + SHIFT"
@@ -71,8 +72,12 @@ keybind:bind({ mod = { mod }, key = { "S" }, dsp = hl.dsp.exec_cmd("env HQF_ACTI
 
 -- Cursor
 keybind:bind({ mod = { mod } })
-    :temp({ key = { "comma" }, dsp = hl.dsp.exec_cmd("wl-kbptr -o modes=floating,click -o mode_floating.source=detect") }) -- Clickable
-    :temp({ key = { "period" }, dsp = hl.dsp.exec_cmd("wl-kbptr") })                                                       -- Grid
+    :temp({
+        key = { "comma" },
+        dsp = hl.dsp.exec_cmd(
+            "pkill wl-kbptr || wl-kbptr -o modes=floating,click -o mode_floating.source=detect")
+    })                                                                                 -- Clickable
+    :temp({ key = { "period" }, dsp = hl.dsp.exec_cmd("pkill wl-kbptr || wl-kbptr") }) -- Grid
 
 -- --- APP ---
 keybind:bind({ mod = { mod } })
@@ -86,22 +91,33 @@ keybind:bind({ mod = { mod } })
 -- --- WINDOW ---
 local directions = { H = "l", L = "r", K = "u", J = "d" }
 keybind:bind({ mod = { mod } })
-    :temp({ key = { "mouse:272" }, dsp = hl.dsp.window.drag(), rules = { mouse = true } })                -- Drag
-    :temp({ key = { "mouse:273" }, dsp = hl.dsp.window.resize() })                                        -- Resize
-    :temp({ key = { "O" }, dsp = hl.dsp.window.float({ action = "toggle" }), rules = { mouse = false } }) -- Toggle Float
-    :temp({ key = { "P" }, dsp = hl.dsp.window.pin() })                                                   -- Pin
-    :temp({ key = { "D" }, dsp = hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }) })   -- Maximized
-    :temp({ key = { "F" }, dsp = hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }) })  -- Fullscreen
-    :temp({ key = { "C" }, dsp = hl.dsp.window.close() })                                                 -- Close
+-- Float to Corner
+    :temp({ key = { "D" }, dsp = hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }) })  -- Maximized
+    :temp({ key = { "F" }, dsp = hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }) }) -- Fullscreen
+    :temp({ key = { "mouse:272" }, dsp = hl.dsp.window.drag(), rules = { mouse = true } })               -- Drag
+    :temp({ key = { "mouse:273" }, dsp = hl.dsp.window.resize() })                                       -- Resize
+    :temp({ key = { "C" }, dsp = hl.dsp.window.close(), rules = { mouse = false } })                     -- Close
     :append({ mod = { s } })
-    :temp({ key = { "C" }, dsp = hl.dsp.window.kill() })                                                  -- Force Close
-    :temp({ key = { "equal" }, dsp = hl.dsp.layout("splitratio 0.1") })                                   -- Split Ratio Up
-    :temp({ key = { "minus" }, dsp = hl.dsp.layout("splitratio -0.1") })                                  -- Split Ratio Down
-    :bind({ mod = { mod } })
+    :temp({ key = { "C" }, dsp = hl.dsp.window.kill() })                                                 -- Force Close
+    :temp({ key = { "equal" }, dsp = hl.dsp.layout("splitratio 0.1") })                                  -- Split Ratio Up
+    :temp({ key = { "minus" }, dsp = hl.dsp.layout("splitratio -0.1") })                                 -- Split Ratio Down
 for key, val in pairs(directions) do
-    keybind:temp({ key = { key }, dsp = hl.dsp.focus({ direction = val }) })    -- Focus in Direction
-        :temp({ key = { key }, dsp = hl.dsp.window.move({ direction = val }) }) -- Move in Direction
+    keybind:bind({ mod = { mod }, key = { key }, dsp = hl.dsp.focus({ direction = val }) })              -- Focus in Direction
+        :append({ mod = { s }, dsp = hl.dsp.window.move({ direction = val }) })                          -- Move in Direction
 end
+
+-- Float
+keybind:bind({ mod = { mod } })
+    :temp({ key = { "O" }, dsp = flt.float() })                    -- Toggle Float
+    :temp({ key = { "P" }, dsp = flt.pin() })                      -- Pin
+    :temp({ key = { "mouse:274" }, dsp = flt.float() })            -- Toggle Float
+    :temp({ mod = { a }, key = { "mouse:274" }, dsp = flt.pin() }) -- Pin
+    :temp({ key = { "mouse_up" }, dsp = flt.clockwise() })         -- Next corner in Clockwise direction
+    :temp({ key = { "mouse_down" }, dsp = flt.anticlockwise() })   -- Next corner in AntiClockwise direction
+    :append({ mod = { s } })
+    :temp({ key = { "mouse:274" }, dsp = flt.float_corner() })     -- Toggle Float & Pin to corner, with video proportion
+    :temp({ key = { "mouse_up" }, dsp = flt.shrink() })            -- Shrink window
+    :temp({ key = { "mouse_down" }, dsp = flt.enlarge() })         -- Enlarge window
 
 -- --- GROUP ---
 keybind:bind({ mod = { mod, a } })

@@ -57,10 +57,10 @@ keybind:bind({ mod = { mod } })
     :temp({ key = { "up" }, dsp = player.run("playerctl volume 0.05+") })                                -- Volume Up
     :temp({ key = { "down" }, dsp = player.run("playerctl volume 0.05-playerctl position 5+") })         -- Volume Down
     :append({ mod = { a } })
-    :temp({ key = { "left", dsp = player.run("playerctl prev") } })                                      -- Previous Track
-    :temp({ key = { "right", dsp = player.run("playerctl next") } })                                     -- Next Track
-    :temp({ key = { "up", dsp = player.run("playerctl shift") } })                                       -- Next Player
-    :temp({ key = { "down", dsp = player.run("playerctl unshift") } })                                   -- Previous Player
+    :temp({ key = { "left" }, dsp = player.run("playerctl prev") })                                      -- Previous Track
+    :temp({ key = { "right" }, dsp = player.run("playerctl next") })                                     -- Next Track
+    :temp({ key = { "up" }, dsp = player.run("playerctld shift") })                                      -- Next Player
+    :temp({ key = { "down" }, dsp = player.run("playerctld unshift") })                                  -- Previous Player
 
 -- Screen Snap
 keybind:bind({ mod = { mod }, key = { "S" }, dsp = hl.dsp.exec_cmd("env HQF_ACTION=temp quickshell -c HyprQuickFrame -n") }) -- Clipboard (Region)

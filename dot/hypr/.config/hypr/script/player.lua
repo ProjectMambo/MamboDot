@@ -3,8 +3,9 @@ local M = {}
 
 function M.run(playercmd)
     return function()
+        local cmd = playercmd ~= "" and playercmd or "sleep 0"
         local player = f.new()
-            :exec(playercmd)
+            :exec(cmd)
             :sleep(0.1)
             :capture("playerctl -l | head -n 1")
             :run()

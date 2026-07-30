@@ -13,11 +13,11 @@ hl.on("hyprland.start",
     })
     :exec({
         "playerctld daemon",
-        "kbuildsycoca6 --noincremental",
         "hyprlock", "waybar", "hyprpaper", "hypridle", "avizo-service", "mako",
         "/usr/lib/hyprpolkitagent/hyprpolkitagent",
         "wl-paste --type text --watch cliphist store",
-        "wl-paste --type image --watch cliphist store"
+        "wl-paste --type image --watch cliphist store",
+        "kbuildsycoca6 --noincremental",
     })
     :done()
 )

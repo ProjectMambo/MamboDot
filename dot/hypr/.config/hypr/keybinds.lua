@@ -55,7 +55,7 @@ keybind:bind({ mod = { mod } })
     :temp({ key = { "left" }, dsp = player.run("playerctl position 5-"), rules = { repeating = true } }) -- Skip Backward
     :temp({ key = { "right" }, dsp = player.run("playerctl position 5+") })                              -- Skip Forward
     :temp({ key = { "up" }, dsp = player.run("playerctl volume 0.05+") })                                -- Volume Up
-    :temp({ key = { "down" }, dsp = player.run("playerctl volume 0.05-playerctl position 5+") })         -- Volume Down
+    :temp({ key = { "down" }, dsp = player.run("playerctl volume 0.05-") })                              -- Volume Down
     :append({ mod = { a } })
     :temp({ key = { "left" }, dsp = player.run("playerctl prev") })                                      -- Previous Track
     :temp({ key = { "right" }, dsp = player.run("playerctl next") })                                     -- Next Track

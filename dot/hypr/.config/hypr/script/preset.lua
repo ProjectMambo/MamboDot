@@ -6,9 +6,9 @@ local M = {}
 -- Each entry contains the target workspace number (or special name)
 -- and the application class name to verify.
 M.default = {
-    { ws = "minimized", app = "spotify",     check = "Spotify" },
-    { ws = "minimized", app = "steam" },
-    { ws = 1,           app = "zen-browser", check = "zen" },
+    { ws = "minimized", app = "spotify",         check = "Spotify" },
+    { ws = "minimized", app = "prime-run steam", check = "steam" },
+    { ws = 1,           app = "zen-browser",     check = "zen" },
     { ws = 10,          app = "obsidian" },
     { ws = 2,           app = "code-oss" },
 }

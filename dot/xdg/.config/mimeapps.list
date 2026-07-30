@@ -140,6 +140,7 @@ application/x-bittorrent=org.qbittorrent.qBittorrent.desktop
 application/x-font-sfd=org.fontforge.FontForge.desktop
 text/x-octave=org.octave.Octave.desktop
 inode/directory=org.kde.dolphin.desktop
+x-scheme-handler/notion=notion.desktop
 
 [Added Associations]
 text/plain=featherpad.desktop;code-oss.desktop;nvim.desktop;vim.desktop;gvim.desktop;

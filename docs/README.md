@@ -49,6 +49,7 @@ Before installing, ensure you have the following packages *(required)* installed
 
 The following packages *(optional)* are encouraged to install:
 - **[Obsidian](https://obsidian.md/)** - The default notes/markdown editor.
+- MamboFont
 - **[Zen Browser](https://zen-browser.app/)** - The default browser.
 > [!TIP]
 > If you choose not to install the optional applications, you may need to manually update the target variables inside your Hyprland configuration files to prevent shortcut execution errors.

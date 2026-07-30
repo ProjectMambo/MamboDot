@@ -68,6 +68,7 @@
         "tooltip-format": "<big>{:%Y %B %d}</big>\n<tt><small>{calendar}</small></tt>",
         "calendar": {
             "mode": "month",
+            "iso8601": true,
             "format": {
                 "today": "<span color='#D44B36'><b>{}</b></span>",
             },

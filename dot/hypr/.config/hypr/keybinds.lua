@@ -17,11 +17,14 @@ local keybind = f.new()
 
 -- --- SHELL ---
 keybind:bind({ mod = { mod } })
-    :temp({ key = { "space" }, dsp = hl.dsp.exec_cmd("fcitx5-remote -t"), rules = { repeating = true } })                      -- Language
-    :temp({ key = { "B" }, dsp = hl.dsp.exec_cmd("pgrep waybar && pkill waybar || waybar &"), rules = { repeating = false } }) -- Toggle Waybar
-    :temp({ key = { "super_l" }, dsp = hl.dsp.exec_cmd("pkill rofi || rofi -show drun -show-icons -terminal kitty") })         -- App Launcher
+    :temp({ key = { "space" }, dsp = hl.dsp.exec_cmd("fcitx5-remote -c") })                                            -- Language: English
+    :temp({ mod = { a }, key = { "space" }, dsp = hl.dsp.exec_cmd("fcitx5-remote -s pinyin") })                        -- Language: Mandarin
+    :temp({ mod = { s }, key = { "space" }, dsp = hl.dsp.exec_cmd("fcitx5-remote -s mozc") })                          -- Language: Japanese
+    :bind({ mod = { mod } })
+    :temp({ key = { "B" }, dsp = hl.dsp.exec_cmd("pgrep waybar && pkill waybar || waybar &") })                        -- Toggle Waybar
+    :temp({ key = { "super_l" }, dsp = hl.dsp.exec_cmd("pkill rofi || rofi -show drun -show-icons -terminal kitty") }) -- App Launcher
     :append({ mod = { c } })
-    :temp({                                                                                                                    -- Prime-run App Launcher
+    :temp({                                                                                                            -- Prime-run App Launcher
         key = { "super_l" },
         dsp = f.new()
             :notify("Prime-Run")

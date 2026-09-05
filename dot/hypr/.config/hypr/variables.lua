@@ -32,6 +32,7 @@ M.env = {
     XDG_SESSION_TYPE            = "wayland",
     QT_AUTO_SCREEN_SCALE_FACTOR = "1",
     GTK_THEME                   = "Breeze-Dark",
+    KDE_SESSION_VERSION         = "5",
 }
 for k, v in pairs(M.env) do
     hl.env(k, v)

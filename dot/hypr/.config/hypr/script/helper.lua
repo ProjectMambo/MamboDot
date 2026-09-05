@@ -1,6 +1,7 @@
 local M = {}
 
 M.NUM_WORKSPACE = 10
+M.WORKSPACES_PER_MONITOR = M.NUM_WORKSPACE
 M.TEMP_WORKSPACE = "temp"
 
 -- ============================================================
@@ -82,14 +83,16 @@ end
 -- currently active workspace, wrapping around at the ends. Any other
 -- target is passed through unchanged.
 local function wrap(current, target)
-    local id = current.id
+    local offset = M.mon_offset()
+    local rel = current.id - offset
     if target == "l" then
-        return (id == 1) and M.NUM_WORKSPACE or (id - 1)
+        rel = (rel == 1) and M.WORKSPACES_PER_MONITOR or (rel - 1)
     elseif target == "r" then
-        return (id == M.NUM_WORKSPACE) and 1 or (id + 1)
+        rel = (rel == M.WORKSPACES_PER_MONITOR) and 1 or (rel + 1)
     else
         return target
     end
+    return offset + rel
 end
 
 -- override: shallow-merges `add` into `rules` in place, overwriting any
@@ -161,10 +164,10 @@ end
 --   anything else -> treated as a special workspace name ("special:...")
 function M.safe(ws)
     if type(ws) == "number" then
-        return tostring(ws)
+        return tostring(M.mon_offset() + ws)
     elseif ws == "l" or ws == "r" then
         local current = M.active_ws()
-        if not current and M.is_special(current) then
+        if not current or M.is_special(current) then
             M.new():notify("Could not determine active non-special workspace", "Fallback to workspace 1"):run()
             return "1"
         end
@@ -172,6 +175,13 @@ function M.safe(ws)
     else
         return "special:" .. tostring(ws)
     end
+end
+
+-- M.mon_offset: workspace-id offset for `mon` (active monitor if
+-- omitted), so relative workspace numbers can be mapped onto it.
+function M.mon_offset(mon)
+    mon = mon or M.active_mon()
+    return mon.id * M.WORKSPACES_PER_MONITOR
 end
 
 -- ============================================================

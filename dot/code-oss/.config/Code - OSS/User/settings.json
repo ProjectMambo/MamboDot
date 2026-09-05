@@ -6,9 +6,9 @@
     "material-code.primaryColor": "#131C27",
     "workbench.colorTheme": "Dark Modern",
     "editor.fontFamily": "'JetBrainsMono Nerd Font', 'monospace', monospace",
-    "editor.fontLigatures": true, // Enables beautiful symbol connections for Nerd Fonts
-    "editor.lineHeight": 22, // Gives your code lines a cleaner, readable spacing
-    "editor.tabSize": 4, // Sets the global default indentation width to 4 spaces
+    "editor.fontLigatures": true,
+    "editor.lineHeight": 22,
+    "editor.tabSize": 4,
 
     // ==========================================
     // 2. RUST DEVELOPMENT
@@ -20,7 +20,7 @@
         "editor.defaultFormatter": "rust-lang.rust-analyzer",
         "editor.semanticHighlighting.enabled": true,
         "editor.tabSize": 4,
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
     },
 
     // ==========================================
@@ -31,7 +31,7 @@
     "editor.detectIndentation": false,
     "editor.guides.indentation": true,
     "editor.codeActionsOnSave": {
-        "source.fixAll.eslint": "explicit"
+        "source.fixAll.eslint": "explicit",
     },
 
     // ==========================================
@@ -39,24 +39,24 @@
     // ==========================================
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
     "[javascriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
     "tailwindCSS.emmetCompletions": true,
     "tailwindCSS.includeLanguages": {
         "plaintext": "javascriptreact",
-        "typescriptreact": "typescriptreact"
+        "typescriptreact": "typescriptreact",
     },
 
     // ==========================================
@@ -67,18 +67,13 @@
         "*.jsonc": "jsonc",
         "*.conf": "hyprlang",
         "hyprland.conf": "hyprlang",
-        "*.sh": "shellscript"
+        "*.sh": "shellscript",
     },
-
-    // Layout styling for Waybar's JSON configuration files
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
     },
-
-    // CSS targeting both Next.js/Tailwind and Waybar GTK configs
     "[css]": {
-    
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.tabSize": 4,
         "css.lint.unknownAtRules": "ignore",
@@ -90,8 +85,35 @@
             "-gtk-icon-transform",
             "-gtk-icon-shadow",
             "-gtk-icon-effect",
-            "-gtk-icon-palette"
-        ]
+            "-gtk-icon-palette",
+        ],
+    },
+
+    // ==========================================
+    // 6. PYTHON DEVELOPMENT
+    // ==========================================
+    "python.languageServer": "Default",
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+        },
+    },
+
+    // ==========================================
+    // 7. JAVA DEVELOPMENT
+    // ==========================================
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.format.settings.profile": "GoogleStyle",
+    "[java]": {
+        "editor.defaultFormatter": "redhat.java",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4,
     },
 
     // Workspace stubs mapping if you use the Lua flavor of Hyprland
@@ -99,5 +121,6 @@
 
     "servers": {},
     "js/ts.updateImportsOnFileMove.enabled": "always",
-    "console-ninja.featureSet": "Community"
+    "console-ninja.featureSet": "Community",
+    "redhat.telemetry.enabled": false,
 }

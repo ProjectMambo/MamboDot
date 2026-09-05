@@ -20,9 +20,10 @@ This is a personal workstation profile rather than a portable distribution or un
 
 | Goal | Document |
 |---|---|
+| Read the canonical Wiki documentation | [projectmambo.org/mambodot/](https://projectmambo.org/mambodot/) |
 | Review requirements and install safely | [Installation and Safety](Installation%20and%20Safety.md) |
 | Learn desktop shortcuts | [Keybinds](Keybinds.md) |
-| Use the `tp` shell helper | [Command Reference](Commands.md) |
+| Regenerate colours or use the `tp` helper | [Command Reference](Commands.md) |
 
 ## Configuration scope
 
@@ -32,7 +33,7 @@ This is a personal workstation profile rather than a portable distribution or un
 - Screenshot, clipboard, media, cursor, floating-window, power, and application-launcher helpers.
 - The Zsh `tp` directory-bookmark function.
 
-Direct children of `dot/` are Stow packages. `script/stow.sh` links or unlinks every package; `script/install.sh` performs theme generation and live desktop refresh work but does **not** run Stow.
+Direct children of `dot/` are Stow packages. `script/stow.sh` links or unlinks every package; `script/install.sh` delegates theme generation to `script/mambodot.sh update` and performs live desktop refresh work but does **not** run Stow or build MamboFont.
 
 ## Machine assumptions
 
@@ -62,19 +63,24 @@ dot/<package>/                 Stow packages rooted at the home directory
 dot/hypr/.config/hypr/        Lua Hyprland entry, modules, rules, and assets
 dot/zsh/.config/zsh/          Zsh configuration and local bookmark storage
 script/stow.sh                all-package stow/unstow operation
+script/mambodot.sh            repository-owned MamboColour update adapter
 script/install.sh             post-link generation and live refresh
+script/test.sh                colour-provider and installer regression checks
 script/code-oss/              editor extension installer
 docs/                         operating documentation
 ```
 
 ## Development checks
 
-There is no automated CI or test suite. Before committing configuration changes, run syntax checks available on the workstation, regenerate MamboColour outputs, and inspect the exact diff:
+The repository has a focused local provider regression script, but no CI workflow. Before committing configuration changes, run the available checks, regenerate MamboColour outputs, and inspect the exact diff:
 
 ```bash
-bash -n script/install.sh script/stow.sh script/code-oss/install_extensions.sh
+bash -n script/install.sh script/mambodot.sh script/stow.sh script/test.sh script/code-oss/install_extensions.sh
+./script/test.sh
+./script/mambodot.sh update
 find dot/hypr/.config/hypr -name '*.lua' -print0 | xargs -0 -n1 luac -p
 git diff --check
+git status --short
 ```
 
 ## Issues and feedback

@@ -19,7 +19,7 @@ The active configuration references these groups of software:
 - Waybar, Rofi, Kitty, Dolphin, FeatherPad, Qalculate-Qt, Neovim, Code OSS, Fastfetch, and KDE/Qt desktop utilities.
 - Fcitx5 with Pinyin and Mozc input methods.
 - Avizo volume/brightness helpers, Playerctl, Cliphist, wl-clipboard, wl-kbptr, Quickshell with HyprQuickFrame, and the screenshot tools used by that shell.
-- MamboColour's installed `mbcolor` command. MamboFont's `mbfont` command is optional.
+- MamboColour's installed `mbcolor` command. MamboFont is not an installation dependency.
 
 The repository does not install system packages. Package names and providers vary, so resolve them for the target Arch system before linking the configuration.
 
@@ -66,7 +66,7 @@ Once the preview and backup are complete:
 ./script/install.sh
 ```
 
-The second script regenerates MamboColour theme files, installs configured Code OSS extensions, optionally compiles MamboFont, refreshes font and desktop caches, sources `.zshenv`, and asks Hyprland to reload. Run it from the intended live desktop session.
+The second script delegates tracked MamboColour generation to `script/mambodot.sh update`, installs configured Code OSS extensions, refreshes desktop caches, sources `.zshenv`, and asks Hyprland to reload. It does not build MamboFont or run font-cache commands. Run it from the intended live desktop session.
 
 The script assumes the Stow step has already made helpers such as `~/.local/bin/powermenu.sh` available.
 
@@ -81,9 +81,10 @@ Unstow removes managed links. It does not reconstruct files that were previously
 ## Verify
 
 ```bash
+./script/mambodot.sh update
+./script/test.sh
 git status --short
 hyprctl reload
-fc-list | rg -i mambofont
 ```
 
-Test launchers, input methods, workspace navigation, screenshots, media controls, and power actions individually before relying on them.
+The provider check verifies all 12 expected staged `mbcolor` calls while preserving the tracked artifact bytes. Test launchers, input methods, workspace navigation, screenshots, media controls, and power actions individually before relying on them.

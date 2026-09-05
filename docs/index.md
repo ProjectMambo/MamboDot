@@ -1,7 +1,7 @@
 ---
 title: MamboDot
 description: The Stow-managed Arch Linux and Hyprland workstation configuration used by Project Mambo.
-order: 20
+order: 30
 ---
 
 ::page{layout="project" width="normal" sidebar=true}

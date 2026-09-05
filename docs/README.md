@@ -1,106 +1,86 @@
 # MamboDot
+
 <p align="left">
   <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=flat-square&logo=arch-linux&logoColor=white" alt="Arch Linux" />
   <img src="https://img.shields.io/badge/Hyprland-33CCFF?style=flat-square&logo=hyprland&logoColor=white" alt="Hyprland" />
   <img src="https://img.shields.io/badge/GNU_Stow-4A4A4A?style=flat-square&logo=gnu&logoColor=white" alt="GNU Stow" />
 </p>
 <p align="left">
-  <img src="https://img.shields.io/badge/Maintenance-Active-brightgreen?style=flat-square" />
-  <img src="https://img.shields.io/github/last-commit/ProjectMambo/MamboDot?style=flat-square&color=7a5fff" />
-  <img src="https://img.shields.io/github/repo-size/ProjectMambo/MamboDot?style=flat-square&color=yellow" />
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/ProjectMambo/MamboDot?style=flat-square&color=orange" /></a>
+  <img src="https://img.shields.io/badge/Maintenance-Active-brightgreen?style=flat-square" alt="Maintenance status: active" />
+  <img src="https://img.shields.io/github/last-commit/ProjectMambo/MamboDot?style=flat-square&color=7a5fff" alt="Last commit" />
+  <img src="https://img.shields.io/github/repo-size/ProjectMambo/MamboDot?style=flat-square&color=yellow" alt="Repository size" />
+  <a href="../LICENSE"><img src="https://img.shields.io/github/license/ProjectMambo/MamboDot?style=flat-square&color=orange" alt="License" /></a>
 </p>
 
-A GNU Stow-managed dotfiles repository optimised for speed and consistent styling.
+MamboDot is the live, GNU Stow-managed Arch Linux desktop configuration used by Project Mambo. It combines a Lua-driven Hyprland setup with application dotfiles, generated MamboColour themes, shell helpers, and small installation scripts.
 
-## Features
-- Consistent **styling** across different apps.
-- Complete **controls** for seamless use.
-- Custom **commands** like `tp` for easier terminal controls.
+This is a personal workstation profile rather than a portable distribution or unattended installer. Review its paths, hardware identifiers, applications, and destructive Stow behavior before using it.
 
-## Demo
-Not available for now.
+## Start here
 
-## Getting Started
+| Goal | Document |
+|---|---|
+| Review requirements and install safely | [Installation and Safety](Installation%20and%20Safety.md) |
+| Learn desktop shortcuts | [Keybinds](Keybinds.md) |
+| Use the `tp` shell helper | [Command Reference](Commands.md) |
 
-### Prerequisites
-Before installing, ensure you have the following packages *(required)* installed on your system:
- - **[Arch Linux](https://archlinux.org)** - The base Linux distribution used for this environment.
- - **[Avizo](https://github.com/heyjuvi/avizo)** - A neat notification daemon for audio and brightness status.
- - **[brightnessctl](https://github.com/Hummer12007/brightnessctl)** - The core utility to control brightness.
- - **[Code OSS](https://github.com/microsoft/vscode)** - The open-source version of the Visual Studio Code editor.
- - **[Curl](https://curl.se/)** - A command-line utility for transferring data with URLs, used to fetch scripts.
- - **[Dolphin](https://wiki.archlinux.org/title/Dolphin)** - The default graphical file manager for navigating directories.
- - **[Fcitx5](https://github.com/fcitx/fcitx5)** - The input method framework for multi-languages support.
- - **[Git](https://git-scm.com/)** - Version control system used to clone and manage this repository.
- - **[GNU Stow](https://www.gnu.org/software/stow/)** - A symlink installation manager used to deploy configuration files.
- - **[grim](https://sr.ht/~emersion/grim/)** - The core utility that captures image data on Wayland.
- - **[Hyprland](https://hypr.land/)** - The dynamic tiling Wayland compositor acting as the desktop environment.
- - **[Kitty](https://github.com/kovidgoyal/kitty)** - A fast, feature-rich, GPU-accelerated terminal emulator.
- - **[Neovim (Nvim)](https://neovim.io/)** - Vim-based text editor used for terminal text editing.
- - **[Oh My Zsh](https://ohmyz.sh/)** - An open-source, community-driven framework for managing the Zsh configuration.
- - **[pamixer](https://github.com/cdemoulins/pamixer)** - The core utility to control volume.
- - **[Rofi](https://github.com/davatorium/rofi)** - A window switcher, application launcher, and dmenu replacement.
- - **[slurp](https://github.com/emersion/slurp)** - An interactive tool that allows on-screen region selection.
- - **[Waybar](https://waybar.org/)** - A highly customizable Wayland bar for Hyprland.
- - **[wl-clipboard](https://github.com/bugaevc/wl-clipboard)** - A clipboard manager utility.
- - **[Zsh](https://www.zsh.org/)** - The primary interactive command shell.
- - **[ProjectMambo/MamboColour](https://github.com/ProjectMambo/MamboColour)** - The centralized color palette system used across these configurations.
+## Configuration scope
 
-The following packages *(optional)* are encouraged to install:
-- **[Obsidian](https://obsidian.md/)** - The default notes/markdown editor.
-- MamboFont
-- **[Zen Browser](https://zen-browser.app/)** - The default browser.
-> [!TIP]
-> If you choose not to install the optional applications, you may need to manually update the target variables inside your Hyprland configuration files to prevent shortcut execution errors.
+- Hyprland session, idle, lock, wallpaper, window, workspace, group, input, and launcher behavior.
+- Waybar, Rofi, Kitty, Dolphin, Zsh, Neovim, Code OSS, notification, and desktop-integration settings.
+- MamboColour-generated Hyprland and Waybar palettes.
+- Screenshot, clipboard, media, cursor, floating-window, power, and application-launcher helpers.
+- The Zsh `tp` directory-bookmark function.
 
-### Install Prerequisites
+Direct children of `dot/` are Stow packages. `script/stow.sh` links or unlinks every package; `script/install.sh` performs theme generation and live desktop refresh work but does **not** run Stow.
 
-#### Install official packages through Pacman
+## Machine assumptions
+
+- The checkout lives at `$HOME/ProjectMambo/MamboDot`.
+- Monitor rules currently name `eDP-1` and `DP-9`.
+- The power menu contains a machine-specific Windows boot target.
+- Application commands assume the exact programs configured in `variables.lua` and the launch preset.
+- Some visual assets and status modules are specific to the maintainer's hardware and home layout.
+
+Adjust these before activating the configuration on another machine.
+
+## Quick start
+
 ```bash
-sudo pacman -S brightnessctl code curl dolphin fcitx5-im fcitx5-chinese-addons git grim stow hyprland kitty neovim pamixer rofi slurp waybar wl-clipboard zsh zsh-completions
-```
-
-#### Install Oh My Zsh through Curl
-```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-```
-
-#### Install AUR packages through Yay
-```bash
-yay -S avizo
-```
-
-#### Install Custom Colour Palette
-See the installation guide on **[MamboColour](https://github.com/ProjectMambo/MamboColour)** to set up the global theme dependency.
-
-#### Install Optional Packages
-```bash
-sudo pacman -S obsidian
-yay -S zen-browser-bin
-```
-
-### Quick Start
-Clone and run the install script:
-```bash
-# Clone the repository and navigate into the directory
-git clone https://github.com/ProjectMambo/MamboDot
-cd MamboDot
-# Make the installation script executable and run it
-chmod +x script/install.sh
+git clone https://github.com/ProjectMambo/MamboDot.git "$HOME/ProjectMambo/MamboDot"
+cd "$HOME/ProjectMambo/MamboDot"
+./script/stow.sh stow
 ./script/install.sh
 ```
-Once the install script completes successfully, reboot your machine to apply all system configurations:
-```bash
-reboot
+
+Do not run that sequence before reading [Installation and Safety](Installation%20and%20Safety.md). In particular, Stow uses `--adopt`, which can move existing target files into this repository and change tracked content.
+
+## Repository layout
+
+```text
+dot/<package>/                 Stow packages rooted at the home directory
+dot/hypr/.config/hypr/        Lua Hyprland entry, modules, rules, and assets
+dot/zsh/.config/zsh/          Zsh configuration and local bookmark storage
+script/stow.sh                all-package stow/unstow operation
+script/install.sh             post-link generation and live refresh
+script/code-oss/              editor extension installer
+docs/                         operating documentation
 ```
 
-## Usage
-- **[Keybind Guide](docs/Keybinds.md)** - A list of keybinds for windows/workspace movements & system utilities.
-- **[Custom Commands](docs/Commands.md)** - A list of custom commands for easier terminal controls.
+## Development checks
 
-## Issues & Feedback
-Since this is our personal dotfiles environment, we are not looking for external pull requests. However, if you spot a bug or have a suggestion regarding the automation scripts, feel free to open an **Issue** to let me know!
+There is no automated CI or test suite. Before committing configuration changes, run syntax checks available on the workstation, regenerate MamboColour outputs, and inspect the exact diff:
+
+```bash
+bash -n script/install.sh script/stow.sh script/code-oss/install_extensions.sh
+find dot/hypr/.config/hypr -name '*.lua' -print0 | xargs -0 -n1 luac -p
+git diff --check
+```
+
+## Issues and feedback
+
+This is a personal desktop environment, so external pull requests are not currently requested. Bug reports and focused suggestions are welcome as repository issues.
 
 ## License
-Distributed under the MIT License. See **[LICENSE](LICENSE)** for more information.
+
+Distributed under the MIT License. See **[LICENSE](../LICENSE)** for details.

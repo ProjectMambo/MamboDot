@@ -1,32 +1,46 @@
-This document outlines all custom commands built into this environment.
+---
+title: MamboDot Command Reference
+description: Use the Zsh directory-bookmark helper shipped with MamboDot.
+order: 20
+---
 
-# The tp Command
-A custom utility to quickly teleport between directories and manage workspace shortcuts.
+::page{layout="docs" width="normal" sidebar=true}
+
+# MamboDot Command Reference
+
+## `tp`
+
+`tp` is a Zsh function for jumping to directories and maintaining named bookmarks. It is defined by the managed Zsh configuration, so it is available after that configuration is linked and loaded.
+
 ```bash
-tp [option]
+tp <name-or-path>
+tp -a <name> <path>
+tp -d <name>
+tp -l
 ```
 
-## Available Options
-| Option        | Arguments                   | Description                                                             |
-| ------------- | --------------------------- | ----------------------------------------------------------------------- |
-| [target_name] | None                        | Teleports directly to the specified target directory shortcut.          |
-| -a            | [target_name] [target_path] | Adds a new shortcut mapping a target name to a specific directory path. |
-| -d            | [target_name]               | Deletes an existing shortcut mapping.                                   |
-| -l            | None                        | Lists all currently saved shortcut targets and their paths.             |
-> [!NOTE]
-> The [target_name] is not case sensitive, any input will be formatted to all lower caps.
+| Form | Result |
+|---|---|
+| `tp <name>` | Change to the bookmarked directory |
+| `tp <path>` | Change directly to an existing directory |
+| `tp -a <name> <path>` | Add or replace a bookmark using the absolute target path |
+| `tp -d <name>` | Remove a bookmark |
+| `tp -l` | List saved bookmarks |
+| `tp` | Show built-in help |
+
+Bookmark names are stored in lowercase and matched case-insensitively.
 
 ## Examples
+
 ```bash
-# Add a new shortcut named 'docs' pointing to your Documents folder
 tp -a docs ~/Documents
-
-# List all your active shortcuts
 tp -l
-
-# Teleport to the 'docs' shortcut
 tp docs
-
-# Delete the 'docs' shortcut
 tp -d docs
 ```
+
+## Storage
+
+Bookmarks live in `.config/zsh/tp_bookmarks.txt` beside the managed `.zshrc`. Both the Stow ignore rules and Git ignore rules exclude that machine-local file.
+
+A bookmark record uses a whitespace-separated name and path. Paths containing spaces are therefore not represented safely by the current format.

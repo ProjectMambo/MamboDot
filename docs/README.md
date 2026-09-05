@@ -9,7 +9,7 @@
   <img src="https://img.shields.io/badge/Maintenance-Active-brightgreen?style=flat-square" alt="Maintenance status: active" />
   <img src="https://img.shields.io/github/last-commit/ProjectMambo/MamboDot?style=flat-square&color=7a5fff" alt="Last commit" />
   <img src="https://img.shields.io/github/repo-size/ProjectMambo/MamboDot?style=flat-square&color=yellow" alt="Repository size" />
-  <a href="../LICENSE"><img src="https://img.shields.io/github/license/ProjectMambo/MamboDot?style=flat-square&color=orange" alt="License" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/ProjectMambo/MamboDot?style=flat-square&color=orange" alt="License" /></a>
 </p>
 
 MamboDot is the live, GNU Stow-managed Arch Linux desktop configuration used by Project Mambo. It combines a Lua-driven Hyprland setup with application dotfiles, generated MamboColour themes, shell helpers, and small installation scripts.
@@ -89,4 +89,4 @@ This is a personal desktop environment, so external pull requests are not curren
 
 ## License
 
-Distributed under the MIT License. See **[LICENSE](../LICENSE)** for details.
+Distributed under the MIT License. See **[LICENSE](LICENSE)** for details.

@@ -133,4 +133,9 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 
 lua "$SCRIPT_DIR/test_hypr.lua" "$PROJECT_DIR"
 
+grep -Eq '^auth[[:space:]]+include[[:space:]]+login$' \
+    "$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/hyprlock"
+grep -Eq '^-auth[[:space:]]+optional[[:space:]]+pam_gnome_keyring\.so$' \
+    "$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/hyprlock"
+
 echo 'MamboDot checks passed'

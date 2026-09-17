@@ -1,0 +1,6 @@
+# PAM configuration file for hyprlock
+auth        include     login
+
+# SDDM autologin has no password to unlock GNOME Keyring. Reuse the password
+# already authenticated by hyprlock instead.
+-auth       optional    pam_gnome_keyring.so

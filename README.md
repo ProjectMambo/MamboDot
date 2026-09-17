@@ -12,9 +12,9 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/ProjectMambo/MamboDot?style=flat-square&color=orange" alt="License" /></a>
 </p>
 
-MamboDot is the live, GNU Stow-managed Arch Linux desktop configuration used by Project Mambo. It combines a Lua-driven Hyprland setup with application dotfiles, generated MamboColour themes, shell helpers, and small installation scripts.
+MamboDot is the live, GNU Stow-managed Arch Linux desktop configuration used by Project Mambo. It combines a Lua-driven Hyprland setup with application dotfiles, generated MamboColour themes, shell helpers, and a guarded repository command.
 
-This is a personal workstation profile rather than a portable distribution or unattended installer. Review its paths, hardware identifiers, applications, and destructive Stow behavior before using it.
+This is a personal workstation profile rather than a portable distribution or unattended installer. Review its paths, hardware identifiers, and applications before using it. Linking is previewed as one operation and stops on existing-file conflicts; MamboDot never adopts home-directory files into the repository.
 
 ## Start here
 
@@ -23,7 +23,8 @@ This is a personal workstation profile rather than a portable distribution or un
 | Read the canonical Wiki documentation | [projectmambo.org/mambodot/](https://projectmambo.org/mambodot/) |
 | Review requirements and install safely | [Installation and Safety](docs/Installation%20and%20Safety.md) |
 | Learn desktop shortcuts | [Keybinds](docs/Keybinds.md) |
-| Regenerate colours or use the `tp` helper | [Command Reference](docs/Commands.md) |
+| Link configuration, regenerate colours, or use `tp` | [Command Reference](docs/Commands.md) |
+| Review planned AGS, display, and coverage work | [Roadmap](docs/Roadmap.md) |
 
 ## Configuration scope
 
@@ -33,12 +34,12 @@ This is a personal workstation profile rather than a portable distribution or un
 - Screenshot, clipboard, media, cursor, floating-window, power, and application-launcher helpers.
 - The Zsh `tp` directory-bookmark function.
 
-Direct children of `dot/` are Stow packages. `script/stow.sh` links or unlinks every package; `script/install.sh` delegates theme generation to `script/mambodot.sh update` and performs live desktop refresh work but does **not** run Stow or build MamboFont.
+Direct children of `dot/` are Stow packages. `script/mambodot.sh` previews and links or unlinks explicit packages, while its `update` command refreshes reviewed MamboColour output. Linking has no desktop reload, package-installation, cache-rebuild, or service side effects.
 
 ## Machine assumptions
 
 - The checkout lives at `$HOME/ProjectMambo/MamboDot`.
-- Monitor rules currently name `eDP-1` and `DP-9`.
+- Hyprpaper currently names `eDP-1` and `DP-9`.
 - The power menu contains a machine-specific Windows boot target.
 - Application commands assume the exact programs configured in `variables.lua` and the launch preset.
 - Some visual assets and status modules are specific to the maintainer's hardware and home layout.
@@ -50,11 +51,11 @@ Adjust these before activating the configuration on another machine.
 ```bash
 git clone https://github.com/ProjectMambo/MamboDot.git "$HOME/ProjectMambo/MamboDot"
 cd "$HOME/ProjectMambo/MamboDot"
-./script/stow.sh stow
-./script/install.sh
+./script/test.sh
+./script/mambodot.sh link hypr kitty zsh
 ```
 
-Do not run that sequence before reading [Installation and Safety](docs/Installation%20and%20Safety.md). In particular, Stow uses `--adopt`, which can move existing target files into this repository and change tracked content.
+Replace that package list with the configuration you reviewed. Do not use `all` before reading [Installation and Safety](docs/Installation%20and%20Safety.md). Existing conflicting files are left unchanged and must be resolved deliberately.
 
 ## Repository layout
 
@@ -62,26 +63,27 @@ Do not run that sequence before reading [Installation and Safety](docs/Installat
 dot/<package>/                 Stow packages rooted at the home directory
 dot/hypr/.config/hypr/        Lua Hyprland entry, modules, rules, and assets
 dot/zsh/.config/zsh/          Zsh configuration and local bookmark storage
-script/stow.sh                all-package stow/unstow operation
-script/mambodot.sh            repository-owned MamboColour update adapter
-script/install.sh             post-link generation and live refresh
-script/test.sh                colour-provider and installer regression checks
+script/mambodot.sh            safe link, unlink, and colour-update command
+script/test.sh                deployment, provider, and Hyprland regression checks
 script/code-oss/              editor extension installer
 docs/                         operating documentation
 ```
 
 ## Development checks
 
-The repository has a focused local provider regression script, but no CI workflow. Before committing configuration changes, run the available checks, regenerate MamboColour outputs, and inspect the exact diff:
+The repository has a focused local regression suite, but no CI workflow. Before committing configuration changes, run the available checks and inspect the exact diff:
 
 ```bash
-bash -n script/install.sh script/mambodot.sh script/stow.sh script/test.sh script/code-oss/install_extensions.sh
+bash -n script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh
+shellcheck script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh
 ./script/test.sh
-./script/mambodot.sh update
 find dot/hypr/.config/hypr -name '*.lua' -print0 | xargs -0 -n1 luac -p
+Hyprland --verify-config --config "$PWD/dot/hypr/.config/hypr/hyprland.lua"
 git diff --check
 git status --short
 ```
+
+Run `./script/mambodot.sh update` as a separate reviewed step only when changing generated MamboColour output.
 
 ## Issues and feedback
 

@@ -13,7 +13,7 @@ MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a L
 ::button{label="Source code" href="https://github.com/ProjectMambo/MamboDot" variant="secondary" external=true}
 
 > [!WARNING]
-> This repository is hardware- and user-specific. Its Stow script uses `--adopt`, which can move existing files into the checkout. Read the installation guide and review every resulting Git change.
+> This repository is hardware- and user-specific. Read the installation guide and review package contents before linking them.
 
 ## Main areas
 
@@ -28,4 +28,6 @@ MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a L
 
 ## Current status
 
-The configuration is actively used on the maintainer's Arch Linux workstation. It is not a general-purpose installer, package manifest, or compatibility-tested desktop distribution.
+The configuration is actively used on the maintainer's Arch Linux workstation. Its foundation now provides conflict-safe, explicit Stow deployment and focused Hyprland regression checks. It is not yet a general-purpose installer, package manifest, or compatibility-tested desktop distribution.
+
+The next phases will normalize the session environment and displays, then replace the separate bar, launcher, and control surfaces with one AGS shell. See the roadmap for the planned left laptop-controls panel, right general/day-planner panel, hotplug behavior, and configuration ownership.

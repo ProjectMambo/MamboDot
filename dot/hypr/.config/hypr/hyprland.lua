@@ -2,6 +2,7 @@
 -- HYPRLAND
 -- =============================================================================
 
+-- Catch-all rule for every current and hot-plugged output.
 hl.monitor({
     output = "",
     mode = "preferred",

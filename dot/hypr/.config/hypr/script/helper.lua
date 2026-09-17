@@ -189,11 +189,7 @@ end
 -- windows, standalone, not part of the Builder chain)
 -- ============================================================
 
--- M.BASE_RESOLUTION: reference resolution that M.SIZES proportions are
--- computed against.
-M.BASE_RESOLUTION = { x = 1920, y = 1080 }
-
--- M.SIZES: the size steps (as a proportion of M.BASE_RESOLUTION) that
+-- M.SIZES: the size steps (as a proportion of the active monitor) that
 -- M.get_next_size() cycles through.
 M.SIZES = { 0.1, 0.2, 0.3, 0.4, 0.6 }
 
@@ -205,11 +201,9 @@ M.CORNER_OFFSET = 2
 -- M.get_corner_index()/M.get_pos() and for stepping "next"/"prev".
 M.CORNERS = { "ul", "ur", "br", "bl" }
 
--- M.size: returns { x, y } pixel dimensions for a window at proportion
--- `prop` of `dimension` (defaults to M.BASE_RESOLUTION).
-function M.size(prop, dimension)
-    local dim = dimension or M.BASE_RESOLUTION
-    return { x = dim.x * prop, y = dim.y * prop }
+-- M.size: returns { x, y } dimensions at proportion `prop` of `mon`.
+function M.size(prop, mon)
+    return { x = mon.width * prop, y = mon.height * prop }
 end
 
 -- M.get_corner_index: returns which corner (1=ul, 2=ur, 3=br, 4=bl) of
@@ -257,8 +251,8 @@ end
 -- within a small tolerance to find the starting index — this is only
 -- used to determine which step you're near, not to derive the target
 -- pixel size (that's scaled from the window's actual current size).
-function M.get_next_size(current_w, current_h, dir)
-    local current_prop = current_w / M.BASE_RESOLUTION.x
+function M.get_next_size(current_w, monitor_w, dir)
+    local current_prop = current_w / monitor_w
     local idx = 2
     for i, p in ipairs(M.SIZES) do
         if math.abs(p - current_prop) < 0.05 then

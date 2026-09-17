@@ -21,11 +21,11 @@ local function video(rules)
             local target
             if rules.prop == "next" or rules.prop == "prev" then
                 local dir = (rules.prop == "next") and 1 or -1
-                local next_prop, current_prop = f.get_next_size(win.size.x, win.size.y, dir)
+                local next_prop, current_prop = f.get_next_size(win.size.x, mon.width, dir)
                 local ratio = next_prop / current_prop
                 target = { x = win.size.x * ratio, y = win.size.y * ratio }
             else
-                target = f.size(rules.prop, rules.dimension)
+                target = f.size(rules.prop, mon)
             end
             f.new():resize(target):run()
         end
@@ -51,7 +51,6 @@ function M.float_corner()
         f.new()
             :float({ action = "toggle" })
             :pin({ action = "toggle" })
-            :resize(f.BASE_RESOLUTION)
             :run()
         video({ prop = f.SIZES[4], corner = "br" })()
     end

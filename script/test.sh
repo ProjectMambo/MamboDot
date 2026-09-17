@@ -147,6 +147,13 @@ if grep -Eq 'systemctl --user import-environment|hyprland-session.target' "$sess
     exit 1
 fi
 
+wallpaper_config="$PROJECT_DIR/dot/hypr/.config/hypr/hyprpaper.conf"
+[[ "$(grep -Fc 'wallpaper {' "$wallpaper_config")" -eq 1 ]]
+grep -Eq '^[[:space:]]*monitor[[:space:]]*=[[:space:]]*$' "$wallpaper_config"
+monitor_config="$PROJECT_DIR/dot/hypr/.config/hypr/hyprland.lua"
+grep -Fq 'output = ""' "$monitor_config"
+grep -Fq 'position = "auto"' "$monitor_config"
+
 grep -Eq '^auth[[:space:]]+include[[:space:]]+login$' \
     "$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/hyprlock"
 grep -Eq '^-auth[[:space:]]+optional[[:space:]]+pam_gnome_keyring\.so$' \

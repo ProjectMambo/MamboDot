@@ -1,0 +1,190 @@
+$background: #181615;
+$surface: #24201e;
+$surface-strong: #3d3633;
+$text: #faf7f2;
+$text-muted: #d5c9b8;
+$text-subtle: #969085;
+$brand: #ff6b57;
+$brand-hover: #ffa775;
+$brand-active: #e65235;
+$on-brand: #181615;
+$focus: #d3a774;
+$success: #64705e;
+$audio: #e08a4f;
+$network: #9cbaac;
+$motion: 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+window.Bar {
+  background: transparent;
+  color: $text;
+  font-family: "MamboFont", "JetBrainsMono Nerd Font Mono", monospace;
+  font-size: 14px;
+
+  > centerbox {
+    min-height: 34px;
+    padding: 0 4px;
+    border-bottom: 2px solid $surface-strong;
+    background: rgba($background, 0.92);
+  }
+
+  .bar-section {
+    min-height: 32px;
+    padding: 0 4px;
+    background: transparent;
+  }
+
+  button {
+    min-width: 0;
+    padding: 4px 7px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: $text;
+    box-shadow: none;
+    transition: background-color $motion, color $motion, border-color $motion;
+  }
+
+  button:hover,
+  button:focus {
+    background: $surface-strong;
+  }
+
+  .launcher-button {
+    margin: 0 4px 0 0;
+    padding: 4px 10px;
+    background: $brand;
+    color: $on-brand;
+    font-size: 18px;
+  }
+
+  .launcher-button:hover,
+  .launcher-button:focus {
+    background: $brand-hover;
+    color: $on-brand;
+  }
+
+  .launcher-button:active {
+    background: $brand-active;
+  }
+
+  .workspaces button {
+    padding: 4px 6px 2px;
+    border-bottom: 2px solid transparent;
+    color: $text-subtle;
+  }
+
+  .workspaces button.active {
+    border-bottom-color: $brand;
+    background: $surface;
+    color: $text;
+    font-weight: 700;
+  }
+
+  .window-title {
+    padding: 0 8px;
+    color: $text-muted;
+  }
+
+  .clock {
+    padding: 0 12px;
+    border-right: 2px solid $surface-strong;
+    border-left: 2px solid $surface-strong;
+    background: $surface;
+    font-weight: 600;
+  }
+
+  .tray-item,
+  .status-button {
+    padding: 4px 7px;
+  }
+
+  .network {
+    color: $network;
+  }
+
+  .audio {
+    color: $audio;
+  }
+
+  .battery {
+    padding: 0 7px;
+    color: $success;
+  }
+}
+
+window.Launcher {
+  background: rgba(0, 0, 0, 0.58);
+  color: $text;
+  font-family: "MamboFont", "JetBrainsMono Nerd Font Mono", monospace;
+  font-size: 14px;
+
+  #launcher-content {
+    min-width: 620px;
+    padding: 18px;
+    border: 2px solid $surface-strong;
+    border-radius: 0;
+    background: rgba($background, 0.98);
+    box-shadow: none;
+  }
+
+  entry {
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border: 2px solid $surface-strong;
+    border-radius: 0;
+    background: $surface;
+    color: $text;
+    transition: border-color $motion, background-color $motion;
+  }
+
+  entry:focus {
+    border-color: $focus;
+  }
+
+  .launcher-message {
+    padding: 20px 8px 12px;
+    color: $text-subtle;
+  }
+
+  .app-row {
+    margin-top: 4px;
+    padding: 8px 10px 8px 6px;
+    border: 0;
+    border-left: 4px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: $text;
+    box-shadow: none;
+    transition: background-color $motion, border-color $motion, color $motion;
+  }
+
+  .app-row:hover,
+  .app-row:focus {
+    border-left-color: $brand;
+    background: $surface-strong;
+  }
+
+  .app-description,
+  .shortcut {
+    color: $text-subtle;
+    font-size: 12px;
+  }
+
+  .shortcut {
+    margin-left: 12px;
+  }
+}
+
+tooltip {
+  border: 1px solid $surface-strong;
+  border-radius: 0;
+  background: $background;
+  color: $text;
+}
+
+popover > contents {
+  border: 2px solid $surface-strong;
+  border-radius: 0;
+  background: $background;
+  color: $text;
+}

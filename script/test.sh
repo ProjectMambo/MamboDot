@@ -126,10 +126,15 @@ fi
 ALL_HOME="$TEST_ROOT/all-home"
 mkdir -p "$ALL_HOME"
 HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" link all >/dev/null 2>&1
+[[ -L "$ALL_HOME/.config/ags/app.tsx" ]]
 [[ -L "$ALL_HOME/.config/nvim/init.lua" ]]
 [[ -L "$ALL_HOME/.config/waybar/config.jsonc" ]]
 HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 [[ ! -e "$ALL_HOME/.config/nvim/init.lua" ]]
+
+ags_config="$PROJECT_DIR/dot/ags/.config/ags"
+ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null
+[[ -x "$TEST_ROOT/mambodot-ags" ]]
 
 lua "$SCRIPT_DIR/test_hypr.lua" "$PROJECT_DIR"
 

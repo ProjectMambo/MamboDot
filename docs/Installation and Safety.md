@@ -99,6 +99,29 @@ sudo install --backup=numbered -D -m 0644 \
 
 The install command leaves a numbered backup beside the target. Restore that backup from a TTY if Hyprlock authentication fails. Package upgrades may provide a `.pacnew`; compare it with the tracked policy before replacing either file.
 
+## Session environment
+
+The active login path is `SDDM` → the standard Hyprland session → `/usr/bin/start-hyprland` → Hyprland's Lua startup → one `dbus-update-activation-environment --systemd` propagation.
+
+| Owner | Responsibility |
+|---|---|
+| SDDM's standard Hyprland desktop entry | Session identity: `XDG_CURRENT_DESKTOP`, `XDG_SESSION_DESKTOP`, and `XDG_SESSION_TYPE` |
+| `variables.lua` | XDG base directories and Qt/GTK preferences for applications launched by Hyprland |
+| `exec.lua` | Propagate the environment once to D-Bus and the systemd user manager, then start the current session processes |
+| `/etc/environment` | Fcitx input-method variables; this remains host state until the coverage phase reviews it |
+| `.zshrc` | Interactive shell behavior only; it must not redefine the desktop or input method |
+
+UWSM is not installed or required. Do not select the optional `Hyprland (uwsm-managed)` session unless a later phase deliberately migrates the complete login lifecycle to UWSM.
+
+Environment changes require a fresh login, preferably a reboot on the autologin host; `hyprctl reload` cannot replace the environment inherited by the compositor or already-running services. After login, verify that every layer agrees and that `KDE_SESSION_VERSION` is absent:
+
+```bash
+loginctl show-session "$XDG_SESSION_ID" -p Desktop -p Type
+printenv XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE
+systemctl --user show-environment |
+    rg '^(XDG_CURRENT_DESKTOP|XDG_SESSION_DESKTOP|XDG_SESSION_TYPE|KDE_SESSION_VERSION)='
+```
+
 ## Unlink
 
 ```bash

@@ -8,7 +8,7 @@ order: 40
 
 # MamboDot roadmap
 
-MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. The safe deployment foundation is implemented; the remaining phases below are planned rather than current behavior.
+MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. The safe deployment foundation and session environment are implemented; the remaining phases below are planned rather than current behavior.
 
 ## Configuration ownership
 
@@ -37,7 +37,7 @@ The schedule reader resolves a local daily note such as `Periodic/2026-09-17-W38
 ## Delivery phases
 
 1. **Foundation — implemented:** guarded Stow link/unlink commands, no adoption, focused deployment tests, safer Hyprland reload behavior, native helper notifications, corrected workspace interchange, and monitor-origin geometry.
-2. **Session environment:** the current FA507XV policy passes the startup Hyprlock password to GNOME Keyring; next choose one Hyprland/UWSM environment owner, remove KDE/Hyprland variable conflicts, and document the complete login path.
+2. **Session environment — implemented:** use the standard SDDM/Hyprland login path, propagate its environment once to D-Bus and systemd, keep session identity out of Zsh, remove the fake KDE session, and pass the startup Hyprlock password to GNOME Keyring through explicit FA507XV policy.
 3. **Displays:** derive layout from live monitor data, handle add/remove events, and remove hard-coded wallpaper outputs and geometry.
 4. **AGS core:** add the per-monitor bar and main menu while keeping existing Waybar/Rofi behavior available for rollback.
 5. **Sidebars:** add the left laptop-controls overlay and right general/day-planner overlay with visibility-scoped polling.

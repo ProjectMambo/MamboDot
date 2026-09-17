@@ -15,6 +15,7 @@ MamboDot is a personal home-directory configuration, not an unattended installer
 The active configuration references these groups of software:
 
 - Arch Linux, Hyprland with the Lua `hl` configuration API, Hypridle, Hyprlock, and Hyprpaper.
+- AGS 3 with GTK4 and the Astal Hyprland, battery, network, tray, and WirePlumber libraries; its SCSS bundle also requires Sass.
 - GNU Stow, Git, Bash, Zsh, Oh My Zsh, `zsh-autosuggestions`, and `zsh-syntax-highlighting`.
 - Waybar, Rofi, Kitty, Dolphin, FeatherPad, Qalculate-Qt, Neovim, Code OSS, Fastfetch, and KDE/Qt desktop utilities.
 - Fcitx5 with Pinyin and Mozc input methods.
@@ -128,6 +129,12 @@ Hyprland applies one catch-all rule to every current or hot-plugged output: pref
 
 Reload Hyprland for layout and geometry changes. Hyprpaper reads its configuration at startup, so restart it or log in again before testing a changed fallback. Then run `hyprctl monitors all`, connect and disconnect each external display, and confirm placement, wallpaper, and floating-window controls. Review the catch-all rule if hardware needs a different scale, transform, or fixed placement.
 
+## AGS preview boundary
+
+The `ags` Stow package contains a live-tested per-monitor bar and application launcher, but Hyprland does not start it and no current keybinding depends on it. Waybar and Rofi remain the default session path until the sidebars and remaining shell surfaces are complete. This prevents a partial shell from becoming the only recovery path.
+
+Link and exercise AGS only as an explicit preview. The [command reference](Commands.md#ags-preview) provides a guarded command that temporarily stops Waybar, forces the Wayland GTK backend, and restores Waybar when AGS exits. The launcher can then be toggled through AGS's own command interface. Do not add AGS to `exec.lua` or replace the Rofi keybinding before the cutover phase validates the complete workflow.
+
 ## Unlink
 
 ```bash
@@ -150,4 +157,4 @@ git diff --check
 git status --short
 ```
 
-The regression suite tests safe linking and unlinking, conflict handling, hostile Stow resource files, all 12 staged MamboColour calls, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, launchers, input methods, screenshots, media controls, and power actions individually before relying on them.
+The regression suite tests safe linking and unlinking, including the AGS package, conflict handling, hostile Stow resource files, all 12 staged MamboColour calls, an AGS production bundle, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, the AGS preview, launchers, input methods, screenshots, media controls, and power actions individually before relying on them.

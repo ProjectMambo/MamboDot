@@ -48,6 +48,29 @@ Run the regression suite after changing the command or its tests:
 
 The check covers guarded Stow deployment, stubs `mbcolor` with copies of the current tracked model, verifies the exact staged calls, checks usage failures, and runs focused Lua regressions. It is not currently run by CI.
 
+## AGS preview
+
+AGS is tracked as a complete Stow package but remains parallel to the current Waybar/Rofi session. Link it explicitly, then use a subshell that restores Waybar whenever the foreground AGS preview exits:
+
+```bash
+./script/mambodot.sh link ags
+(
+  trap 'waybar >/dev/null 2>&1 &' EXIT
+  pkill -x waybar || true
+  env GDK_BACKEND=wayland ags run
+)
+```
+
+While that preview is running, another terminal can control the application launcher or end the instance:
+
+```bash
+ags toggle launcher
+ags list
+ags quit
+```
+
+The bar's launcher button performs the same toggle. Escape and an outside click close the launcher. `ags quit` or `Ctrl-C` ends the preview and triggers the subshell's Waybar restore; Rofi remains available throughout. The forced GTK backend is intentional because an XWayland-launched terminal may otherwise make GTK layer-shell unavailable.
+
 ## Code OSS extensions
 
 Install the reviewed extension list explicitly:

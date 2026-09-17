@@ -133,6 +133,20 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 
 lua "$SCRIPT_DIR/test_hypr.lua" "$PROJECT_DIR"
 
+session_exec="$PROJECT_DIR/dot/hypr/.config/hypr/exec.lua"
+session_vars="$PROJECT_DIR/dot/hypr/.config/hypr/variables.lua"
+shell_rc="$PROJECT_DIR/dot/zsh/.config/zsh/.zshrc"
+
+[[ "$(grep -Fc 'dbus-update-activation-environment --systemd' "$session_exec")" -eq 1 ]]
+grep -Fq 'XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE' "$session_exec"
+
+if grep -Eq 'systemctl --user import-environment|hyprland-session.target' "$session_exec" ||
+    grep -Eq 'XDG_CURRENT_DESKTOP|XDG_SESSION_TYPE|KDE_SESSION_VERSION' "$session_vars" ||
+    grep -Eq 'GTK_IM_MODULE|QT_IM_MODULE|XMODIFIERS|XDG_CURRENT_DESKTOP' "$shell_rc"; then
+    echo 'session environment ownership regressed' >&2
+    exit 1
+fi
+
 grep -Eq '^auth[[:space:]]+include[[:space:]]+login$' \
     "$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/hyprlock"
 grep -Eq '^-auth[[:space:]]+optional[[:space:]]+pam_gnome_keyring\.so$' \

@@ -217,10 +217,11 @@ end
 function M.get_corner_index(win, mon)
     local cx = win.at.x + (win.size.x / 2)
     local cy = win.at.y + (win.size.y / 2)
-    local mw, mh = mon.width, mon.height
-    if cx < mw / 2 and cy < mh / 2 then return 1 end
-    if cx >= mw / 2 and cy < mh / 2 then return 2 end
-    if cx >= mw / 2 and cy >= mh / 2 then return 3 end
+    local mid_x = mon.x + mon.width / 2
+    local mid_y = mon.y + mon.height / 2
+    if cx < mid_x and cy < mid_y then return 1 end
+    if cx >= mid_x and cy < mid_y then return 2 end
+    if cx >= mid_x and cy >= mid_y then return 3 end
     return 4
 end
 
@@ -229,15 +230,17 @@ end
 -- M.CORNER_OFFSET pixels of gap from the edges.
 function M.get_corner_pos(c, win, mon)
     local w, h = win.size.x, win.size.y
-    local mw, mh = mon.width, mon.height
+    local mx, my = mon.x, mon.y
+    local right = mx + mon.width - w - M.CORNER_OFFSET
+    local bottom = my + mon.height - h - M.CORNER_OFFSET
     if c == "ul" then
-        return { x = M.CORNER_OFFSET, y = M.CORNER_OFFSET }
+        return { x = mx + M.CORNER_OFFSET, y = my + M.CORNER_OFFSET }
     elseif c == "ur" then
-        return { x = mw - w - M.CORNER_OFFSET, y = M.CORNER_OFFSET }
+        return { x = right, y = my + M.CORNER_OFFSET }
     elseif c == "br" then
-        return { x = mw - w - M.CORNER_OFFSET, y = mh - h - M.CORNER_OFFSET }
+        return { x = right, y = bottom }
     else
-        return { x = M.CORNER_OFFSET, y = mh - h - M.CORNER_OFFSET }
+        return { x = mx + M.CORNER_OFFSET, y = bottom }
     end
 end
 
@@ -359,14 +362,15 @@ function Builder:cursor(rules)
     return self
 end
 
--- Builder:notify: queues a `notify-send` exec with an optional
--- description. Sugar over :exec().
+-- Builder:notify: queues a native Hyprland notification.
 function Builder:notify(title, desc)
-    local msg = "'" .. title .. "'"
-    if desc then
-        msg = msg .. " '" .. desc .. "'"
-    end
-    return self:exec("notify-send " .. msg)
+    table.insert(self._actions, function()
+        return hl.notification.create({
+            text = desc and (tostring(title) .. "\n" .. tostring(desc)) or tostring(title),
+            timeout = 3000,
+        })
+    end)
+    return self
 end
 
 -- Builder:sleep: queues a `sleep` exec for `duration` seconds. Sugar

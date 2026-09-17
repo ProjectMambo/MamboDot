@@ -24,8 +24,13 @@ end
 -- Swap all windows between current workspace and target workspace
 function M.interchange(target)
     return function()
-        local current = f.safe(f.active_ws().id)
+        local active = f.active_ws()
+        if not active then return end
+
+        local current = tostring(active.id)
         local dest = f.safe(target)
+        if current == dest then return end
+
         local temp = f.safe(f.TEMP_WORKSPACE)
         f.new()
             :move_all(current, temp)

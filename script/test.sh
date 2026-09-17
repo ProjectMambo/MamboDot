@@ -87,4 +87,6 @@ if grep -Eq 'mbfont|fc-cache|fc-list' "$SCRIPT_DIR/install.sh"; then
     exit 1
 fi
 
+lua "$SCRIPT_DIR/test_hypr.lua" "$PROJECT_DIR"
+
 echo 'MamboDot provider checks passed'

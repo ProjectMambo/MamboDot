@@ -57,4 +57,24 @@ assert(table.concat(commands, "\n") == table.concat({
     "hyprctl reload",
 }, "\n"))
 
+commands = {}
+notifications = {}
+hl.get_windows = function()
+    return { { class = "AlreadyRunning" } }
+end
+hl.dsp.exec_cmd = function(command, rules)
+    return string.format("exec:%s@%s", command, rules.workspace)
+end
+hl.dsp.focus = function(rules)
+    return "focus:" .. rules.workspace.id
+end
+require("script.preset").launch({
+    { ws = "minimized", app = "slow-app", check = "SlowApp" },
+    { ws = 2, app = "running-app", check = "AlreadyRunning" },
+    { ws = 3, app = "next-app", check = "NextApp" },
+})()
+assert(table.concat(commands, ",") == "exec:slow-app@special:minimized,exec:next-app@13,focus:12")
+assert(#notifications == 1)
+assert(notifications[1].text == "2 apps queued")
+
 print("Hyprland helper checks passed")

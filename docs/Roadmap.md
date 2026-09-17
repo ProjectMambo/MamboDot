@@ -20,7 +20,7 @@ Use GNU Stow for portable, user-owned text configuration:
 | Code OSS settings/keybindings/extensions, Dolphin, KDE, Fcitx, GTK, and XDG defaults | Reviewed leaf files only, when stable across reinstalls |
 | Credentials, cookies, caches, histories, databases, device state, window/session state, and generated runtime files | Never tracked |
 | Obsidian vault and `.obsidian` | Owned by the Notes project; MamboDot owns only the AGS reader and optional `MAMBO_NOTES_DIR` override |
-| Root-owned hardware policy | Explicit future `system/hosts/fa507xv/` apply step, never normal Stow or wholesale daemon state |
+| Root-owned hardware and login policy | Explicit `system/hosts/<host>/` files applied individually, never normal Stow or wholesale daemon state |
 
 ## Planned AGS desktop shell
 
@@ -37,7 +37,7 @@ The schedule reader resolves a local daily note such as `Periodic/2026-09-17-W38
 ## Delivery phases
 
 1. **Foundation — implemented:** guarded Stow link/unlink commands, no adoption, focused deployment tests, safer Hyprland reload behavior, native helper notifications, corrected workspace interchange, and monitor-origin geometry.
-2. **Session environment:** choose one Hyprland/UWSM environment owner, remove KDE/Hyprland variable conflicts, and document the login path.
+2. **Session environment:** the current FA507XV policy passes the startup Hyprlock password to GNOME Keyring; next choose one Hyprland/UWSM environment owner, remove KDE/Hyprland variable conflicts, and document the complete login path.
 3. **Displays:** derive layout from live monitor data, handle add/remove events, and remove hard-coded wallpaper outputs and geometry.
 4. **AGS core:** add the per-monitor bar and main menu while keeping existing Waybar/Rofi behavior available for rollback.
 5. **Sidebars:** add the left laptop-controls overlay and right general/day-planner overlay with visibility-scoped polling.

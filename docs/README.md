@@ -33,6 +33,7 @@ This is a personal workstation profile rather than a portable distribution or un
 - MamboColour-generated Hyprland and Waybar palettes.
 - Screenshot, clipboard, media, cursor, floating-window, power, and application-launcher helpers.
 - The Zsh `tp` directory-bookmark function.
+- Explicit host policy kept outside normal Stow packages.
 
 Direct children of `dot/` are Stow packages. `script/mambodot.sh` previews and links or unlinks explicit packages, while its `update` command refreshes reviewed MamboColour output. Linking has no desktop reload, package-installation, cache-rebuild, or service side effects.
 
@@ -66,6 +67,7 @@ dot/zsh/.config/zsh/          Zsh configuration and local bookmark storage
 script/mambodot.sh            safe link, unlink, and colour-update command
 script/test.sh                deployment, provider, and Hyprland regression checks
 script/code-oss/              editor extension installer
+system/hosts/<host>/          reviewed root-owned host policy, applied explicitly
 docs/                         operating documentation
 ```
 

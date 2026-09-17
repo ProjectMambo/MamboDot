@@ -85,6 +85,20 @@ Code OSS extensions and generated colour output are explicit, independent action
 
 Run `update` only when `mbcolor` is installed and the generated palette artifacts should change. Review its diff before committing.
 
+## Apply host-specific system policy
+
+Files below `system/hosts/` are root-owned machine policy, not Stow packages. Inspect and apply them individually.
+
+The FA507XV profile keeps SDDM autologin and starts Hyprlock immediately. Autologin cannot provide a password to GNOME Keyring, so the first secret-using application otherwise opens a second password dialog. The tracked PAM file reuses the password already authenticated by Hyprlock:
+
+```bash
+diff -u /etc/pam.d/hyprlock system/hosts/fa507xv/etc/pam.d/hyprlock
+sudo install --backup=numbered -D -m 0644 \
+    system/hosts/fa507xv/etc/pam.d/hyprlock /etc/pam.d/hyprlock
+```
+
+The install command leaves a numbered backup beside the target. Restore that backup from a TTY if Hyprlock authentication fails. Package upgrades may provide a `.pacnew`; compare it with the tracked policy before replacing either file.
+
 ## Unlink
 
 ```bash
@@ -102,6 +116,7 @@ shellcheck script/mambodot.sh script/test.sh script/code-oss/install_extensions.
 ./script/test.sh
 find dot/hypr/.config/hypr -name '*.lua' -print0 | xargs -0 -n1 luac -p
 Hyprland --verify-config --config "$PWD/dot/hypr/.config/hypr/hyprland.lua"
+diff -u system/hosts/fa507xv/etc/pam.d/hyprlock /etc/pam.d/hyprlock
 git diff --check
 git status --short
 ```

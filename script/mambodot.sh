@@ -3,14 +3,96 @@ set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+DOT_DIR="$PROJECT_DIR/dot"
 
 usage() {
     printf '%s\n' \
         'Usage:' \
         '  mambodot.sh update' \
+        '  mambodot.sh link PACKAGE...|all' \
+        '  mambodot.sh unlink PACKAGE...|all' \
         '' \
         'Commands:' \
-        '  update  Regenerate tracked colour artifacts with mbcolor'
+        '  update         Regenerate tracked colour artifacts with mbcolor' \
+        '  link PACKAGE   Preview and link selected Stow packages' \
+        '  unlink PACKAGE Preview and unlink selected Stow packages'
+}
+
+PACKAGES=()
+
+select_packages() {
+    if [[ $# -eq 0 ]]; then
+        echo '[!] Select at least one package or use all.' >&2
+        return 2
+    fi
+    if [[ "$1" == all ]]; then
+        if [[ $# -ne 1 ]]; then
+            echo '[!] all cannot be combined with package names.' >&2
+            return 2
+        fi
+        mapfile -t PACKAGES < <(
+            find "$DOT_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | LC_ALL=C sort
+        )
+        [[ ${#PACKAGES[@]} -gt 0 ]] || {
+            echo '[!] No Stow packages found.' >&2
+            return 1
+        }
+        return
+    fi
+
+    local package
+    for package in "$@"; do
+        if [[ ! "$package" =~ ^[[:alnum:]_][[:alnum:]_.-]*$ ]] ||
+            [[ ! -d "$DOT_DIR/$package" ]] || [[ -L "$DOT_DIR/$package" ]]; then
+            echo "[!] Unknown Stow package: $package" >&2
+            return 2
+        fi
+        PACKAGES+=("$package")
+    done
+}
+
+run_stow() {
+    local mode="$1"
+    shift
+    local target="${HOME:-}"
+    local action label
+
+    command -v stow >/dev/null 2>&1 || {
+        echo '[!] GNU Stow is required.' >&2
+        return 1
+    }
+    if [[ "$target" != /* || "$target" == / || ! -d "$target" ]]; then
+        echo "[!] Refusing unsafe or missing Stow target: $target" >&2
+        return 1
+    fi
+    if [[ "$mode" == link ]]; then
+        action=--restow
+        label='link'
+    else
+        action=--delete
+        label='unlink'
+    fi
+
+    local clean_home
+    clean_home="$(mktemp -d /tmp/mambodot-stow.XXXXXX)"
+    (
+        # shellcheck disable=SC2329 # Invoked by the EXIT trap.
+        cleanup_stow_home() {
+            if [[ -d "$clean_home" && "$clean_home" == /tmp/mambodot-stow.* ]]; then
+                rm -rf -- "$clean_home"
+            fi
+        }
+        trap cleanup_stow_home EXIT
+        cd "$clean_home"
+
+        printf '[*] Previewing %s: %s\n' "$label" "$*"
+        HOME="$clean_home" stow --simulate --verbose --no-folding \
+            --dir "$DOT_DIR" --target "$target" "$action" "$@"
+
+        printf '[*] Applying %s: %s\n' "$label" "$*"
+        HOME="$clean_home" stow --verbose --no-folding \
+            --dir "$DOT_DIR" --target "$target" "$action" "$@"
+    )
 }
 
 update_colours() {
@@ -107,6 +189,12 @@ case "${1:-}" in
             exit 2
         fi
         update_colours
+        ;;
+    link|unlink)
+        command="$1"
+        shift
+        select_packages "$@"
+        run_stow "$command" "${PACKAGES[@]}"
         ;;
     -h|--help)
         usage

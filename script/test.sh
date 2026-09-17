@@ -13,6 +13,7 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$TEST_ROOT/bin"
+# shellcheck disable=SC2016 # These lines form the generated mbcolor test double.
 printf '%s\n' \
     '#!/usr/bin/env bash' \
     'set -euo pipefail' \
@@ -43,7 +44,7 @@ for theme in "${themes[@]}"; do
     ((call_index += 1))
 done
 
-"$SCRIPT_DIR/mambodot.sh" --help | grep -q 'mambodot.sh update'
+"$SCRIPT_DIR/mambodot.sh" --help | grep -q 'mambodot.sh link PACKAGE'
 if "$SCRIPT_DIR/mambodot.sh" >/dev/null 2>&1; then
     echo 'mambodot.sh without a command should fail' >&2
     exit 1
@@ -81,12 +82,55 @@ fi
 [[ "$(cat "$TEST_PROJECT/dot/hypr/.config/hypr/themes/mamboorchelight.lua")" == old ]]
 [[ "$(cat "$unrelated")" == keep ]]
 
-grep -Fq '"$SCRIPT_DIR/mambodot.sh" update' "$SCRIPT_DIR/install.sh"
-if grep -Eq 'mbfont|fc-cache|fc-list' "$SCRIPT_DIR/install.sh"; then
-    echo 'MamboFont installation must remain outside MamboDot' >&2
+STOW_HOME="$TEST_ROOT/stow-home"
+mkdir -p "$STOW_HOME"
+if HOME="$STOW_HOME" "$SCRIPT_DIR/mambodot.sh" link >/dev/null 2>&1; then
+    echo 'link without packages should fail' >&2
+    exit 1
+fi
+if HOME="$STOW_HOME" "$SCRIPT_DIR/mambodot.sh" unlink >/dev/null 2>&1; then
+    echo 'unlink without packages should fail' >&2
+    exit 1
+fi
+if HOME="$STOW_HOME" "$SCRIPT_DIR/mambodot.sh" link ../feh >/dev/null 2>&1; then
+    echo 'link should reject traversal-style package names' >&2
+    exit 1
+fi
+if HOME="$STOW_HOME" "$SCRIPT_DIR/mambodot.sh" link missing >/dev/null 2>&1; then
+    echo 'link should reject unknown packages' >&2
     exit 1
 fi
 
+stow_output="$(HOME="$STOW_HOME" "$SCRIPT_DIR/mambodot.sh" link feh 2>&1)"
+[[ "$stow_output" == *'Previewing link'*'Applying link'* ]]
+[[ -d "$STOW_HOME/.config/feh" && ! -L "$STOW_HOME/.config/feh" ]]
+[[ -L "$STOW_HOME/.config/feh/themes" ]]
+[[ ! -e "$STOW_HOME/.config/avizo/config.ini" ]]
+printf 'runtime\n' > "$STOW_HOME/.config/feh/runtime-state"
+HOME="$STOW_HOME" "$SCRIPT_DIR/mambodot.sh" unlink feh >/dev/null 2>&1
+[[ ! -e "$STOW_HOME/.config/feh/themes" ]]
+[[ "$(cat "$STOW_HOME/.config/feh/runtime-state")" == runtime ]]
+
+CONFLICT_HOME="$TEST_ROOT/conflict-home"
+mkdir -p "$CONFLICT_HOME/.config/feh"
+printf '%s\n' '--adopt' > "$CONFLICT_HOME/.stowrc"
+printf 'home copy\n' > "$CONFLICT_HOME/.config/feh/themes"
+repo_theme="$(cat "$PROJECT_DIR/dot/feh/.config/feh/themes")"
+if HOME="$CONFLICT_HOME" "$SCRIPT_DIR/mambodot.sh" link feh >/dev/null 2>&1; then
+    echo 'link should stop on a conflicting target' >&2
+    exit 1
+fi
+[[ "$(cat "$CONFLICT_HOME/.config/feh/themes")" == 'home copy' ]]
+[[ "$(cat "$PROJECT_DIR/dot/feh/.config/feh/themes")" == "$repo_theme" ]]
+
+ALL_HOME="$TEST_ROOT/all-home"
+mkdir -p "$ALL_HOME"
+HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" link all >/dev/null 2>&1
+[[ -L "$ALL_HOME/.config/nvim/init.lua" ]]
+[[ -L "$ALL_HOME/.config/waybar/config.jsonc" ]]
+HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
+[[ ! -e "$ALL_HOME/.config/nvim/init.lua" ]]
+
 lua "$SCRIPT_DIR/test_hypr.lua" "$PROJECT_DIR"
 
-echo 'MamboDot provider checks passed'
+echo 'MamboDot checks passed'

@@ -24,11 +24,11 @@ This is a personal workstation profile rather than a portable distribution or un
 | Review requirements and install safely | [Installation and Safety](docs/Installation%20and%20Safety.md) |
 | Learn desktop shortcuts | [Keybinds](docs/Keybinds.md) |
 | Link configuration, regenerate colours, or use `tp` | [Command Reference](docs/Commands.md) |
-| Review planned AGS, display, and coverage work | [Roadmap](docs/Roadmap.md) |
+| Review implemented milestones and planned AGS and coverage work | [Roadmap](docs/Roadmap.md) |
 
 ## Configuration scope
 
-- Hyprland session, idle, lock, wallpaper, window, workspace, group, input, and launcher behavior.
+- Hyprland session, hotplug display layout, idle, lock, wallpaper, window, workspace, group, input, and launcher behavior.
 - Waybar, Rofi, Kitty, Dolphin, Zsh, Neovim, Code OSS, notification, and desktop-integration settings.
 - MamboColour-generated Hyprland and Waybar palettes.
 - Screenshot, clipboard, media, cursor, floating-window, power, and application-launcher helpers.
@@ -40,7 +40,7 @@ Direct children of `dot/` are Stow packages. `script/mambodot.sh` previews and l
 ## Machine assumptions
 
 - The checkout lives at `$HOME/ProjectMambo/MamboDot`.
-- Hyprpaper currently names `eDP-1` and `DP-9`.
+- Displays use their preferred mode, automatic placement, and scale 1; review the catch-all rule if an output needs a different arrangement.
 - The power menu contains a machine-specific Windows boot target.
 - Application commands assume the exact programs configured in `variables.lua` and the launch preset.
 - Some visual assets and status modules are specific to the maintainer's hardware and home layout.

@@ -18,6 +18,7 @@ MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a L
 ## Main areas
 
 - Hyprland windows, workspaces, groups, launchers, input methods, screenshots, media, and power controls.
+- Native display hotplug, output-agnostic wallpapers, and monitor-relative floating-window geometry.
 - Stow packages for the shell, terminal, editors, bar, launcher, file manager, and desktop services.
 - Generated light and dark palettes supplied by MamboColour.
 - Machine-specific monitor, boot, application, and filesystem assumptions.
@@ -28,6 +29,6 @@ MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a L
 
 ## Current status
 
-The configuration is actively used on the maintainer's Arch Linux workstation. Its foundation now provides conflict-safe, explicit Stow deployment, focused Hyprland regression checks, and a normalized SDDM/Hyprland session environment with one activation propagation path. It is not yet a general-purpose installer, package manifest, or compatibility-tested desktop distribution.
+The configuration is actively used on the maintainer's Arch Linux workstation. Its foundation now provides conflict-safe, explicit Stow deployment, focused Hyprland regression checks, a normalized SDDM/Hyprland session environment with one activation propagation path, and native output-agnostic display handling with monitor-relative window geometry. It is not yet a general-purpose installer, package manifest, or compatibility-tested desktop distribution.
 
-The next phase will normalize displays and hotplug behavior, then replace the separate bar, launcher, and control surfaces with one AGS shell. See the roadmap for the planned left laptop-controls panel, right general/day-planner panel, and configuration ownership.
+The next phase will add the AGS per-monitor bar and main menu while keeping Waybar and Rofi available for rollback, then build the sidebars and finish the cutover. See the roadmap for the planned laptop controls, general/day-planner panel, and configuration ownership.

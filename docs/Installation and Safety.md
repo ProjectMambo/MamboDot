@@ -28,10 +28,10 @@ The repository does not install system packages or enable services. Package and 
 Before installation, search the checkout for values tied to the maintainer's machine:
 
 ```bash
-rg -n 'eDP-1|DP-9|ProjectMambo/MamboDot|Windows|kohkohnut' dot script
+rg -n 'ProjectMambo/MamboDot|Windows|kohkohnut' dot script
 ```
 
-At minimum, review monitor names, wallpaper paths, the Windows boot entry, launch-preset applications, application commands in `variables.lua`, and any absolute home paths.
+At minimum, review the scale-1 display policy, wallpaper paths, the Windows boot entry, launch-preset applications, application commands in `variables.lua`, and any absolute home paths.
 
 ## Clone into the expected path
 
@@ -122,6 +122,12 @@ systemctl --user show-environment |
     rg '^(XDG_CURRENT_DESKTOP|XDG_SESSION_DESKTOP|XDG_SESSION_TYPE|KDE_SESSION_VERSION)='
 ```
 
+## Displays
+
+Hyprland applies one catch-all rule to every current or hot-plugged output: preferred mode, automatic placement, and scale 1. Output removal is handled by the compositor; no listener or external layout daemon is involved. Hyprpaper uses one empty-monitor fallback for every output, and floating-window size steps use the active monitor dimensions rather than a fixed resolution.
+
+Reload Hyprland for layout and geometry changes. Hyprpaper reads its configuration at startup, so restart it or log in again before testing a changed fallback. Then run `hyprctl monitors all`, connect and disconnect each external display, and confirm placement, wallpaper, and floating-window controls. Review the catch-all rule if hardware needs a different scale, transform, or fixed placement.
+
 ## Unlink
 
 ```bash
@@ -144,4 +150,4 @@ git diff --check
 git status --short
 ```
 
-The regression suite tests safe linking and unlinking, conflict handling, hostile Stow resource files, all 12 staged MamboColour calls, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test launchers, input methods, screenshots, media controls, and power actions individually before relying on them.
+The regression suite tests safe linking and unlinking, conflict handling, hostile Stow resource files, all 12 staged MamboColour calls, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, launchers, input methods, screenshots, media controls, and power actions individually before relying on them.

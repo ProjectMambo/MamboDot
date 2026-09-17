@@ -1,6 +1,6 @@
 ---
 title: MamboDot roadmap
-description: Implemented deployment foundation and planned AGS shell, display automation, and configuration ownership for MamboDot.
+description: Implemented deployment, session, and display foundations with a planned AGS shell and configuration coverage for MamboDot.
 order: 40
 ---
 
@@ -8,7 +8,7 @@ order: 40
 
 # MamboDot roadmap
 
-MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. The safe deployment foundation and session environment are implemented; the remaining phases below are planned rather than current behavior.
+MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. The safe deployment, session environment, and display phases are implemented; the remaining phases below are planned rather than current behavior.
 
 ## Configuration ownership
 
@@ -38,7 +38,7 @@ The schedule reader resolves a local daily note such as `Periodic/2026-09-17-W38
 
 1. **Foundation — implemented:** guarded Stow link/unlink commands, no adoption, focused deployment tests, safer Hyprland reload behavior, native helper notifications, corrected workspace interchange, and monitor-origin geometry.
 2. **Session environment — implemented:** use the standard SDDM/Hyprland login path, propagate its environment once to D-Bus and systemd, keep session identity out of Zsh, remove the fake KDE session, and pass the startup Hyprlock password to GNOME Keyring through explicit FA507XV policy.
-3. **Displays:** derive layout from live monitor data, handle add/remove events, and remove hard-coded wallpaper outputs and geometry.
+3. **Displays — implemented:** use Hyprland's catch-all preferred-mode, automatic-placement rule for current and hot-plugged outputs, apply one Hyprpaper fallback to every output, and size floating-window helpers from the active monitor instead of a fixed resolution.
 4. **AGS core:** add the per-monitor bar and main menu while keeping existing Waybar/Rofi behavior available for rollback.
 5. **Sidebars:** add the left laptop-controls overlay and right general/day-planner overlay with visibility-scoped polling.
 6. **Cutover:** move notifications and remaining controls into AGS, validate the live workflow, then remove superseded Waybar, Rofi, Mako, and helper configuration.

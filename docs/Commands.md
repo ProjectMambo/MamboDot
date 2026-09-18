@@ -61,15 +61,19 @@ AGS is tracked as a complete Stow package but remains parallel to the current Wa
 )
 ```
 
-While that preview is running, another terminal can control the application launcher or end the instance:
+While that preview is running, another terminal can control the application launcher, either sidebar, or the instance:
 
 ```bash
 ags toggle launcher
+ags toggle sidebar-left
+ags toggle sidebar-right
 ags list
 ags quit
 ```
 
-The bar's launcher button performs the same toggle. Escape and an outside click close the launcher. `ags quit` or `Ctrl-C` ends the preview and triggers the subshell's Waybar restore; Rofi remains available throughout. The forced GTK backend is intentional because an XWayland-launched terminal may otherwise make GTK layer-shell unavailable.
+The bar exposes the same three toggles. The launcher and sidebars follow the focused monitor, exclude one another, and close with Escape or an outside click. Sidebar telemetry refreshes only while its panel is visible. `ags quit` or `Ctrl-C` ends the preview and triggers the subshell's Waybar restore; Rofi remains available throughout. The forced GTK backend is intentional because an XWayland-launched terminal may otherwise make GTK layer-shell unavailable.
+
+The left panel uses `asusctl` and `supergfxctl` without `sudo`; graphics-mode changes require an explicit second confirmation and never log out or reboot automatically. Its screen-brightness buttons remain disabled on the FA507XV until the planned host backlight permission is applied. The right panel reads Mako history and today's Obsidian `## Schedule` section without taking notification ownership or writing to the vault.
 
 ## Code OSS extensions
 

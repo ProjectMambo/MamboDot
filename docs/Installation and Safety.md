@@ -16,6 +16,7 @@ The active configuration references these groups of software:
 
 - Arch Linux, Hyprland with the Lua `hl` configuration API, Hypridle, Hyprlock, and Hyprpaper.
 - AGS 3 with GTK4 and the Astal Hyprland, battery, network, tray, and WirePlumber libraries; its SCSS bundle also requires Sass.
+- NetworkManager, BlueZ with `bluetoothctl`, Blueman, Mako, `lm_sensors`, `brightnessctl`, `asusctl`, and `supergfxctl` for the current sidebar controls. Obsidian is optional unless the day planner should open the vault.
 - GNU Stow, Git, Bash, Zsh, Oh My Zsh, `zsh-autosuggestions`, and `zsh-syntax-highlighting`.
 - Waybar, Rofi, Kitty, Dolphin, FeatherPad, Qalculate-Qt, Neovim, Code OSS, Fastfetch, and KDE/Qt desktop utilities.
 - Fcitx5 with Pinyin and Mozc input methods.
@@ -131,9 +132,13 @@ Reload Hyprland for layout and geometry changes. Hyprpaper reads its configurati
 
 ## AGS preview boundary
 
-The `ags` Stow package contains a live-tested per-monitor bar and application launcher, but Hyprland does not start it and no current keybinding depends on it. Waybar and Rofi remain the default session path until the sidebars and remaining shell surfaces are complete. This prevents a partial shell from becoming the only recovery path.
+The `ags` Stow package contains a live-tested per-monitor bar, application launcher, and two sidebars, but Hyprland does not start it and no current keybinding depends on it. Waybar and Rofi remain the default session path until the remaining shell surfaces are complete. Mako also remains the notification daemon; AGS reads its JSON history and toggles a tracked Mako do-not-disturb mode rather than competing for the notification service. This keeps the current shell available as a recovery path.
 
-Link and exercise AGS only as an explicit preview. The [command reference](Commands.md#ags-preview) provides a guarded command that temporarily stops Waybar, forces the Wayland GTK backend, and restores Waybar when AGS exits. The launcher can then be toggled through AGS's own command interface. Do not add AGS to `exec.lua` or replace the Rofi keybinding before the cutover phase validates the complete workflow.
+Link and exercise AGS only as an explicit preview. The [command reference](Commands.md#ags-preview) provides a guarded command that temporarily stops Waybar, forces the Wayland GTK backend, restores Waybar when AGS exits, and lists the launcher and sidebar controls. Do not add AGS to `exec.lua` or replace the Rofi keybinding before the cutover phase validates the complete workflow.
+
+The left panel exposes firmware thermal profiles rather than raw fan curves and confirms every graphics-mode request because it may require logout or reboot. It never performs that disruptive follow-up itself. Screen brightness is displayed but remains read-only on the current host because its sysfs attribute is root-owned; do not add a broad `sudoers` or Polkit rule. A later host-policy milestone will add and document one device-specific permission.
+
+The right panel reads only today's `Periodic/` note under `MAMBO_NOTES_DIR` or `$HOME/ProjectMambo/notes`. It accepts the current padded or unpadded ISO-week filename, parses only `## Schedule` rows shaped as `- HH:mm - HH:mm event`, and never creates, edits, or indexes vault files.
 
 ## Unlink
 
@@ -157,4 +162,4 @@ git diff --check
 git status --short
 ```
 
-The regression suite tests safe linking and unlinking, including the AGS package, conflict handling, hostile Stow resource files, all 12 staged MamboColour calls, an AGS production bundle, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, the AGS preview, launchers, input methods, screenshots, media controls, and power actions individually before relying on them.
+The regression suite tests safe linking and unlinking, including the AGS package, conflict handling, hostile Stow resource files, all 12 staged MamboColour calls, an AGS production bundle, the schedule parser, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, both AGS sidebars, launchers, input methods, screenshots, media controls, and power actions individually before relying on them.

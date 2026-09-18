@@ -29,7 +29,7 @@ This is a personal workstation profile rather than a portable distribution or un
 ## Configuration scope
 
 - Hyprland session, hotplug display layout, idle, lock, wallpaper, window, workspace, group, input, and launcher behavior.
-- A parallel AGS 3 per-monitor bar and application launcher, plus the active Waybar/Rofi fallback configuration.
+- A parallel AGS 3 per-monitor bar, application launcher, laptop-control sidebar, and general/day-planner sidebar, plus the active Waybar/Rofi fallback configuration.
 - Kitty, Dolphin, Zsh, Neovim, Code OSS, notification, and desktop-integration settings.
 - MamboColour-generated Hyprland and Waybar palettes.
 - Screenshot, clipboard, media, cursor, floating-window, power, and application-launcher helpers.
@@ -63,7 +63,7 @@ Replace that package list with the configuration you reviewed. Do not use `all` 
 
 ```text
 dot/<package>/                 Stow packages rooted at the home directory
-dot/ags/.config/ags/          parallel AGS bar, launcher, and square Mambo styling
+dot/ags/.config/ags/          parallel AGS bar, launcher, sidebars, and square Mambo styling
 dot/hypr/.config/hypr/        Lua Hyprland entry, modules, rules, and assets
 dot/zsh/.config/zsh/          Zsh configuration and local bookmark storage
 script/mambodot.sh            safe link, unlink, and colour-update command

@@ -24,12 +24,12 @@ This is a personal workstation profile rather than a portable distribution or un
 | Review requirements and install safely | [Installation and Safety](docs/Installation%20and%20Safety.md) |
 | Learn desktop shortcuts | [Keybinds](docs/Keybinds.md) |
 | Link configuration, preview AGS, regenerate colours, or use `tp` | [Command Reference](docs/Commands.md) |
-| Review implemented milestones and planned AGS and coverage work | [Roadmap](docs/Roadmap.md) |
+| Review implemented milestones and planned cutover and coverage work | [Roadmap](docs/Roadmap.md) |
 
 ## Configuration scope
 
 - Hyprland session, hotplug display layout, idle, lock, wallpaper, window, workspace, group, input, and launcher behavior.
-- A parallel AGS 3 per-monitor bar, application launcher, laptop-control sidebar, and general/day-planner sidebar, plus the active Waybar/Rofi fallback configuration.
+- A parallel AGS 3 per-monitor bar, Apps/Run/Windows/Power launcher, laptop-control sidebar, and general/day-planner sidebar, plus the active Waybar/Rofi/Mako fallback configuration.
 - Kitty, Dolphin, Zsh, Neovim, Code OSS, notification, and desktop-integration settings.
 - MamboColour-generated Hyprland and Waybar palettes.
 - Screenshot, clipboard, media, cursor, floating-window, power, and application-launcher helpers.
@@ -43,6 +43,7 @@ Direct children of `dot/` are Stow packages. `script/mambodot.sh` previews and l
 - The checkout lives at `$HOME/ProjectMambo/MamboDot`.
 - Displays use their preferred mode, automatic placement, and scale 1; review the catch-all rule if an output needs a different arrangement.
 - The power menu contains a machine-specific Windows boot target.
+- AGS brightness controls target `nvidia_wmi_ec_backlight` and rely on active-session systemd-logind authorization.
 - Application commands assume the exact programs configured in `variables.lua` and the launch preset.
 - Some visual assets and status modules are specific to the maintainer's hardware and home layout.
 
@@ -78,8 +79,8 @@ docs/                         operating documentation
 The repository has a focused local regression suite, but no CI workflow. Before committing configuration changes, run the available checks and inspect the exact diff:
 
 ```bash
-bash -n script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh
-shellcheck script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh
+bash -n script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh dot/script/.local/bin/powermenu.sh
+shellcheck script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh dot/script/.local/bin/powermenu.sh
 ./script/test.sh
 find dot/hypr/.config/hypr -name '*.lua' -print0 | xargs -0 -n1 luac -p
 Hyprland --verify-config --config "$PWD/dot/hypr/.config/hypr/hyprland.lua"

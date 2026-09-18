@@ -16,7 +16,7 @@ The active configuration references these groups of software:
 
 - Arch Linux, Hyprland with the Lua `hl` configuration API, Hypridle, Hyprlock, and Hyprpaper.
 - AGS 3 with GTK4 and the Astal Hyprland, battery, network, tray, and WirePlumber libraries; its SCSS bundle also requires Sass.
-- NetworkManager, BlueZ with `bluetoothctl`, Blueman, Mako, `lm_sensors`, `brightnessctl`, `asusctl`, and `supergfxctl` for the current sidebar controls. Obsidian is optional unless the day planner should open the vault.
+- NetworkManager, BlueZ with `bluetoothctl`, Blueman, Mako, `lm_sensors`, `brightnessctl` with systemd-logind support, `asusctl`, and `supergfxctl` for the current sidebar controls. Obsidian is optional unless the day planner should open the vault.
 - GNU Stow, Git, Bash, Zsh, Oh My Zsh, `zsh-autosuggestions`, and `zsh-syntax-highlighting`.
 - Waybar, Rofi, Kitty, Dolphin, FeatherPad, Qalculate-Qt, Neovim, Code OSS, Fastfetch, and KDE/Qt desktop utilities.
 - Fcitx5 with Pinyin and Mozc input methods.
@@ -132,11 +132,13 @@ Reload Hyprland for layout and geometry changes. Hyprpaper reads its configurati
 
 ## AGS preview boundary
 
-The `ags` Stow package contains a live-tested per-monitor bar, application launcher, and two sidebars, but Hyprland does not start it and no current keybinding depends on it. Waybar and Rofi remain the default session path until the remaining shell surfaces are complete. Mako also remains the notification daemon; AGS reads its JSON history and toggles a tracked Mako do-not-disturb mode rather than competing for the notification service. This keeps the current shell available as a recovery path.
+The `ags` Stow package contains a live-tested per-monitor bar, an Apps/Run/Windows/Power launcher, and two sidebars, but Hyprland does not start it and no current keybinding depends on it. Waybar and Rofi remain the default session path. Mako remains the notification daemon; AGS reads its JSON history and toggles a tracked Mako do-not-disturb mode rather than competing for notification ownership. This keeps the current shell available as a recovery path.
 
 Link and exercise AGS only as an explicit preview. The [command reference](Commands.md#ags-preview) provides a guarded command that temporarily stops Waybar, forces the Wayland GTK backend, restores Waybar when AGS exits, and lists the launcher and sidebar controls. Do not add AGS to `exec.lua` or replace the Rofi keybinding before the cutover phase validates the complete workflow.
 
-The left panel exposes firmware thermal profiles rather than raw fan curves and confirms every graphics-mode request because it may require logout or reboot. It never performs that disruptive follow-up itself. Screen brightness is displayed but remains read-only on the current host because its sysfs attribute is root-owned; do not add a broad `sudoers` or Polkit rule. A later host-policy milestone will add and document one device-specific permission.
+The left panel exposes firmware thermal profiles rather than raw fan curves and confirms every graphics-mode request because it may require logout or reboot. It never performs that disruptive follow-up itself. Screen-brightness controls explicitly target the FA507XV's `nvidia_wmi_ec_backlight` device and keep the minimum at 1. The installed `brightnessctl` delegates writes to the active local session through systemd-logind's `SetBrightness` API, so root ownership of the raw sysfs attribute is expected; do not add a udev, `sudoers`, or extra Polkit rule. If writes fail, verify that systemd-logind is running and the session is active, local, and non-remote.
+
+The Power launcher uses the fixed `powermenu.sh` action interface. AGS confirms every disruptive action; the direct backend is immediate. Restart to Windows is the only path that explicitly invokes `pkexec`, and reboot proceeds only after `grub-reboot` succeeds.
 
 The right panel reads only today's `Periodic/` note under `MAMBO_NOTES_DIR` or `$HOME/ProjectMambo/notes`. It accepts the current padded or unpadded ISO-week filename, parses only `## Schedule` rows shaped as `- HH:mm - HH:mm event`, and never creates, edits, or indexes vault files.
 
@@ -152,8 +154,8 @@ Unlinking previews the complete selection before removing managed links. It does
 ## Verify
 
 ```bash
-bash -n script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh
-shellcheck script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh
+bash -n script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh dot/script/.local/bin/powermenu.sh
+shellcheck script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh dot/script/.local/bin/powermenu.sh
 ./script/test.sh
 find dot/hypr/.config/hypr -name '*.lua' -print0 | xargs -0 -n1 luac -p
 Hyprland --verify-config --config "$PWD/dot/hypr/.config/hypr/hyprland.lua"
@@ -162,4 +164,4 @@ git diff --check
 git status --short
 ```
 
-The regression suite tests safe linking and unlinking, including the AGS package, conflict handling, hostile Stow resource files, all 12 staged MamboColour calls, an AGS production bundle, the schedule parser, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, both AGS sidebars, launchers, input methods, screenshots, media controls, and power actions individually before relying on them.
+The regression suite tests safe linking and unlinking, including the AGS package, conflict handling, hostile Stow resource files, all 12 staged MamboColour calls, an AGS production bundle, the fixed power-action backend and AGS launcher request grammar, the schedule parser, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, both AGS sidebars, launchers, input methods, screenshots, media controls, and power actions individually before relying on them.

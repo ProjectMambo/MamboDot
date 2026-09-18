@@ -1,6 +1,6 @@
 ---
 title: MamboDot command reference
-description: Link configuration, regenerate colour artifacts, install editor extensions, and use the Zsh directory-bookmark helper.
+description: Link configuration, preview AGS, run safe power actions, regenerate colour artifacts, install editor extensions, and use the Zsh directory-bookmark helper.
 order: 20
 ---
 
@@ -71,9 +71,33 @@ ags list
 ags quit
 ```
 
+Open a specific launcher mode through the validated request interface:
+
+```bash
+ags request launcher apps
+ags request launcher apps prime
+ags request launcher run
+ags request launcher windows
+ags request launcher power
+```
+
+Apps searches visible desktop entries; `prime` launches the selected application with the dedicated-GPU environment. Run parses a command into an argument vector and does not invoke a shell, so pipes, redirects, globs, and substitutions are not expanded. Windows focuses a mapped Hyprland client. Power exposes only the fixed actions documented below. Use `Ctrl-1` through `Ctrl-4` to change mode and `Alt-1` through `Alt-9` to activate a visible result.
+
 The bar exposes the same three toggles. The launcher and sidebars follow the focused monitor, exclude one another, and close with Escape or an outside click. Sidebar telemetry refreshes only while its panel is visible. `ags quit` or `Ctrl-C` ends the preview and triggers the subshell's Waybar restore; Rofi remains available throughout. The forced GTK backend is intentional because an XWayland-launched terminal may otherwise make GTK layer-shell unavailable.
 
-The left panel uses `asusctl` and `supergfxctl` without `sudo`; graphics-mode changes require an explicit second confirmation and never log out or reboot automatically. Its screen-brightness buttons remain disabled on the FA507XV until the planned host backlight permission is applied. The right panel reads Mako history and today's Obsidian `## Schedule` section without taking notification ownership or writing to the vault.
+The left panel uses `asusctl` and `supergfxctl` without `sudo`; graphics-mode changes require an explicit second confirmation and never log out or reboot automatically. Brightness controls target `nvidia_wmi_ec_backlight` explicitly and let `brightnessctl` use the active session's systemd-logind `SetBrightness` path; no repository-managed backlight permission is required. The right panel reads Mako history and today's Obsidian `## Schedule` section without taking notification ownership or writing to the vault.
+
+## Power actions
+
+After the `script` Stow package is linked, the shared backend accepts one fixed action:
+
+```bash
+~/.local/bin/powermenu.sh [shutdown|hibernate|reboot|windows|suspend|logout|lock]
+```
+
+With no argument it preserves the current Rofi menu. Unknown or extra arguments fail with a usage error, and action strings are selected by `case` rather than evaluated. The AGS Power mode confirms suspend, hibernate, logout, restart, restart-to-Windows, and shutdown before invoking this backend; Lock runs immediately. Direct command-line action calls are immediate.
+
+The `windows` action asks Polkit to run only `/usr/bin/grub-reboot` for the reviewed Windows entry, then reboots only if that command succeeds. Cancelling or failing authorization leaves the current boot target and session unchanged.
 
 ## Code OSS extensions
 

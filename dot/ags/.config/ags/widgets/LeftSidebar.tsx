@@ -5,7 +5,6 @@ import { readFile } from "ags/file"
 import { execAsync } from "ags/process"
 import { interval } from "ags/time"
 import AstalBattery from "gi://AstalBattery"
-import GLib from "gi://GLib"
 
 export type PanelContent = {
   widget: Gtk.Widget
@@ -66,10 +65,6 @@ export default function LeftSidebar(): PanelContent {
   const [brightness, setBrightness] = createState("—")
   const [message, setMessage] = createState("")
   const [busy, setBusy] = createState(false)
-  const canSetBrightness = GLib.access(
-    "/sys/class/backlight/nvidia_wmi_ec_backlight/brightness",
-    2,
-  ) === 0
   let sensorTimer: ReturnType<typeof interval> | null = null
   let stateTimer: ReturnType<typeof interval> | null = null
 
@@ -123,7 +118,12 @@ export default function LeftSidebar(): PanelContent {
       execAsync(["supergfxctl", "--status"]),
       execAsync(["supergfxctl", "--pend-action"]),
       execAsync(["supergfxctl", "--pend-mode"]),
-      execAsync(["brightnessctl", "--machine-readable", "--class=backlight"]),
+      execAsync([
+        "brightnessctl",
+        "--machine-readable",
+        "--class=backlight",
+        "--device=nvidia_wmi_ec_backlight",
+      ]),
     ])
     const value = (index: number) =>
       results[index].status === "fulfilled" ? results[index].value : ""
@@ -330,26 +330,43 @@ export default function LeftSidebar(): PanelContent {
             <box class="button-row" spacing={6}>
               <button
                 hexpand
-                sensitive={busy((value) => !value && canSetBrightness)}
-                onClicked={() => void action(["brightnessctl", "--class=backlight", "set", "5%-"], "Brightness lowered")}
+                sensitive={busy((value) => !value)}
+                onClicked={() =>
+                  void action(
+                    [
+                      "brightnessctl",
+                      "--class=backlight",
+                      "--device=nvidia_wmi_ec_backlight",
+                      "--min-value=1",
+                      "set",
+                      "5%-",
+                    ],
+                    "Brightness lowered",
+                  )
+                }
               >
                 <label label="− 5%" />
               </button>
               <button
                 hexpand
-                sensitive={busy((value) => !value && canSetBrightness)}
-                onClicked={() => void action(["brightnessctl", "--class=backlight", "set", "+5%"], "Brightness raised")}
+                sensitive={busy((value) => !value)}
+                onClicked={() =>
+                  void action(
+                    [
+                      "brightnessctl",
+                      "--class=backlight",
+                      "--device=nvidia_wmi_ec_backlight",
+                      "--min-value=1",
+                      "set",
+                      "+5%",
+                    ],
+                    "Brightness raised",
+                  )
+                }
               >
                 <label label="+ 5%" />
               </button>
             </box>
-            <label
-              class="panel-note"
-              visible={!canSetBrightness}
-              label="Brightness is read-only until the host backlight permission is applied."
-              wrap
-              xalign={0}
-            />
           </box>
 
           <label

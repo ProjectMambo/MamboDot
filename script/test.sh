@@ -58,6 +58,48 @@ if PATH="/usr/bin:/bin" "$SCRIPT_DIR/mambodot.sh" update >/dev/null 2>&1; then
     exit 1
 fi
 
+POWER_BIN="$TEST_ROOT/power-bin"
+POWER_LOG="$TEST_ROOT/power.log"
+POWER_MENU="$PROJECT_DIR/dot/script/.local/bin/powermenu.sh"
+mkdir -p "$POWER_BIN"
+# shellcheck disable=SC2016 # These lines form the generated power-command test double.
+printf '%s\n' \
+    '#!/usr/bin/env bash' \
+    'set -euo pipefail' \
+    'printf "%s" "${0##*/}" >> "$MAMBODOT_TEST_LOG"' \
+    'for arg in "$@"; do printf "|%s" "$arg" >> "$MAMBODOT_TEST_LOG"; done' \
+    'printf "\n" >> "$MAMBODOT_TEST_LOG"' \
+    '[[ ${MAMBODOT_TEST_FAIL:-} != "${0##*/}" ]]' \
+    > "$POWER_BIN/mock"
+chmod +x "$POWER_BIN/mock"
+for command in hyprshutdown pkexec systemctl; do
+    ln -s mock "$POWER_BIN/$command"
+done
+
+MAMBODOT_TEST_LOG="$POWER_LOG" PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" logout
+MAMBODOT_TEST_LOG="$POWER_LOG" PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" windows
+if MAMBODOT_TEST_LOG="$POWER_LOG" PATH="$POWER_BIN:/usr/bin:/bin" \
+    "$POWER_MENU" unknown >/dev/null 2>&1; then
+    echo 'powermenu should reject unknown actions' >&2
+    exit 1
+fi
+mapfile -t power_calls < "$POWER_LOG"
+[[ "${power_calls[0]}" == hyprshutdown ]]
+[[ "${power_calls[1]}" == 'pkexec|/usr/bin/grub-reboot|Windows Boot Manager (on /dev/nvme1n1p1)' ]]
+[[ "${power_calls[2]}" == 'systemctl|reboot' ]]
+FAILED_POWER_LOG="$TEST_ROOT/power-failed.log"
+if MAMBODOT_TEST_LOG="$FAILED_POWER_LOG" MAMBODOT_TEST_FAIL=pkexec \
+    PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" windows >/dev/null 2>&1; then
+    echo 'Windows reboot should stop when grub-reboot authorization fails' >&2
+    exit 1
+fi
+[[ "$(cat "$FAILED_POWER_LOG")" == 'pkexec|/usr/bin/grub-reboot|Windows Boot Manager (on /dev/nvme1n1p1)' ]]
+"$POWER_MENU" --help | grep -q 'shutdown|hibernate|reboot|windows|suspend|logout|lock'
+if grep -Eq '(^|[[:space:]])eval([[:space:]]|$)' "$POWER_MENU"; then
+    echo 'powermenu should not evaluate action strings' >&2
+    exit 1
+fi
+
 TEST_PROJECT="$TEST_ROOT/project"
 mkdir -p \
     "$TEST_PROJECT/script" \
@@ -135,6 +177,9 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null
 [[ -x "$TEST_ROOT/mambodot-ags" ]]
+grep -Fq 'GLib.shell_parse_argv' "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'client.focus()' "$ags_config/widgets/Launcher.tsx"
+grep -Fq -- '--device=nvidia_wmi_ec_backlight' "$ags_config/widgets/LeftSidebar.tsx"
 ags bundle "$ags_config/lib/schedule.ts" "$TEST_ROOT/mambodot-schedule-test" \
     --root "$ags_config" --gtk 4 >/dev/null
 MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-schedule-test"

@@ -1,9 +1,18 @@
-import { For, createState } from "ags"
+import { For, createComputed, createState } from "ags"
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
+import { execAsync } from "ags/process"
 import AstalHyprland from "gi://AstalHyprland"
 import Gio from "gi://Gio"
+import GLib from "gi://GLib"
 import Graphene from "gi://Graphene"
+
+export type LauncherMode = "apps" | "run" | "windows" | "power"
+
+export type LauncherController = {
+  window: Gtk.Window
+  open: (mode: LauncherMode, prime?: boolean) => void
+}
 
 type Application = {
   info: Gio.AppInfo
@@ -14,7 +23,40 @@ type Application = {
   icon: Gio.Icon
 }
 
+type Candidate = {
+  name: string
+  description: string
+  nameLower: string
+  searchable: string
+  icon: Gio.Icon
+  run: () => boolean | void
+  confirm?: string
+}
+
 const fallbackIcon = Gio.ThemedIcon.new("application-x-executable-symbolic")
+const commandIcon = Gio.ThemedIcon.new("utilities-terminal-symbolic")
+const windowIcon = Gio.ThemedIcon.new("focus-windows-symbolic")
+const powerScript = GLib.build_filenamev([
+  GLib.get_home_dir(),
+  ".local",
+  "bin",
+  "powermenu.sh",
+])
+const modeLabels: Array<[LauncherMode, string]> = [
+  ["apps", "Apps"],
+  ["run", "Run"],
+  ["windows", "Windows"],
+  ["power", "Power"],
+]
+const powerActions = [
+  ["lock", "Lock", "Lock this session", "system-lock-screen-symbolic", ""],
+  ["suspend", "Suspend", "Suspend this computer", "system-suspend-symbolic", "Suspend now?"],
+  ["hibernate", "Hibernate", "Hibernate this computer", "system-hibernate-symbolic", "Hibernate now?"],
+  ["logout", "Log out", "End this Hyprland session", "system-log-out-symbolic", "Log out now?"],
+  ["reboot", "Restart", "Restart this computer", "system-reboot-symbolic", "Restart now?"],
+  ["windows", "Restart to Windows", "Select Windows for the next boot", "computer-symbolic", "Restart into Windows now?"],
+  ["shutdown", "Shut down", "Power off this computer", "system-shutdown-symbolic", "Shut down now?"],
+] as const
 const applications = Gio.AppInfo.get_all()
   .filter((info) => info.should_show())
   .map((info): Application => {
@@ -36,45 +78,162 @@ const applications = Gio.AppInfo.get_all()
 
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
 
-export default function Launcher() {
+function matches(items: Candidate[], text: string) {
+  const needle = text.trim().toLocaleLowerCase()
+  const terms = needle.split(/\s+/).filter(Boolean)
+  if (!needle) return items.slice(0, 9)
+
+  return items
+    .filter((candidate) => terms.every((term) => candidate.searchable.includes(term)))
+    .sort((a, b) => {
+      const rankA = a.nameLower.startsWith(needle) ? 0 : 1
+      const rankB = b.nameLower.startsWith(needle) ? 0 : 1
+      return rankA - rankB || a.name.localeCompare(b.name)
+    })
+    .slice(0, 9)
+}
+
+export default function Launcher(): LauncherController {
   let content: Gtk.Box
   let entry: Gtk.Entry
   let win: Astal.Window
+  let pending: Candidate | undefined
   const hyprland = AstalHyprland.get_default()
-  const [query, setQuery] = createState("")
-  const [results, setResults] = createState<Application[]>([])
+  const [mode, setMode] = createState<LauncherMode>("apps")
+  const [prime, setPrime] = createState(false)
+  const [results, setResults] = createState<Candidate[]>([])
+  const [empty, setEmpty] = createState("Type to search applications")
+  const [confirmation, setConfirmation] = createState("")
+  const [message, setMessage] = createState("")
+  const [placeholder, setPlaceholder] = createState("Search applications")
+  const showEmpty = createComputed(() => results().length === 0 && !message())
 
-  function search(text: string) {
-    const needle = text.trim().toLocaleLowerCase()
-    const terms = needle.split(/\s+/).filter(Boolean)
-    setQuery(needle)
+  function launchApplication(candidate: Application) {
+    const context = Gdk.Display.get_default()?.get_app_launch_context() ?? null
+    if (prime.peek() && context) {
+      context.setenv("__NV_PRIME_RENDER_OFFLOAD", "1")
+      context.setenv("__VK_LAYER_NV_optimus", "NVIDIA_only")
+      context.setenv("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+    }
+    return candidate.info.launch(null, context)
+  }
 
-    if (terms.length === 0) {
-      setResults([])
+  function applicationCandidates(): Candidate[] {
+    return applications.map((candidate) => ({
+      ...candidate,
+      description: prime.peek()
+        ? ["Dedicated GPU", candidate.description].filter(Boolean).join(" · ")
+        : candidate.description,
+      run: () => launchApplication(candidate),
+    }))
+  }
+
+  function runCandidate(text: string): Candidate[] {
+    const command = text.trim()
+    if (!command) return []
+
+    return [{
+      name: command,
+      description: "Run arguments directly; shell operators are not expanded",
+      nameLower: command.toLocaleLowerCase(),
+      searchable: command.toLocaleLowerCase(),
+      icon: commandIcon,
+      run: () => {
+        const [, argv] = GLib.shell_parse_argv(command)
+        Gio.Subprocess.new(argv, Gio.SubprocessFlags.NONE)
+      },
+    }]
+  }
+
+  function windowCandidates(): Candidate[] {
+    return (hyprland?.clients ?? [])
+      .filter((client) => client.mapped)
+      .map((client) => {
+        const name = client.title || client.class || "Untitled window"
+        const description = [client.class, `Workspace ${client.workspace.id}`]
+          .filter(Boolean)
+          .join(" · ")
+        return {
+          name,
+          description,
+          nameLower: name.toLocaleLowerCase(),
+          searchable: `${name}\n${description}`.toLocaleLowerCase(),
+          icon: windowIcon,
+          run: () => client.focus(),
+        }
+      })
+  }
+
+  function powerCandidates(): Candidate[] {
+    return powerActions.map(([id, name, description, icon, confirm]) => ({
+      name,
+      description,
+      nameLower: name.toLocaleLowerCase(),
+      searchable: `${name}\n${description}`.toLocaleLowerCase(),
+      icon: Gio.ThemedIcon.new(icon),
+      confirm: confirm || undefined,
+      run: () => {
+        void execAsync([powerScript, id]).catch((error) => {
+          win.visible = true
+          setMessage(`Could not ${name.toLocaleLowerCase()}: ${error instanceof Error ? error.message : String(error)}`)
+        })
+      },
+    }))
+  }
+
+  function search(text: string, selected = mode.peek()) {
+    setMessage("")
+    const query = text.trim()
+
+    if (selected === "apps") {
+      setResults(query ? matches(applicationCandidates(), query) : [])
+      setEmpty(query ? "No matching applications" : "Type to search applications")
+    } else if (selected === "run") {
+      setResults(runCandidate(query))
+      setEmpty("Type a command and its arguments")
+    } else if (selected === "windows") {
+      setResults(matches(windowCandidates(), query))
+      setEmpty(query ? "No matching windows" : "No open windows")
+    } else {
+      setResults(matches(powerCandidates(), query))
+      setEmpty(query ? "No matching power actions" : "No power actions available")
+    }
+  }
+
+  function cancelConfirmation() {
+    pending = undefined
+    setConfirmation("")
+  }
+
+  function activate(candidate?: Candidate, confirmed = false) {
+    if (!candidate) return
+    if (candidate.confirm && !confirmed) {
+      pending = candidate
+      setConfirmation(candidate.confirm)
       return
     }
 
-    setResults(
-      applications
-        .filter((candidate) => terms.every((term) => candidate.searchable.includes(term)))
-        .sort((a, b) => {
-          const rankA = a.nameLower.startsWith(needle) ? 0 : 1
-          const rankB = b.nameLower.startsWith(needle) ? 0 : 1
-          return rankA - rankB || a.name.localeCompare(b.name)
-        })
-        .slice(0, 9),
-    )
+    cancelConfirmation()
+    setMessage("")
+    try {
+      if (candidate.run() !== false) win.visible = false
+    } catch (error) {
+      setMessage(`Could not open ${candidate.name}: ${error instanceof Error ? error.message : String(error)}`)
+    }
   }
 
-  function launch(candidate?: Application) {
-    if (!candidate) return
-
-    try {
-      const context = Gdk.Display.get_default()?.get_app_launch_context() ?? null
-      if (candidate.info.launch(null, context)) win.visible = false
-    } catch (error) {
-      console.error(`Could not launch ${candidate.name}:`, error)
-    }
+  function selectMode(next: LauncherMode, dedicated = false) {
+    cancelConfirmation()
+    setMode(next)
+    setPrime(next === "apps" && dedicated)
+    setPlaceholder(({
+      apps: dedicated ? "Search applications · dedicated GPU" : "Search applications",
+      run: "Run a command",
+      windows: "Find an open window",
+      power: "Find a power action",
+    })[next])
+    entry.set_text("")
+    search("", next)
   }
 
   function onKey(
@@ -84,14 +243,24 @@ export default function Launcher() {
     state: number,
   ) {
     if (keyval === Gdk.KEY_Escape) {
-      win.visible = false
+      if (pending) cancelConfirmation()
+      else win.visible = false
       return true
     }
 
-    if (state & Gdk.ModifierType.ALT_MASK) {
+    if (state & Gdk.ModifierType.CONTROL_MASK) {
+      for (const [index, [next]] of modeLabels.entries()) {
+        if (keyval === Gdk[`KEY_${index + 1}`]) {
+          selectMode(next)
+          return true
+        }
+      }
+    }
+
+    if (!pending && state & Gdk.ModifierType.ALT_MASK) {
       for (const number of [1, 2, 3, 4, 5, 6, 7, 8, 9] as const) {
         if (keyval === Gdk[`KEY_${number}`]) {
-          launch(results.peek()[number - 1])
+          activate(results.peek()[number - 1])
           return true
         }
       }
@@ -109,9 +278,8 @@ export default function Launcher() {
     return false
   }
 
-  return (
+  win = (
     <window
-      $={(self) => (win = self)}
       name="launcher"
       class="Launcher"
       anchor={TOP | BOTTOM | LEFT | RIGHT}
@@ -126,10 +294,16 @@ export default function Launcher() {
           const focused = hyprland?.focusedMonitor.name
           const monitor = app.get_monitors().find(({ connector }) => connector === focused)
           if (monitor) win.gdkmonitor = monitor
+          search(entry.text)
           entry.grab_focus()
         } else {
           entry.set_text("")
-          search("")
+          setMode("apps")
+          setPrime(false)
+          setPlaceholder("Search applications")
+          cancelConfirmation()
+          setMessage("")
+          search("", "apps")
         }
       }}
     >
@@ -142,21 +316,56 @@ export default function Launcher() {
         halign={Gtk.Align.CENTER}
         orientation={Gtk.Orientation.VERTICAL}
       >
+        <box class="launcher-modes" homogeneous spacing={4}>
+          {modeLabels.map(([id, label], index) => (
+            <button
+              class={mode((current) => (current === id ? "active" : ""))}
+              onClicked={() => selectMode(id)}
+            >
+              <label label={`${label}  Ctrl+${index + 1}`} />
+            </button>
+          ))}
+        </box>
         <entry
           $={(self) => (entry = self)}
-          onNotifyText={({ text }) => search(text)}
-          onActivate={() => launch(results.peek()[0])}
-          placeholderText="Search applications"
+          onNotifyText={({ text }) => {
+            if (pending) cancelConfirmation()
+            search(text)
+          }}
+          onActivate={() => pending ? activate(pending, true) : activate(results.peek()[0])}
+          placeholderText={placeholder}
+        />
+        <box
+          class="launcher-confirm"
+          visible={confirmation((value) => value.length > 0)}
+          orientation={Gtk.Orientation.VERTICAL}
+          spacing={8}
+        >
+          <label label={confirmation} wrap xalign={0} />
+          <box homogeneous spacing={6}>
+            <button onClicked={cancelConfirmation}>
+              <label label="Cancel" />
+            </button>
+            <button class="destructive" onClicked={() => activate(pending, true)}>
+              <label label="Confirm" />
+            </button>
+          </box>
+        </box>
+        <label
+          class="launcher-message error"
+          label={message}
+          visible={message((value) => value.length > 0)}
+          wrap
         />
         <label
           class="launcher-message"
-          label={query((value) => (value ? "No matching applications" : "Type to search applications"))}
-          visible={results((items) => items.length === 0)}
+          label={empty}
+          visible={showEmpty}
         />
         <box class="app-results" orientation={Gtk.Orientation.VERTICAL}>
           <For each={results}>
             {(candidate, index) => (
-              <button class="app-row" onClicked={() => launch(candidate)}>
+              <button class="app-row" onClicked={() => activate(candidate)}>
                 <box spacing={12}>
                   <image gicon={candidate.icon} pixelSize={32} />
                   <box hexpand orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
@@ -177,5 +386,17 @@ export default function Launcher() {
         </box>
       </box>
     </window>
-  )
+  ) as Astal.Window
+
+  return {
+    window: win,
+    open(next, dedicated = false) {
+      if (win.visible && mode.peek() === next && prime.peek() === dedicated) {
+        win.visible = false
+        return
+      }
+      selectMode(next, dedicated)
+      win.visible = true
+    },
+  }
 }

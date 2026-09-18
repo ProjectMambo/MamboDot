@@ -67,6 +67,15 @@ window.Bar {
     background: $brand-active;
   }
 
+  .sidebar-button {
+    color: $text-muted;
+  }
+
+  .sidebar-button:hover,
+  .sidebar-button:focus {
+    color: $brand-hover;
+  }
+
   .workspaces button {
     padding: 4px 6px 2px;
     border-bottom: 2px solid transparent;
@@ -109,6 +118,220 @@ window.Bar {
   .battery {
     padding: 0 7px;
     color: $success;
+  }
+}
+
+window.Sidebar,
+window.SidebarBackdrop {
+  color: $text;
+  font-family: "MamboFont", "JetBrainsMono Nerd Font Mono", monospace;
+  font-size: 14px;
+}
+
+window.SidebarBackdrop {
+  background: rgba(0, 0, 0, 0.34);
+}
+
+window.Sidebar {
+  background: transparent;
+
+  .sidebar-body {
+    min-width: 420px;
+    background: rgba($background, 0.98);
+  }
+
+  &.left .sidebar-body {
+    border-right: 2px solid $surface-strong;
+  }
+
+  &.right .sidebar-body {
+    border-left: 2px solid $surface-strong;
+  }
+
+  .sidebar-header {
+    min-height: 52px;
+    padding: 10px 12px 10px 16px;
+    border-bottom: 2px solid $surface-strong;
+    background: $surface;
+  }
+
+  .eyebrow {
+    color: $brand;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .sidebar-title {
+    color: $text;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .sidebar-scroll {
+    min-width: 396px;
+    padding: 12px;
+  }
+
+  .panel-section {
+    padding: 12px;
+    border: 1px solid $surface-strong;
+    background: $surface;
+  }
+
+  .section-title {
+    color: $text;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .section-state,
+  .panel-note,
+  .metric-label,
+  .control-state,
+  .notification-body {
+    color: $text-subtle;
+    font-size: 12px;
+  }
+
+  .section-state {
+    margin-left: 10px;
+  }
+
+  .metric-strip {
+    border: 1px solid $surface-strong;
+    background: $background;
+
+    > box {
+      min-width: 104px;
+      padding: 9px 6px;
+    }
+  }
+
+  .metric-value {
+    color: $text;
+    font-weight: 700;
+  }
+
+  button {
+    min-width: 0;
+    padding: 7px 9px;
+    border: 1px solid $surface-strong;
+    border-radius: 0;
+    background: $background;
+    color: $text-muted;
+    box-shadow: none;
+    transition: background-color $motion, color $motion, border-color $motion;
+  }
+
+  button:hover,
+  button:focus {
+    border-color: $focus;
+    background: $surface-strong;
+    color: $text;
+  }
+
+  button.active {
+    border-color: $brand;
+    background: $surface-strong;
+    color: $brand-hover;
+  }
+
+  button.destructive {
+    border-color: $brand-active;
+    color: $brand-hover;
+  }
+
+  button:disabled {
+    color: $text-subtle;
+    opacity: 0.55;
+  }
+
+  .confirm-row,
+  .action-message {
+    padding: 9px;
+    border-left: 3px solid $brand;
+    background: $background;
+    color: $text-muted;
+  }
+
+  .control-grid button {
+    min-height: 82px;
+  }
+
+  .control-grid image {
+    margin-bottom: 5px;
+    color: $network;
+  }
+
+  scale {
+    min-height: 28px;
+    padding: 0;
+  }
+
+  scale trough {
+    min-height: 6px;
+    border-radius: 0;
+    background: $surface-strong;
+  }
+
+  scale highlight {
+    border-radius: 0;
+    background: $audio;
+  }
+
+  scale slider {
+    min-width: 18px;
+    min-height: 18px;
+    border: 0;
+    border-radius: 0;
+    background: $text;
+    box-shadow: none;
+  }
+
+  calendar {
+    padding: 8px;
+    border: 1px solid $surface-strong;
+    background: $background;
+    color: $text;
+  }
+
+  calendar:selected {
+    background: $brand;
+    color: $on-brand;
+  }
+
+  .schedule-row,
+  .notification-row {
+    padding: 8px;
+    border-left: 3px solid $surface-strong;
+    background: $background;
+  }
+
+  .schedule-row.current {
+    border-left-color: $brand;
+    background: $surface-strong;
+  }
+
+  .schedule-row.next {
+    border-left-color: $focus;
+  }
+
+  .schedule-time,
+  .notification-app {
+    color: $text-subtle;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .notification-body {
+    margin-top: 3px;
+  }
+
+  scrollbar slider {
+    min-width: 5px;
+    min-height: 28px;
+    border-radius: 0;
+    background: $surface-strong;
   }
 }
 

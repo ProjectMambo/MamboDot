@@ -119,6 +119,10 @@ export default function Launcher() {
       keymode={Astal.Keymode.EXCLUSIVE}
       onNotifyVisible={({ visible }) => {
         if (visible) {
+          const left = app.get_window("sidebar-left")
+          const right = app.get_window("sidebar-right")
+          if (left) left.visible = false
+          if (right) right.visible = false
           const focused = hyprland?.focusedMonitor.name
           const monitor = app.get_monitors().find(({ connector }) => connector === focused)
           if (monitor) win.gdkmonitor = monitor

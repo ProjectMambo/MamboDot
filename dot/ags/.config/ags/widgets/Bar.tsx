@@ -151,6 +151,13 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           >
             <label label="󰣇" />
           </button>
+          <button
+            class="sidebar-button"
+            tooltipText="Laptop controls"
+            onClicked={() => app.toggle_window("sidebar-left")}
+          >
+            <label label="󰌢" />
+          </button>
           <Workspaces gdkmonitor={gdkmonitor} />
           <label
             class="window-title"
@@ -168,6 +175,13 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           <Network />
           <Audio />
           <Battery />
+          <button
+            class="sidebar-button"
+            tooltipText="Today and quick controls"
+            onClicked={() => app.toggle_window("sidebar-right")}
+          >
+            <label label="󰒓" />
+          </button>
         </box>
       </centerbox>
     </window>

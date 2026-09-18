@@ -63,3 +63,15 @@ hl.config({
         },
     },
 })
+
+hl.layer_rule({
+    name = "mambodot-sidebar-left",
+    match = { namespace = "^mambodot-sidebar-left$" },
+    animation = "slide left",
+})
+
+hl.layer_rule({
+    name = "mambodot-sidebar-right",
+    match = { namespace = "^mambodot-sidebar-right$" },
+    animation = "slide right",
+})

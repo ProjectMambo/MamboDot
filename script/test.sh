@@ -135,6 +135,9 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null
 [[ -x "$TEST_ROOT/mambodot-ags" ]]
+ags bundle "$ags_config/lib/schedule.ts" "$TEST_ROOT/mambodot-schedule-test" \
+    --root "$ags_config" --gtk 4 >/dev/null
+MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-schedule-test"
 
 lua "$SCRIPT_DIR/test_hypr.lua" "$PROJECT_DIR"
 

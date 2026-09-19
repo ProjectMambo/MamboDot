@@ -8,7 +8,7 @@ order: 40
 
 # MamboDot roadmap
 
-MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. Safe deployment, session environment, displays, and the active AGS bar, five-mode launcher, sidebars, native notifications, and shell cutover are implemented; configuration coverage remains planned rather than current behavior.
+MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. Safe deployment, session environment, displays, the active AGS shell, and its post-cutover stabilization are implemented; configuration coverage remains planned rather than current behavior.
 
 ## Configuration ownership
 
@@ -26,10 +26,12 @@ Use GNU Stow for portable, user-owned text configuration:
 
 The active shell uses the already-installed AGS 3, Astal, GTK4, and Gio stack without another launcher framework:
 
-- A hotplug-aware bar is created for each monitor and shows its ten-workspace block, focused title, clock, tray, network, audio, and battery state without hardware polling scripts.
+- A hotplug-aware bar is created for each monitor and shows its clickable ten-workspace block, focused title, clock, tray, network, audio, and battery state without hardware polling scripts.
 - A keyboard-first launcher provides Apps, Run, Windows, Power, and binary-safe Clipboard modes, follows the focused monitor, accepts validated AGS requests, supports dedicated-GPU application launch, focuses mapped Hyprland clients, executes commands without a shell, and confirms disruptive power actions.
 - Astal owns notification delivery independently of AGS restarts. AGS renders square top-right popups with actions, applies do-not-disturb in the frontend, and retains bounded process-local history without persisting notification bodies.
-- The interface follows MamboSite's dark semantic palette, MamboFont-first typography, square controls, strong two-pixel structure, and short eased state transitions.
+- The interface follows MamboSite's dark semantic palette, MamboFont-first typography, opaque bar groups, square controls, strong two-pixel structure, distinct sidebar accents, and short eased state transitions.
+
+The workspace buttons and Windows launcher mode deliberately send Hyprland's current Lua `hl.dsp.focus(...)` expressions. Astal's convenience focus methods still emit legacy dispatcher strings that Lua-configured Hyprland 0.55 rejects.
 
 The sidebars run with the active shell:
 
@@ -49,6 +51,7 @@ Hyprland now starts Astal and AGS, and its shell keybindings target AGS. Waybar,
 4. **AGS core — implemented:** add a Stow-managed, hotplug-aware per-monitor bar and focused-monitor Apps/Run/Windows/Power launcher with a validated request interface; bundle-check and live-test them before session activation.
 5. **Sidebars — implemented:** add focused-monitor left laptop controls and a right quick-control, calendar, notification-history, and Obsidian day-planner overlay with visibility-scoped polling and native layer animations.
 6. **Cutover — implemented:** move notification ownership to Astal, add binary-safe Clipboard mode, switch startup and keybindings to AGS, validate the full shell under a guarded live preview, and document recovery while retaining Waybar/Rofi/Mako configuration outside normal startup.
-7. **Coverage:** add reviewed package/service manifests, a machine doctor, and only the stable Code OSS, Dolphin, KDE, and desktop settings that survive the ownership rules above.
+7. **Shell stabilization — implemented:** make every bar group opaque, distinguish both sidebar controls, launch desktop applications with the GJS-compatible empty file list, and move clickable workspace and window focus to Hyprland's Lua dispatcher syntax.
+8. **Coverage:** add reviewed package/service manifests, a machine doctor, and only the stable Code OSS, Dolphin, KDE, and desktop settings that survive the ownership rules above.
 
 Each phase should be usable, tested, documented, and reversible before the next one begins.

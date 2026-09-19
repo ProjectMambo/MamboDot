@@ -21,6 +21,18 @@ order: 20
 
 At least one package name or the exact word `all` is required. The command rejects unknown packages and path traversal, previews the complete selection, and applies it only after a successful preview. It uses leaf symlinks, ignores user Stow resource files, and never adopts an existing file. See [Installation and safety](Installation%20and%20Safety.md) for conflict handling.
 
+## Machine doctor
+
+Compare the current host with the reviewed package and enabled-service manifests:
+
+```bash
+./script/mambodot.sh doctor
+```
+
+The command reads `manifest/packages.tsv` and `manifest/services.tsv`, checks Arch and foreign package provenance, checks Flatpak applications, and checks system and user service enablement. It prints only missing or disabled entries and exits non-zero when the machine drifts. Extra packages and services are intentionally ignored.
+
+`doctor` is read-only: it does not install, remove, enable, start, or stop anything. The two-column TSV files are the reviewable machine profile; use the reported rows to decide which changes are appropriate for the target host.
+
 ## Colour update
 
 `script/mambodot.sh` is MamboDot's repository-local adapter for MamboColour. It is not installed as a global command.

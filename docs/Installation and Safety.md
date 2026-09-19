@@ -23,14 +23,26 @@ The active configuration references these groups of software:
 - Avizo volume/brightness helpers, Playerctl, Cliphist, wl-clipboard, wl-kbptr, Quickshell with HyprQuickFrame, and the screenshot tools used by that shell.
 - MamboColour's installed `mbcolor` command. MamboFont is not an installation dependency.
 
-The repository does not install system packages or enable services. Package and service manifests are planned; until then, resolve requirements for the target Arch system before linking the configuration.
+The repository does not install system packages or enable services. `manifest/packages.tsv` records the reviewed Arch, foreign/AUR, and Flatpak applications for this workstation; `manifest/services.tsv` records intended system and user enablement. They are a host profile, not an unattended bootstrap or a minimal dependency list.
+
+## Audit machine state
+
+Run the read-only doctor before linking or after a system change:
+
+```bash
+./script/mambodot.sh doctor
+```
+
+It reports missing packages, packages installed from the wrong source class, and disabled services. It ignores extra software and never installs, removes, enables, starts, or stops anything. Review each reported row before changing another machine: entries such as SDDM autologin, SSH, SMB, VPN, NVIDIA, and ASUS laptop services are intentionally specific to this workstation.
+
+The profile deliberately excludes `thermald`, which reports this Ryzen platform as unsupported, and installed `-debug` split packages that are not runtime requirements. Because extras are ignored, `doctor` will not ask to remove them. The current profile retains `auto-cpufreq` alongside `asusd` until their overlapping power policy is benchmarked; do not add or enable power-profiles-daemon or TLP at the same time.
 
 ## Review machine-specific values
 
 Before installation, search the checkout for values tied to the maintainer's machine:
 
 ```bash
-rg -n 'ProjectMambo/MamboDot|Windows|kohkohnut' dot script
+rg -n 'ProjectMambo/MamboDot|Windows|kohkohnut' dot script system manifest
 ```
 
 At minimum, review the scale-1 display policy, wallpaper paths, the Windows boot entry, launch-preset applications, application commands in `variables.lua`, and any absolute home paths.
@@ -64,6 +76,22 @@ Use `all` only after reviewing every package:
 
 Linking does not install packages, rebuild caches, reload Hyprland, source shell files, or start services.
 
+## Configuration coverage
+
+Stow only intentional user preferences. Current ownership is deliberately narrower than all of `~/.config`:
+
+| Area | Tracked | Deliberately outside MamboDot |
+|---|---|---|
+| Hyprland and desktop shell | Hyprland, AGS, scripts, Kitty, Avizo, HyprQuickFrame, wl-kbptr, plus Waybar/Rofi/Mako recovery settings | Runtime sockets, logs, notification bodies, clipboard contents, and generated caches |
+| Editors | Neovim configuration; Code OSS settings and reviewed extension IDs | Code chat/session storage, history, logs, machine IDs, and authentication |
+| File manager and desktop integration | Dolphin preferences, metadata-field visibility, service-menu choices; KDE appearance and I/O policy; XDG MIME and portal defaults | KDE activities, global shortcuts owned by Hyprland, window/session state, trash state, and KDE Connect keys |
+| Input | Fcitx5 profile, hotkeys, Pinyin, punctuation, notifications, and conversion preferences | Mozc history/databases, cached layouts, temporary files, and learned input data |
+| Notes | The read-only AGS schedule integration | The Obsidian vault and `.obsidian`, which remain owned by the Notes project |
+| System and hardware | Reviewed files under `system/hosts/fa507xv/` | Generated `asusd`/`supergfxd` state, raw sysfs controls, daemon databases, and broad `/etc` snapshots |
+| Other applications | Package presence is recorded in the manifest | Browser/Electron profiles, credentials, cookies, caches, game state, and mixed runtime preference files remain local until a stable leaf file is reviewed |
+
+GTK theme selection is already owned by Hyprland's environment and KDE globals. The current GTK CSS files are stale generated Matugen output without tracked source templates, so duplicating them would make the repository less reproducible rather than more complete.
+
 ## Resolve a conflict
 
 An existing file at a managed path stops the whole selection. To import it deliberately:
@@ -89,17 +117,28 @@ Run `update` only when `mbcolor` is installed and the generated palette artifact
 
 ## Apply host-specific system policy
 
-Files below `system/hosts/` are root-owned machine policy, not Stow packages. Inspect and apply them individually.
-
-The FA507XV profile keeps SDDM autologin and starts Hyprlock immediately. Autologin cannot provide a password to GNOME Keyring, so the first secret-using application otherwise opens a second password dialog. The tracked PAM file reuses the password already authenticated by Hyprlock:
+Files below `system/hosts/` are root-owned machine policy, not Stow packages. Inspect and apply them individually. The FA507XV profile records SDDM autologin, Fcitx environment variables, and the Hyprlock PAM addition:
 
 ```bash
+diff -u /etc/sddm.conf system/hosts/fa507xv/etc/sddm.conf
+diff -u /etc/environment system/hosts/fa507xv/etc/environment
 diff -u /etc/pam.d/hyprlock system/hosts/fa507xv/etc/pam.d/hyprlock
+```
+
+After reviewing each diff, apply only the intended files:
+
+```bash
+sudo install --backup=numbered -D -m 0644 \
+    system/hosts/fa507xv/etc/sddm.conf /etc/sddm.conf
+sudo install --backup=numbered -D -m 0644 \
+    system/hosts/fa507xv/etc/environment /etc/environment
 sudo install --backup=numbered -D -m 0644 \
     system/hosts/fa507xv/etc/pam.d/hyprlock /etc/pam.d/hyprlock
 ```
 
-The install command leaves a numbered backup beside the target. Restore that backup from a TTY if Hyprlock authentication fails. Package upgrades may provide a `.pacnew`; compare it with the tracked policy before replacing either file.
+The FA507XV profile keeps SDDM autologin and starts Hyprlock immediately. Autologin cannot provide a password to GNOME Keyring, so the first secret-using application otherwise opens a second password dialog. The tracked PAM file reuses the password already authenticated by Hyprlock.
+
+Each install command leaves a numbered backup beside the target. Restore the appropriate backup from a TTY if login or Hyprlock authentication fails. Changes to SDDM and `/etc/environment` require a fresh login, preferably a reboot. Package upgrades may provide a `.pacnew`; compare it with the tracked policy before replacing either file.
 
 ## Session environment
 
@@ -110,7 +149,7 @@ The active login path is `SDDM` → the standard Hyprland session → `/usr/bin/
 | SDDM's standard Hyprland desktop entry | Session identity: `XDG_CURRENT_DESKTOP`, `XDG_SESSION_DESKTOP`, and `XDG_SESSION_TYPE` |
 | `variables.lua` | XDG base directories and Qt/GTK preferences for applications launched by Hyprland |
 | `exec.lua` | Propagate the environment once to D-Bus and the systemd user manager, then start the current session processes |
-| `/etc/environment` | Fcitx input-method variables; this remains host state until the coverage phase reviews it |
+| Tracked `/etc/environment` host policy | Fcitx input-method variables |
 | `.zshrc` | Interactive shell behavior only; it must not redefine the desktop or input method |
 
 UWSM is not installed or required. Do not select the optional `Hyprland (uwsm-managed)` session unless a later phase deliberately migrates the complete login lifecycle to UWSM.
@@ -157,11 +196,14 @@ Unlinking previews the complete selection before removing managed links. It does
 bash -n script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh dot/script/.local/bin/powermenu.sh
 shellcheck script/mambodot.sh script/test.sh script/code-oss/install_extensions.sh dot/script/.local/bin/powermenu.sh
 ./script/test.sh
+./script/mambodot.sh doctor
 find dot/hypr/.config/hypr -name '*.lua' -print0 | xargs -0 -n1 luac -p
 Hyprland --verify-config --config "$PWD/dot/hypr/.config/hypr/hyprland.lua"
+diff -u system/hosts/fa507xv/etc/sddm.conf /etc/sddm.conf
+diff -u system/hosts/fa507xv/etc/environment /etc/environment
 diff -u system/hosts/fa507xv/etc/pam.d/hyprlock /etc/pam.d/hyprlock
 git diff --check
 git status --short
 ```
 
-The regression suite tests safe linking and unlinking, including the AGS package, conflict handling, hostile Stow resource files, all 12 staged MamboColour calls, an AGS production bundle, the fixed power-action backend and AGS request grammar, the schedule and binary-safe clipboard self-checks, session-process ownership, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, both AGS sidebars, all launcher modes, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them.
+The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, all 12 staged MamboColour calls, an AGS production bundle, the fixed power-action backend and AGS request grammar, the schedule and binary-safe clipboard self-checks, session-process ownership, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, both AGS sidebars, all launcher modes, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them.

@@ -1,6 +1,6 @@
 ---
 title: MamboDot roadmap
-description: Implemented deployment, session, display, and AGS shell cutover with planned configuration coverage.
+description: Implemented deployment, session, display, AGS shell, and reviewed workstation coverage.
 order: 40
 ---
 
@@ -8,7 +8,7 @@ order: 40
 
 # MamboDot roadmap
 
-MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. Safe deployment, session environment, displays, the active AGS shell, and its post-cutover stabilization are implemented; configuration coverage remains planned rather than current behavior.
+MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. Safe deployment, session environment, displays, the active AGS shell, post-cutover stabilization, and reviewed workstation coverage are implemented.
 
 ## Configuration ownership
 
@@ -21,6 +21,8 @@ Use GNU Stow for portable, user-owned text configuration:
 | Credentials, cookies, caches, histories, databases, device state, window/session state, and generated runtime files | Never tracked |
 | Obsidian vault and `.obsidian` | Owned by the Notes project; MamboDot owns only the AGS reader and optional `MAMBO_NOTES_DIR` override |
 | Root-owned hardware and login policy | Explicit `system/hosts/<host>/` files applied individually, never normal Stow or wholesale daemon state |
+
+Coverage now includes reviewed Arch/AUR/Flatpak and enabled-service manifests, a read-only machine doctor, every installed Code OSS extension ID, stable Dolphin and KDE leaf settings, Fcitx5 preferences, and the FA507XV SDDM/Fcitx/PAM host policy. Browser and Electron profiles, credentials, histories, learned input data, generated daemon state, and mixed runtime preference files remain local. Additional application settings should be added only when a stable leaf file has a clear owner and does not dirty the repository during ordinary use.
 
 ## AGS desktop shell
 
@@ -46,12 +48,12 @@ Hyprland now starts Astal and AGS, and its shell keybindings target AGS. Waybar,
 ## Delivery phases
 
 1. **Foundation — implemented:** guarded Stow link/unlink commands, no adoption, focused deployment tests, safer Hyprland reload behavior, native helper notifications, corrected workspace interchange, and monitor-origin geometry.
-2. **Session environment — implemented:** use the standard SDDM/Hyprland login path, propagate its environment once to D-Bus and systemd, keep session identity out of Zsh, remove the fake KDE session, and pass the startup Hyprlock password to GNOME Keyring through explicit FA507XV policy.
+2. **Session environment — implemented:** use the standard SDDM/Hyprland login path, propagate its environment once to D-Bus and systemd, keep session identity out of Zsh, remove the fake KDE session, supervise the packaged Polkit agent through its user service, and pass the startup Hyprlock password to GNOME Keyring through explicit FA507XV policy.
 3. **Displays — implemented:** use Hyprland's catch-all preferred-mode, automatic-placement rule for current and hot-plugged outputs, apply one Hyprpaper fallback to every output, and size floating-window helpers from the active monitor instead of a fixed resolution.
 4. **AGS core — implemented:** add a Stow-managed, hotplug-aware per-monitor bar and focused-monitor Apps/Run/Windows/Power launcher with a validated request interface; bundle-check and live-test them before session activation.
 5. **Sidebars — implemented:** add focused-monitor left laptop controls and a right quick-control, calendar, notification-history, and Obsidian day-planner overlay with visibility-scoped polling and native layer animations.
 6. **Cutover — implemented:** move notification ownership to Astal, add binary-safe Clipboard mode, switch startup and keybindings to AGS, validate the full shell under a guarded live preview, and document recovery while retaining Waybar/Rofi/Mako configuration outside normal startup.
 7. **Shell stabilization — implemented:** make every bar group opaque, distinguish both sidebar controls, launch desktop applications with the GJS-compatible empty file list, and move clickable workspace and window focus to Hyprland's Lua dispatcher syntax.
-8. **Coverage:** add reviewed package/service manifests, a machine doctor, and only the stable Code OSS, Dolphin, KDE, and desktop settings that survive the ownership rules above.
+8. **Coverage — implemented:** add reviewed package/service manifests, a read-only machine doctor, and only the stable Code OSS, Dolphin, KDE, Fcitx5, XDG, and host settings that survive the ownership rules above.
 
-Each phase should be usable, tested, documented, and reversible before the next one begins.
+Future additions are maintenance rather than another broad import: benchmark and choose one owner for CPU/power policy before replacing the current `auto-cpufreq` plus `asusd` arrangement, promote a long-tail application setting only after it proves stable, and retire the Waybar/Rofi/Mako recovery set only after enough daily use makes that rollback unnecessary. Never run power-profiles-daemon or TLP alongside `auto-cpufreq`.

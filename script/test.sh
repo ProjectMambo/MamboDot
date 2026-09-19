@@ -210,6 +210,7 @@ shell_rc="$PROJECT_DIR/dot/zsh/.config/zsh/.zshrc"
 grep -Fq 'XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE' "$session_exec"
 [[ "$(grep -Fc 'astal-notifd daemon' "$session_exec")" -eq 1 ]]
 [[ "$(grep -Fc 'env GDK_BACKEND=wayland ags run' "$session_exec")" -eq 1 ]]
+[[ "$(grep -Fc 'systemctl --user start hyprpolkitagent.service' "$session_exec")" -eq 1 ]]
 grep -Fq 'ags request launcher clipboard' "$session_keys"
 grep -Fq 'ags toggle sidebar-left' "$session_keys"
 grep -Fq 'ags toggle sidebar-right' "$session_keys"

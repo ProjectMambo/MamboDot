@@ -46,6 +46,7 @@ for theme in "${themes[@]}"; do
 done
 
 "$SCRIPT_DIR/mambodot.sh" --help | grep -q 'mambodot.sh link PACKAGE'
+"$SCRIPT_DIR/mambodot.sh" --help | grep -q 'mambodot.sh doctor'
 if "$SCRIPT_DIR/mambodot.sh" >/dev/null 2>&1; then
     echo 'mambodot.sh without a command should fail' >&2
     exit 1
@@ -56,6 +57,49 @@ if PATH="$TEST_ROOT/bin:$PATH" "$SCRIPT_DIR/mambodot.sh" update extra >/dev/null
 fi
 if PATH="/usr/bin:/bin" "$SCRIPT_DIR/mambodot.sh" update >/dev/null 2>&1; then
     echo 'mambodot.sh update should require mbcolor' >&2
+    exit 1
+fi
+
+DOCTOR_BIN="$TEST_ROOT/doctor-bin"
+mkdir -p "$DOCTOR_BIN"
+# shellcheck disable=SC2016 # These lines form the generated machine-state test double.
+printf '%s\n' \
+    '#!/usr/bin/env bash' \
+    'set -euo pipefail' \
+    'case "${0##*/}:$*" in' \
+    '    "pacman:-Qqn") source=arch ;;' \
+    '    "pacman:-Qqm") source=aur ;;' \
+    '    "flatpak:list --app --columns=application") source=flatpak ;;' \
+    '    systemctl:*) [[ ${MAMBODOT_TEST_MISSING:-} != "${!#}" ]]; exit ;;' \
+    '    *) exit 2 ;;' \
+    'esac' \
+    'awk -F "\t" -v source="$source" -v missing="${MAMBODOT_TEST_MISSING:-}" '\''$1 == source && $2 != missing { print $2 }'\'' "$MAMBODOT_TEST_PROJECT/manifest/packages.tsv"' \
+    > "$DOCTOR_BIN/mock"
+chmod +x "$DOCTOR_BIN/mock"
+for command in pacman flatpak systemctl; do
+    ln -s mock "$DOCTOR_BIN/$command"
+done
+
+doctor_output="$(PATH="$DOCTOR_BIN:/usr/bin:/bin" "$SCRIPT_DIR/mambodot.sh" doctor)"
+[[ "$doctor_output" == *'Machine matches'* ]]
+if MAMBODOT_TEST_MISSING=hyprland PATH="$DOCTOR_BIN:/usr/bin:/bin" \
+    "$SCRIPT_DIR/mambodot.sh" doctor 2> "$TEST_ROOT/doctor.err"; then
+    echo 'doctor should report manifest drift' >&2
+    exit 1
+fi
+grep -Fq 'Missing arch package: hyprland' "$TEST_ROOT/doctor.err"
+if PATH="$DOCTOR_BIN:/usr/bin:/bin" "$SCRIPT_DIR/mambodot.sh" doctor extra \
+    >/dev/null 2>&1; then
+    echo 'doctor should reject arguments' >&2
+    exit 1
+fi
+LC_ALL=C sort -cu "$PROJECT_DIR/manifest/packages.tsv"
+LC_ALL=C sort -cu "$PROJECT_DIR/manifest/services.tsv"
+awk -F '\t' 'NF != 2 || $1 == "" || $2 == "" { exit 1 }' \
+    "$PROJECT_DIR/manifest/packages.tsv" "$PROJECT_DIR/manifest/services.tsv"
+if grep -Eq $'\t(thermald|illogical-impulse-microtex-git-debug|wl-kbptr-debug)$' \
+    "$PROJECT_DIR/manifest/packages.tsv"; then
+    echo 'package manifest includes a reviewed exclusion' >&2
     exit 1
 fi
 

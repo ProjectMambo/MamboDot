@@ -9,11 +9,13 @@ usage() {
     printf '%s\n' \
         'Usage:' \
         '  mambodot.sh update' \
+        '  mambodot.sh doctor' \
         '  mambodot.sh link PACKAGE...|all' \
         '  mambodot.sh unlink PACKAGE...|all' \
         '' \
         'Commands:' \
         '  update         Regenerate tracked colour artifacts with mbcolor' \
+        '  doctor         Report missing packages and disabled services' \
         '  link PACKAGE   Preview and link selected Stow packages' \
         '  unlink PACKAGE Preview and unlink selected Stow packages'
 }
@@ -180,6 +182,70 @@ update_colours() {
     trap - EXIT
 }
 
+doctor_machine() {
+    local packages="$PROJECT_DIR/manifest/packages.tsv"
+    local services="$PROJECT_DIR/manifest/services.tsv"
+    local manifest source item installed status=0
+    local -a check_command
+    local -A installed_arch=() installed_aur=() installed_flatpak=()
+
+    for manifest in "$packages" "$services"; do
+        if [[ ! -f "$manifest" ]] ||
+            ! awk -F '\t' 'NF != 2 || $1 == "" || $2 == "" { exit 1 }' "$manifest"; then
+            echo "[!] Invalid manifest: $manifest" >&2
+            return 2
+        fi
+    done
+
+    for item in pacman flatpak systemctl; do
+        if ! command -v "$item" >/dev/null 2>&1; then
+            echo "[!] Required command not found: $item" >&2
+            return 1
+        fi
+    done
+
+    while read -r item; do installed_arch["$item"]=1; done < <(pacman -Qqn)
+    while read -r item; do installed_aur["$item"]=1; done < <(pacman -Qqm)
+    while read -r item; do installed_flatpak["$item"]=1; done \
+        < <(flatpak list --app --columns=application)
+
+    while IFS=$'\t' read -r source item; do
+        case "$source" in
+            arch) installed="${installed_arch[$item]+yes}" ;;
+            aur) installed="${installed_aur[$item]+yes}" ;;
+            flatpak) installed="${installed_flatpak[$item]+yes}" ;;
+            *)
+                echo "[!] Unknown package source: $source" >&2
+                return 2
+                ;;
+        esac
+        if [[ -z "$installed" ]]; then
+            echo "[!] Missing $source package: $item" >&2
+            status=1
+        fi
+    done < "$packages"
+
+    while IFS=$'\t' read -r source item; do
+        case "$source" in
+            system) check_command=(systemctl is-enabled --quiet "$item") ;;
+            user) check_command=(systemctl --user is-enabled --quiet "$item") ;;
+            *)
+                echo "[!] Unknown service scope: $source" >&2
+                return 2
+                ;;
+        esac
+        if ! "${check_command[@]}" >/dev/null 2>&1; then
+            echo "[!] Disabled $source service: $item" >&2
+            status=1
+        fi
+    done < "$services"
+
+    if [[ $status -eq 0 ]]; then
+        echo '[*] Machine matches the package and service manifests.'
+    fi
+    return "$status"
+}
+
 case "${1:-}" in
     update)
         shift
@@ -189,6 +255,15 @@ case "${1:-}" in
             exit 2
         fi
         update_colours
+        ;;
+    doctor)
+        shift
+        if [[ $# -ne 0 ]]; then
+            echo '[!] doctor does not accept arguments.' >&2
+            usage >&2
+            exit 2
+        fi
+        doctor_machine
         ;;
     link|unlink)
         command="$1"

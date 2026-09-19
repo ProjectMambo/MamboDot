@@ -214,6 +214,9 @@ ALL_HOME="$TEST_ROOT/all-home"
 mkdir -p "$ALL_HOME"
 HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" link all >/dev/null 2>&1
 [[ -L "$ALL_HOME/.config/ags/app.tsx" ]]
+[[ -L "$ALL_HOME/.config/fcitx5/config" ]]
+[[ -L "$ALL_HOME/.config/dolphinrc" ]]
+[[ -L "$ALL_HOME/.config/kiorc" ]]
 [[ -L "$ALL_HOME/.config/nvim/init.lua" ]]
 [[ -L "$ALL_HOME/.config/waybar/config.jsonc" ]]
 HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
@@ -278,5 +281,25 @@ grep -Eq '^auth[[:space:]]+include[[:space:]]+login$' \
     "$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/hyprlock"
 grep -Eq '^-auth[[:space:]]+optional[[:space:]]+pam_gnome_keyring\.so$' \
     "$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/hyprlock"
+
+LC_ALL=C sort -cu "$PROJECT_DIR/dot/code-oss/.config/Code - OSS/User/extensions.txt"
+grep -Fq 'ms-python.python' \
+    "$PROJECT_DIR/dot/code-oss/.config/Code - OSS/User/extensions.txt"
+fcitx_files="$(find "$PROJECT_DIR/dot/fcitx5" -type f -printf '%P\n' | LC_ALL=C sort)"
+[[ "$fcitx_files" == $'.config/fcitx5/conf/chttrans.conf\n.config/fcitx5/conf/notifications.conf\n.config/fcitx5/conf/pinyin.conf\n.config/fcitx5/conf/punctuation.conf\n.config/fcitx5/config\n.config/fcitx5/profile' ]]
+if grep -Fq 'ViewPropsTimestamp=' "$PROJECT_DIR/dot/dolphin/.config/dolphinrc"; then
+    echo 'Dolphin runtime timestamps must not be tracked' >&2
+    exit 1
+fi
+grep -Fq 'x-scheme-handler/codex=chatgpt.desktop' \
+    "$PROJECT_DIR/dot/xdg/.config/mimeapps.list"
+if grep -Fq 'qmigv' "$PROJECT_DIR/dot/xdg/.config/mimeapps.list"; then
+    echo 'MIME associations contain a misspelled qimgv desktop entry' >&2
+    exit 1
+fi
+grep -Eq '^GTK_IM_MODULE=fcitx$' \
+    "$PROJECT_DIR/system/hosts/fa507xv/etc/environment"
+grep -Eq '^Session=hyprland$' \
+    "$PROJECT_DIR/system/hosts/fa507xv/etc/sddm.conf"
 
 echo 'MamboDot checks passed'

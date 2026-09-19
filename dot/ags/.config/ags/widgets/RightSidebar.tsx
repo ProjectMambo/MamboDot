@@ -9,13 +9,12 @@ import AstalWp from "gi://AstalWp"
 import GLib from "gi://GLib"
 import { parseSchedule, type ScheduleEntry } from "../lib/schedule"
 import type { PanelContent } from "./LeftSidebar"
-
-type Notice = {
-  id: number
-  app_name: string | null
-  summary: string | null
-  body: string | null
-}
+import {
+  clearNotificationHistory,
+  dismissAll,
+  notificationHistory,
+  notifd,
+} from "./Notifications"
 
 type PlannedEntry = ScheduleEntry & { state: string }
 
@@ -47,9 +46,6 @@ export default function RightSidebar(): PanelContent {
   const wifi = network.wifi
   const speaker = AstalWp.get_default().audio.defaultSpeaker
   const [bluetooth, setBluetooth] = createState<boolean | null>(null)
-  const [dnd, setDnd] = createState(false)
-  const [activeNotices, setActiveNotices] = createState(0)
-  const [notices, setNotices] = createState<Notice[]>([])
   const [schedule, setSchedule] = createState<PlannedEntry[]>([])
   const [scheduleStatus, setScheduleStatus] = createState("Loading today’s note…")
   const [message, setMessage] = createState("")
@@ -57,6 +53,9 @@ export default function RightSidebar(): PanelContent {
   let runtimeTimer: ReturnType<typeof interval> | null = null
 
   const volume = createBinding(speaker, "volume")
+  const dnd = createBinding(notifd, "dontDisturb")
+  const activeNotices = createBinding(notifd, "notifications")
+  const notices = notificationHistory((items) => items.slice(0, 5))
   const volumeLabel = createBinding(speaker, "volume")(
     (value) => `${Math.round(value * 100)}%`,
   )
@@ -65,24 +64,10 @@ export default function RightSidebar(): PanelContent {
     : "Unavailable"
 
   async function refreshRuntime() {
-    const results = await Promise.allSettled([
-      execAsync(["bluetoothctl", "show"]),
-      execAsync(["makoctl", "mode"]),
-      execAsync(["makoctl", "list", "-j"]),
-      execAsync(["makoctl", "history", "-j"]),
-    ])
-    const value = (index: number) =>
-      results[index].status === "fulfilled" ? results[index].value : ""
-
-    setBluetooth(value(0) ? /Powered:\s+yes/.test(value(0)) : null)
-    setDnd(value(1).split("\n").includes("do-not-disturb"))
-
     try {
-      setActiveNotices((JSON.parse(value(2) || "[]") as Notice[]).length)
-      setNotices((JSON.parse(value(3) || "[]") as Notice[]).slice(0, 5))
+      setBluetooth(/Powered:\s+yes/.test(await execAsync(["bluetoothctl", "show"])))
     } catch {
-      setActiveNotices(0)
-      setNotices([])
+      setBluetooth(null)
     }
   }
 
@@ -205,10 +190,7 @@ export default function RightSidebar(): PanelContent {
               <button
                 hexpand
                 class={dnd((value) => (value ? "active" : ""))}
-                sensitive={busy((value) => !value)}
-                onClicked={() =>
-                  void action(["makoctl", "mode", "-t", "do-not-disturb"], "Notification mode updated")
-                }
+                onClicked={() => (notifd.dontDisturb = !notifd.dontDisturb)}
               >
                 <box orientation={Gtk.Orientation.VERTICAL}>
                   <image iconName="notifications-disabled-symbolic" />
@@ -290,7 +272,7 @@ export default function RightSidebar(): PanelContent {
           <box class="panel-section" orientation={Gtk.Orientation.VERTICAL} spacing={8}>
             <box>
               <label class="section-title" label="Notifications" xalign={0} hexpand />
-              <label class="section-state" label={activeNotices((value) => `${value} active`)} />
+              <label class="section-state" label={activeNotices((items) => `${items.length} active`)} />
             </box>
             <box class="notification-list" orientation={Gtk.Orientation.VERTICAL} spacing={4}>
               <label
@@ -302,11 +284,11 @@ export default function RightSidebar(): PanelContent {
               <For each={notices}>
                 {(notice) => (
                   <box class="notification-row" orientation={Gtk.Orientation.VERTICAL}>
-                    <label class="notification-app" label={notice.app_name || "Notification"} xalign={0} />
-                    <label label={notice.summary || "Untitled"} wrap xalign={0} />
+                    <label class="notification-app" label={notice.appName} xalign={0} />
+                    <label label={notice.summary} wrap xalign={0} />
                     <label
                       class="notification-body"
-                      label={notice.body || ""}
+                      label={notice.body}
                       visible={Boolean(notice.body)}
                       wrap
                       xalign={0}
@@ -319,17 +301,15 @@ export default function RightSidebar(): PanelContent {
             <box class="button-row" spacing={6}>
               <button
                 hexpand
-                sensitive={busy((value) => !value)}
-                onClicked={() => void action(["makoctl", "dismiss", "--all"], "Active notifications dismissed")}
+                onClicked={dismissAll}
               >
                 <label label="Dismiss active" />
               </button>
               <button
                 hexpand
-                sensitive={busy((value) => !value)}
-                onClicked={() => void action(["makoctl", "restore"], "Last notification restored")}
+                onClicked={clearNotificationHistory}
               >
-                <label label="Restore last" />
+                <label label="Clear history" />
               </button>
             </box>
           </box>

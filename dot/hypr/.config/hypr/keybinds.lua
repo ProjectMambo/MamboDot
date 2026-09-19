@@ -21,18 +21,20 @@ keybind:bind({ mod = { mod } })
     :temp({ mod = { a }, key = { "space" }, dsp = hl.dsp.exec_cmd("fcitx5-remote -s pinyin") })                        -- Language: Mandarin
     :temp({ mod = { s }, key = { "space" }, dsp = hl.dsp.exec_cmd("fcitx5-remote -s mozc") })                          -- Language: Japanese
     :bind({ mod = { mod } })
-    :temp({ key = { "B" }, dsp = hl.dsp.exec_cmd("pgrep waybar && pkill waybar || waybar &") })                        -- Toggle Waybar
-    :temp({ key = { "super_l" }, dsp = hl.dsp.exec_cmd("pkill rofi || rofi -show drun -show-icons -terminal kitty") }) -- App Launcher
+    :temp({ key = { "B" }, dsp = hl.dsp.exec_cmd("ags request bar toggle") })                           -- Toggle Bar
+    :temp({ key = { "bracketleft" }, dsp = hl.dsp.exec_cmd("ags toggle sidebar-left") })                -- Laptop Controls
+    :temp({ key = { "bracketright" }, dsp = hl.dsp.exec_cmd("ags toggle sidebar-right") })              -- Desktop Controls
+    :temp({ key = { "super_l" }, dsp = hl.dsp.exec_cmd("ags request launcher apps") })                  -- App Launcher
     :append({ mod = { c } })
     :temp({                                                                                                            -- Prime-run App Launcher
         key = { "super_l" },
         dsp = f.new()
             :notify("Prime-Run")
-            :exec("pkill rofi || prime-run rofi -show drun -show-icons -terminal kitty")
+            :exec("ags request launcher apps prime")
             :done()
     })
     :append({ mod = { s }, key = { "R" }, dsp = ref.refresh() })                                     -- Refresh Configs
-    :bind({ mod = { mod }, key = { "delete" }, dsp = hl.dsp.exec_cmd("~/.local/bin/powermenu.sh") }) -- Power Menu
+    :bind({ mod = { mod }, key = { "delete" }, dsp = hl.dsp.exec_cmd("ags request launcher power") }) -- Power Menu
     :append({ mod = { s }, dsp = hl.dsp.exec_cmd("hyprlock") })                                      -- Lock
 
 -- --- UTILITIES ---
@@ -43,7 +45,7 @@ keybind:bind()
     :temp({ key = { "XF86MonBrightnessUp" }, dsp = hl.dsp.exec_cmd("lightctl up") })                                    -- Brightness Up
     :temp({ key = { "XF86MonBrightnessDown" }, dsp = hl.dsp.exec_cmd("lightctl down") })                                -- Brightness Down
     :append({ mod = { mod }, rules = { repeating = false } })
-    :temp({ key = { "V" }, dsp = hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy") })          -- Clipboard History
+    :temp({ key = { "V" }, dsp = hl.dsp.exec_cmd("ags request launcher clipboard") })                                  -- Clipboard History
     :temp({ key = { "M" }, dsp = hl.dsp.exec_cmd("volumectl toggle-mute") })                                            -- Volumne Mute
     :temp({ key = { "equal" }, dsp = hl.dsp.exec_cmd("volumectl -u up"), rules = { repeating = true } })                -- Volumne Up
     :temp({ key = { "minus" }, dsp = hl.dsp.exec_cmd("volumectl -u down") })                                            -- Volumne Down

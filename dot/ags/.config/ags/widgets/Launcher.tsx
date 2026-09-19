@@ -6,8 +6,9 @@ import AstalHyprland from "gi://AstalHyprland"
 import Gio from "gi://Gio"
 import GLib from "gi://GLib"
 import Graphene from "gi://Graphene"
+import { copyClipboard, listClipboard, type ClipboardItem } from "../lib/clipboard"
 
-export type LauncherMode = "apps" | "run" | "windows" | "power"
+export type LauncherMode = "apps" | "run" | "windows" | "power" | "clipboard"
 
 export type LauncherController = {
   window: Gtk.Window
@@ -42,11 +43,13 @@ const powerScript = GLib.build_filenamev([
   "bin",
   "powermenu.sh",
 ])
+const clipboardIcon = Gio.ThemedIcon.new("edit-paste-symbolic")
 const modeLabels: Array<[LauncherMode, string]> = [
   ["apps", "Apps"],
   ["run", "Run"],
   ["windows", "Windows"],
   ["power", "Power"],
+  ["clipboard", "Clipboard"],
 ]
 const powerActions = [
   ["lock", "Lock", "Lock this session", "system-lock-screen-symbolic", ""],
@@ -78,19 +81,21 @@ const applications = Gio.AppInfo.get_all()
 
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
 
-function matches(items: Candidate[], text: string) {
+function matches(items: Candidate[], text: string, rank = true) {
   const needle = text.trim().toLocaleLowerCase()
   const terms = needle.split(/\s+/).filter(Boolean)
   if (!needle) return items.slice(0, 9)
 
-  return items
+  const filtered = items
     .filter((candidate) => terms.every((term) => candidate.searchable.includes(term)))
-    .sort((a, b) => {
+  if (rank) {
+    filtered.sort((a, b) => {
       const rankA = a.nameLower.startsWith(needle) ? 0 : 1
       const rankB = b.nameLower.startsWith(needle) ? 0 : 1
       return rankA - rankB || a.name.localeCompare(b.name)
     })
-    .slice(0, 9)
+  }
+  return filtered.slice(0, 9)
 }
 
 export default function Launcher(): LauncherController {
@@ -98,6 +103,9 @@ export default function Launcher(): LauncherController {
   let entry: Gtk.Entry
   let win: Astal.Window
   let pending: Candidate | undefined
+  let clipboardItems: ClipboardItem[] = []
+  let clipboardGeneration = 0
+  let clipboardLoading = false
   const hyprland = AstalHyprland.get_default()
   const [mode, setMode] = createState<LauncherMode>("apps")
   const [prime, setPrime] = createState(false)
@@ -181,6 +189,40 @@ export default function Launcher(): LauncherController {
     }))
   }
 
+  function clipboardCandidates(): Candidate[] {
+    return clipboardItems.map(({ id, preview }) => ({
+      name: preview,
+      description: "Clipboard history",
+      nameLower: preview.toLocaleLowerCase(),
+      searchable: preview.toLocaleLowerCase(),
+      icon: clipboardIcon,
+      run: () => {
+        void copyClipboard(id).catch((error) => {
+          win.visible = true
+          setMessage(`Could not copy clipboard item: ${error instanceof Error ? error.message : String(error)}`)
+        })
+      },
+    }))
+  }
+
+  async function refreshClipboard() {
+    const generation = ++clipboardGeneration
+    clipboardLoading = true
+    search("", "clipboard")
+    try {
+      const items = await listClipboard()
+      if (generation !== clipboardGeneration || mode.peek() !== "clipboard") return
+      clipboardItems = items
+      clipboardLoading = false
+      search(entry.text, "clipboard")
+    } catch (error) {
+      if (generation !== clipboardGeneration || mode.peek() !== "clipboard") return
+      clipboardLoading = false
+      setResults([])
+      setMessage(`Could not load clipboard history: ${error instanceof Error ? error.message : String(error)}`)
+    }
+  }
+
   function search(text: string, selected = mode.peek()) {
     setMessage("")
     const query = text.trim()
@@ -194,9 +236,15 @@ export default function Launcher(): LauncherController {
     } else if (selected === "windows") {
       setResults(matches(windowCandidates(), query))
       setEmpty(query ? "No matching windows" : "No open windows")
-    } else {
+    } else if (selected === "power") {
       setResults(matches(powerCandidates(), query))
       setEmpty(query ? "No matching power actions" : "No power actions available")
+    } else if (clipboardLoading) {
+      setResults([])
+      setEmpty("Loading clipboard history…")
+    } else {
+      setResults(matches(clipboardCandidates(), query, false))
+      setEmpty(query ? "No matching clipboard items" : "No clipboard history")
     }
   }
 
@@ -231,9 +279,15 @@ export default function Launcher(): LauncherController {
       run: "Run a command",
       windows: "Find an open window",
       power: "Find a power action",
+      clipboard: "Search clipboard history",
     })[next])
     entry.set_text("")
-    search("", next)
+    if (next === "clipboard") void refreshClipboard()
+    else {
+      clipboardGeneration++
+      clipboardLoading = false
+      search("", next)
+    }
   }
 
   function onKey(
@@ -297,6 +351,8 @@ export default function Launcher(): LauncherController {
           search(entry.text)
           entry.grab_focus()
         } else {
+          clipboardGeneration++
+          clipboardLoading = false
           entry.set_text("")
           setMode("apps")
           setPrime(false)

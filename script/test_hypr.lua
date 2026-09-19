@@ -58,8 +58,7 @@ assert(table.concat(queried_workspaces, ",") == "12,13,special:temp")
 commands = {}
 require("script.refresh").refresh()()
 assert(table.concat(commands, "\n") == table.concat({
-    "makoctl reload",
-    "pkill -USR2 -x waybar",
+    "ags quit >/dev/null 2>&1; env GDK_BACKEND=wayland ags run",
     "hyprctl reload",
 }, "\n"))
 

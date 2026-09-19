@@ -5,8 +5,7 @@ function M.refresh()
     return f.new()
         :notify("Refreshing...")
         :exec({
-            "makoctl reload",
-            "pkill -USR2 -x waybar",
+            "ags quit >/dev/null 2>&1; env GDK_BACKEND=wayland ags run",
             "hyprctl reload",
         })
         :done()

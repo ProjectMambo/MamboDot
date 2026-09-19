@@ -11,7 +11,8 @@ hl.on("hyprland.start",
     })
     :exec({
         "playerctld daemon",
-        "hyprlock", "waybar", "hyprpaper", "hypridle", "avizo-service", "mako",
+        "hyprlock", "astal-notifd daemon", "env GDK_BACKEND=wayland ags run",
+        "hyprpaper", "hypridle", "avizo-service",
         "/usr/lib/hyprpolkitagent/hyprpolkitagent",
         "wl-paste --type text --watch cliphist store",
         "wl-paste --type image --watch cliphist store",

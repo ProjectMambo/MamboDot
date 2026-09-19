@@ -12,7 +12,8 @@ cleanup() {
 }
 trap cleanup EXIT
 
-mkdir -p "$TEST_ROOT/bin"
+mkdir -p "$TEST_ROOT/bin" "$TEST_ROOT/runtime"
+chmod 700 "$TEST_ROOT/runtime"
 # shellcheck disable=SC2016 # These lines form the generated mbcolor test double.
 printf '%s\n' \
     '#!/usr/bin/env bash' \
@@ -180,20 +181,33 @@ ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" 
 grep -Fq 'GLib.shell_parse_argv' "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'client.focus()' "$ags_config/widgets/Launcher.tsx"
 grep -Fq -- '--device=nvidia_wmi_ec_backlight' "$ags_config/widgets/LeftSidebar.tsx"
+grep -Fq 'ags request bar toggle | launcher apps [prime]|run|windows|power|clipboard' \
+    "$ags_config/app.tsx"
 ags bundle "$ags_config/lib/schedule.ts" "$TEST_ROOT/mambodot-schedule-test" \
     --root "$ags_config" --gtk 4 >/dev/null
-MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-schedule-test"
+XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-schedule-test"
+ags bundle "$ags_config/lib/clipboard.ts" "$TEST_ROOT/mambodot-clipboard-test" \
+    --root "$ags_config" --gtk 4 >/dev/null
+XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-clipboard-test"
 
 lua "$SCRIPT_DIR/test_hypr.lua" "$PROJECT_DIR"
 
 session_exec="$PROJECT_DIR/dot/hypr/.config/hypr/exec.lua"
+session_keys="$PROJECT_DIR/dot/hypr/.config/hypr/keybinds.lua"
+session_refresh="$PROJECT_DIR/dot/hypr/.config/hypr/script/refresh.lua"
 session_vars="$PROJECT_DIR/dot/hypr/.config/hypr/variables.lua"
 shell_rc="$PROJECT_DIR/dot/zsh/.config/zsh/.zshrc"
 
 [[ "$(grep -Fc 'dbus-update-activation-environment --systemd' "$session_exec")" -eq 1 ]]
 grep -Fq 'XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE' "$session_exec"
+[[ "$(grep -Fc 'astal-notifd daemon' "$session_exec")" -eq 1 ]]
+[[ "$(grep -Fc 'env GDK_BACKEND=wayland ags run' "$session_exec")" -eq 1 ]]
+grep -Fq 'ags request launcher clipboard' "$session_keys"
+grep -Fq 'ags toggle sidebar-left' "$session_keys"
+grep -Fq 'ags toggle sidebar-right' "$session_keys"
 
 if grep -Eq 'systemctl --user import-environment|hyprland-session.target' "$session_exec" ||
+    grep -Eq '\b(mako|makoctl|waybar|rofi)\b' "$session_exec" "$session_keys" "$session_refresh" ||
     grep -Eq 'XDG_CURRENT_DESKTOP|XDG_SESSION_TYPE|KDE_SESSION_VERSION' "$session_vars" ||
     grep -Eq 'GTK_IM_MODULE|QT_IM_MODULE|XMODIFIERS|XDG_CURRENT_DESKTOP' "$shell_rc"; then
     echo 'session environment ownership regressed' >&2

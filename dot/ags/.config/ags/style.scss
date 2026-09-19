@@ -447,6 +447,68 @@ window.Launcher {
   }
 }
 
+window.Notifications {
+  background: transparent;
+  color: $text;
+  font-family: "MamboFont", "JetBrainsMono Nerd Font Mono", monospace;
+  font-size: 14px;
+
+  .notification-popups {
+    min-width: 380px;
+  }
+
+  .notification-popup {
+    padding: 12px;
+    border: 1px solid $surface-strong;
+    border-left: 3px solid $focus;
+    border-radius: 0;
+    background: rgba($background, 0.98);
+    box-shadow: none;
+  }
+
+  .notification-popup.low {
+    border-left-color: $surface-strong;
+  }
+
+  .notification-popup.critical {
+    border-left-color: $brand;
+  }
+
+  .notification-popup-app,
+  .notification-popup-body {
+    color: $text-subtle;
+    font-size: 12px;
+  }
+
+  .notification-popup-summary {
+    color: $text;
+    font-weight: 700;
+  }
+
+  button {
+    min-width: 0;
+    padding: 5px 8px;
+    border: 1px solid $surface-strong;
+    border-radius: 0;
+    background: $surface;
+    color: $text-muted;
+    box-shadow: none;
+    transition: background-color $motion, color $motion, border-color $motion;
+  }
+
+  button:hover,
+  button:focus {
+    border-color: $focus;
+    background: $surface-strong;
+    color: $text;
+  }
+
+  .notification-popup-dismiss {
+    border: 0;
+    background: transparent;
+  }
+}
+
 tooltip {
   border: 1px solid $surface-strong;
   border-radius: 0;

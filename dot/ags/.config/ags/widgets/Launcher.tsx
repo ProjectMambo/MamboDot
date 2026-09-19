@@ -123,7 +123,7 @@ export default function Launcher(): LauncherController {
       context.setenv("__VK_LAYER_NV_optimus", "NVIDIA_only")
       context.setenv("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
     }
-    return candidate.info.launch(null, context)
+    return candidate.info.launch([], context)
   }
 
   function applicationCandidates(): Candidate[] {
@@ -167,7 +167,12 @@ export default function Launcher(): LauncherController {
           nameLower: name.toLocaleLowerCase(),
           searchable: `${name}\n${description}`.toLocaleLowerCase(),
           icon: windowIcon,
-          run: () => client.focus(),
+          run: () => {
+            const response = hyprland.message(
+              `dispatch hl.dsp.focus({ window = "address:0x${client.address}" })`,
+            )
+            if (response.trim() !== "ok") throw Error(response.trim())
+          },
         }
       })
   }

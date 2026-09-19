@@ -30,7 +30,7 @@ window.Bar {
   .bar-section {
     min-height: 32px;
     padding: 0 4px;
-    background: transparent;
+    background: $background;
   }
 
   button {
@@ -67,13 +67,20 @@ window.Bar {
     background: $brand-active;
   }
 
-  .sidebar-button {
-    color: $text-muted;
+  .sidebar-button.laptop-control {
+    background: $focus;
+    color: $on-brand;
+  }
+
+  .sidebar-button.quick-controls {
+    background: $network;
+    color: $on-brand;
   }
 
   .sidebar-button:hover,
   .sidebar-button:focus {
-    color: $brand-hover;
+    background: $surface-strong;
+    color: $text;
   }
 
   .workspaces button {

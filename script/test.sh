@@ -179,7 +179,15 @@ ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null
 [[ -x "$TEST_ROOT/mambodot-ags" ]]
 grep -Fq 'GLib.shell_parse_argv' "$ags_config/widgets/Launcher.tsx"
-grep -Fq 'client.focus()' "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'candidate.info.launch([], context)' "$ags_config/widgets/Launcher.tsx"
+grep -Fq "hl.dsp.focus({ window = \"address:0x\${client.address}\" })" \
+    "$ags_config/widgets/Launcher.tsx"
+grep -Fq "hl.dsp.focus({ workspace = \${id} })" "$ags_config/widgets/Bar.tsx"
+if grep -Fq 'hyprland.dispatch(' "$ags_config/widgets/Bar.tsx" ||
+    grep -Fq 'client.focus()' "$ags_config/widgets/Launcher.tsx"; then
+    echo 'AGS must use Hyprland Lua dispatch syntax' >&2
+    exit 1
+fi
 grep -Fq -- '--device=nvidia_wmi_ec_backlight' "$ags_config/widgets/LeftSidebar.tsx"
 grep -Fq 'ags request bar toggle | launcher apps [prime]|run|windows|power|clipboard' \
     "$ags_config/app.tsx"

@@ -28,7 +28,9 @@ function Workspaces({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           <button
             class={active((activeId) => (activeId === id ? "active" : ""))}
             tooltipText={`Workspace ${index + 1}`}
-            onClicked={() => hyprland.dispatch("workspace", String(id))}
+            onClicked={() => void hyprland.message(
+              `dispatch hl.dsp.focus({ workspace = ${id} })`,
+            )}
           >
             <label label={String(index + 1)} />
           </button>
@@ -152,7 +154,7 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             <label label="󰣇" />
           </button>
           <button
-            class="sidebar-button"
+            class="sidebar-button laptop-control"
             tooltipText="Laptop controls"
             onClicked={() => app.toggle_window("sidebar-left")}
           >
@@ -176,7 +178,7 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           <Audio />
           <Battery />
           <button
-            class="sidebar-button"
+            class="sidebar-button quick-controls"
             tooltipText="Today and quick controls"
             onClicked={() => app.toggle_window("sidebar-right")}
           >

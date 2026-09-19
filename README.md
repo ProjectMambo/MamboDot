@@ -23,13 +23,13 @@ This is a personal workstation profile rather than a portable distribution or un
 | Read the canonical Wiki documentation | [projectmambo.org/mambodot/](https://projectmambo.org/mambodot/) |
 | Review requirements and install safely | [Installation and Safety](docs/Installation%20and%20Safety.md) |
 | Learn desktop shortcuts | [Keybinds](docs/Keybinds.md) |
-| Link configuration, preview AGS, regenerate colours, or use `tp` | [Command Reference](docs/Commands.md) |
-| Review implemented milestones and planned cutover and coverage work | [Roadmap](docs/Roadmap.md) |
+| Link configuration, control or recover AGS, regenerate colours, or use `tp` | [Command Reference](docs/Commands.md) |
+| Review implemented milestones and planned coverage work | [Roadmap](docs/Roadmap.md) |
 
 ## Configuration scope
 
 - Hyprland session, hotplug display layout, idle, lock, wallpaper, window, workspace, group, input, and launcher behavior.
-- A parallel AGS 3 per-monitor bar, Apps/Run/Windows/Power launcher, laptop-control sidebar, and general/day-planner sidebar, plus the active Waybar/Rofi/Mako fallback configuration.
+- The active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, laptop-control sidebar, general/day-planner sidebar, and native notification UI, with Waybar/Rofi/Mako retained for manual recovery.
 - Kitty, Dolphin, Zsh, Neovim, Code OSS, notification, and desktop-integration settings.
 - MamboColour-generated Hyprland and Waybar palettes.
 - Screenshot, clipboard, media, cursor, floating-window, power, and application-launcher helpers.
@@ -55,7 +55,7 @@ Adjust these before activating the configuration on another machine.
 git clone https://github.com/ProjectMambo/MamboDot.git "$HOME/ProjectMambo/MamboDot"
 cd "$HOME/ProjectMambo/MamboDot"
 ./script/test.sh
-./script/mambodot.sh link hypr kitty zsh
+./script/mambodot.sh link hypr ags script kitty zsh
 ```
 
 Replace that package list with the configuration you reviewed. Do not use `all` before reading [Installation and Safety](docs/Installation%20and%20Safety.md). Existing conflicting files are left unchanged and must be resolved deliberately.
@@ -64,7 +64,7 @@ Replace that package list with the configuration you reviewed. Do not use `all` 
 
 ```text
 dot/<package>/                 Stow packages rooted at the home directory
-dot/ags/.config/ags/          parallel AGS bar, launcher, sidebars, and square Mambo styling
+dot/ags/.config/ags/          active AGS bar, launcher, sidebars, notifications, and square Mambo styling
 dot/hypr/.config/hypr/        Lua Hyprland entry, modules, rules, and assets
 dot/zsh/.config/zsh/          Zsh configuration and local bookmark storage
 script/mambodot.sh            safe link, unlink, and colour-update command

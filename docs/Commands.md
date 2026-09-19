@@ -1,6 +1,6 @@
 ---
 title: MamboDot command reference
-description: Link configuration, preview AGS, run safe power actions, regenerate colour artifacts, install editor extensions, and use the Zsh directory-bookmark helper.
+description: Link configuration, control or recover AGS, run safe power actions, regenerate colour artifacts, install editor extensions, and use the Zsh directory-bookmark helper.
 order: 20
 ---
 
@@ -48,25 +48,22 @@ Run the regression suite after changing the command or its tests:
 
 The check covers guarded Stow deployment, stubs `mbcolor` with copies of the current tracked model, verifies the exact staged calls, checks usage failures, and runs focused Lua regressions. It is not currently run by CI.
 
-## AGS preview
+## AGS desktop shell
 
-AGS is tracked as a complete Stow package but remains parallel to the current Waybar/Rofi session. Link it explicitly, then use a subshell that restores Waybar whenever the foreground AGS preview exits:
+Hyprland starts a standalone Astal notification daemon and the Stow-managed AGS shell as ordinary session processes:
 
 ```bash
-./script/mambodot.sh link ags
-(
-  trap 'waybar >/dev/null 2>&1 &' EXIT
-  pkill -x waybar || true
-  env GDK_BACKEND=wayland ags run
-)
+astal-notifd daemon
+env GDK_BACKEND=wayland ags run
 ```
 
-While that preview is running, another terminal can control the application launcher, either sidebar, or the instance:
+The standalone daemon remains the notification owner while AGS restarts and AGS acts as its visual frontend. No systemd user service is involved. Control the bar, launcher, sidebars, or instance from a terminal with:
 
 ```bash
 ags toggle launcher
 ags toggle sidebar-left
 ags toggle sidebar-right
+ags request bar toggle
 ags list
 ags quit
 ```
@@ -79,13 +76,30 @@ ags request launcher apps prime
 ags request launcher run
 ags request launcher windows
 ags request launcher power
+ags request launcher clipboard
 ```
 
-Apps searches visible desktop entries; `prime` launches the selected application with the dedicated-GPU environment. Run parses a command into an argument vector and does not invoke a shell, so pipes, redirects, globs, and substitutions are not expanded. Windows focuses a mapped Hyprland client. Power exposes only the fixed actions documented below. Use `Ctrl-1` through `Ctrl-4` to change mode and `Alt-1` through `Alt-9` to activate a visible result.
+Apps searches visible desktop entries; `prime` launches the selected application with the dedicated-GPU environment. Run parses a command into an argument vector and does not invoke a shell, so pipes, redirects, globs, and substitutions are not expanded. Windows focuses a mapped Hyprland client. Power exposes only the fixed actions documented below. Clipboard searches newest-first Cliphist entries and copies the selected bytes unchanged, including images. Use `Ctrl-1` through `Ctrl-5` to change mode and `Alt-1` through `Alt-9` to activate a visible result.
 
-The bar exposes the same three toggles. The launcher and sidebars follow the focused monitor, exclude one another, and close with Escape or an outside click. Sidebar telemetry refreshes only while its panel is visible. `ags quit` or `Ctrl-C` ends the preview and triggers the subshell's Waybar restore; Rofi remains available throughout. The forced GTK backend is intentional because an XWayland-launched terminal may otherwise make GTK layer-shell unavailable.
+The bar exposes the same three shell toggles. The launcher and sidebars follow the focused monitor, exclude one another, and close with Escape or an outside click. Sidebar telemetry refreshes only while its panel is visible. The forced GTK backend is intentional because an XWayland-launched terminal may otherwise make GTK layer-shell unavailable.
 
-The left panel uses `asusctl` and `supergfxctl` without `sudo`; graphics-mode changes require an explicit second confirmation and never log out or reboot automatically. Brightness controls target `nvidia_wmi_ec_backlight` explicitly and let `brightnessctl` use the active session's systemd-logind `SetBrightness` path; no repository-managed backlight permission is required. The right panel reads Mako history and today's Obsidian `## Schedule` section without taking notification ownership or writing to the vault.
+The left panel uses `asusctl` and `supergfxctl` without `sudo`; graphics-mode changes require an explicit second confirmation and never log out or reboot automatically. Brightness controls target `nvidia_wmi_ec_backlight` explicitly and let `brightnessctl` use the active session's systemd-logind `SetBrightness` path; no repository-managed backlight permission is required. The right panel reads today's Obsidian `## Schedule` section without writing to the vault and shows the five newest notifications retained by the current AGS process.
+
+Top-right notification popups support sender actions and dismissal. Do-not-disturb suppresses and clears popups while notifications continue into active state and session history. Resolved notifications cannot be restored because their sender context may no longer exist, and history intentionally resets with AGS rather than persisting notification contents.
+
+### Manual recovery
+
+Waybar, Rofi, and Mako remain linked as a reviewed recovery shell. From `SUPER Q`, stop AGS and Astal, then start the old bar and notification daemon; Rofi can be opened directly:
+
+```bash
+ags quit
+pkill -x astal-notifd
+env GDK_BACKEND=wayland waybar >/dev/null 2>&1 &
+mako >/dev/null 2>&1 &
+rofi -show drun -show-icons -terminal kitty
+```
+
+Restore the managed shell with a fresh login. For an immediate retry, stop Waybar and Mako, start `astal-notifd daemon`, then run AGS with `GDK_BACKEND=wayland`. Mako and Astal must not compete for `org.freedesktop.Notifications`.
 
 ## Power actions
 

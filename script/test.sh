@@ -103,6 +103,30 @@ if grep -Eq $'\t(thermald|illogical-impulse-microtex-git-debug|wl-kbptr-debug)$'
     exit 1
 fi
 
+CODE_BIN="$TEST_ROOT/code-bin"
+CODE_LOG="$TEST_ROOT/code.log"
+CODE_INSTALLER="$PROJECT_DIR/script/code-oss/install_extensions.sh"
+mkdir -p "$CODE_BIN"
+# shellcheck disable=SC2016 # These lines form the generated Code OSS test double.
+printf '%s\n' \
+    '#!/usr/bin/env bash' \
+    'set -euo pipefail' \
+    'case "${1:-}" in' \
+    '    --list-extensions) grep -Fvx "${MAMBODOT_TEST_MISSING:-}" "$MAMBODOT_TEST_EXTENSIONS" ;;' \
+    '    --install-extension) printf "%s\n" "$2" >> "$MAMBODOT_TEST_LOG" ;;' \
+    '    *) exit 2 ;;' \
+    'esac' \
+    > "$CODE_BIN/code-oss"
+chmod +x "$CODE_BIN/code-oss"
+MAMBODOT_TEST_EXTENSIONS="$PROJECT_DIR/dot/code-oss/.config/Code - OSS/User/extensions.txt" \
+MAMBODOT_TEST_MISSING=ms-python.python MAMBODOT_TEST_LOG="$CODE_LOG" \
+    PATH="$CODE_BIN:/usr/bin:/bin" "$CODE_INSTALLER" >/dev/null
+[[ "$(cat "$CODE_LOG")" == ms-python.python ]]
+if PATH="$CODE_BIN:/usr/bin:/bin" "$CODE_INSTALLER" extra >/dev/null 2>&1; then
+    echo 'Code OSS installer should reject arguments' >&2
+    exit 1
+fi
+
 POWER_BIN="$TEST_ROOT/power-bin"
 POWER_LOG="$TEST_ROOT/power.log"
 POWER_MENU="$PROJECT_DIR/dot/script/.local/bin/powermenu.sh"
@@ -219,6 +243,8 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" link all >/dev/null 2>&1
 [[ -L "$ALL_HOME/.config/kiorc" ]]
 [[ -L "$ALL_HOME/.config/nvim/init.lua" ]]
 [[ -L "$ALL_HOME/.config/waybar/config.jsonc" ]]
+shell_path="$(ZDOTDIR="$ALL_HOME" PATH=/usr/bin zsh -c 'print -r -- "$PATH"')"
+[[ "$shell_path" == "$HOME/.local/bin:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/.local/share/JetBrains/Toolbox/scripts:/usr/bin" ]]
 HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 [[ ! -e "$ALL_HOME/.config/nvim/init.lua" ]]
 
@@ -255,6 +281,7 @@ shell_rc="$PROJECT_DIR/dot/zsh/.config/zsh/.zshrc"
 
 [[ "$(grep -Fc 'dbus-update-activation-environment --systemd' "$session_exec")" -eq 1 ]]
 grep -Fq 'XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE' "$session_exec"
+grep -Fq -- '--systemd PATH XDG_CURRENT_DESKTOP' "$session_exec"
 [[ "$(grep -Fc 'astal-notifd daemon' "$session_exec")" -eq 1 ]]
 [[ "$(grep -Fc 'env GDK_BACKEND=wayland ags run' "$session_exec")" -eq 1 ]]
 [[ "$(grep -Fc 'systemctl --user start hyprpolkitagent.service' "$session_exec")" -eq 1 ]]

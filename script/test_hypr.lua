@@ -4,8 +4,12 @@ package.path = root .. "/dot/hypr/.config/hypr/?.lua;" .. package.path
 local commands = {}
 local notifications = {}
 local queried_workspaces = {}
+local environment = {}
 
 hl = {
+    env = function(key, value)
+        environment[key] = value
+    end,
     dispatch = function(command)
         table.insert(commands, command)
         return command
@@ -30,6 +34,24 @@ hl = {
         end,
     },
 }
+
+local variables = require("variables")
+local home = assert(os.getenv("HOME"))
+local user_paths = {
+    home .. "/.local/bin",
+    home .. "/.npm-global/bin",
+    home .. "/.cargo/bin",
+    home .. "/.local/share/JetBrains/Toolbox/scripts",
+}
+local path_counts = {}
+for path in variables.env.PATH:gmatch("[^:]+") do
+    path_counts[path] = (path_counts[path] or 0) + 1
+end
+assert(variables.env.PATH:sub(1, #table.concat(user_paths, ":")) == table.concat(user_paths, ":"))
+for _, path in ipairs(user_paths) do
+    assert(path_counts[path] == 1)
+end
+assert(environment.PATH == variables.env.PATH)
 
 local helper = require("script.helper")
 assert(helper.safe(2) == "12")

@@ -4,6 +4,21 @@
 local home = os.getenv("HOME")
 local M = {}
 
+local path_parts = {}
+local seen_paths = {}
+for path in (table.concat({
+    home .. "/.local/bin",
+    home .. "/.npm-global/bin",
+    home .. "/.cargo/bin",
+    home .. "/.local/share/JetBrains/Toolbox/scripts",
+    os.getenv("PATH") or "",
+}, ":")):gmatch("[^:]+") do
+    if not seen_paths[path] then
+        table.insert(path_parts, path)
+        seen_paths[path] = true
+    end
+end
+
 -- Helper to recursively load themes
 local function load_themes(t)
     for k, v in pairs(t) do
@@ -24,6 +39,7 @@ M.env = {
         home .. "/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share",
     XDG_CACHE_HOME              = home .. "/.cache",
     XDG_MENU_PREFIX             = "arch-",
+    PATH                        = table.concat(path_parts, ":"),
 
     -- KDE/Qt Integration (Fixes theme/contrast issues)
     QT_QPA_PLATFORMTHEME        = "kde",

@@ -24,6 +24,7 @@ keybind:bind({ mod = { mod } })
     :temp({ key = { "B" }, dsp = hl.dsp.exec_cmd("ags request bar toggle") })                           -- Toggle Bar
     :temp({ key = { "bracketleft" }, dsp = hl.dsp.exec_cmd("ags toggle sidebar-left") })                -- Laptop Controls
     :temp({ key = { "bracketright" }, dsp = hl.dsp.exec_cmd("ags toggle sidebar-right") })              -- Desktop Controls
+    :temp({ key = { "slash" }, dsp = hl.dsp.exec_cmd("ags toggle keybinds") })                           -- Keybind Cheatsheet
     :temp({ key = { "super_l" }, dsp = hl.dsp.exec_cmd("ags request launcher apps") })                  -- App Launcher
     :append({ mod = { c } })
     :temp({                                                                                                            -- Prime-run App Launcher

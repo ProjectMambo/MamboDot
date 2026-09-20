@@ -270,6 +270,9 @@ XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-schedu
 ags bundle "$ags_config/lib/clipboard.ts" "$TEST_ROOT/mambodot-clipboard-test" \
     --root "$ags_config" --gtk 4 >/dev/null
 XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-clipboard-test"
+ags bundle "$ags_config/lib/keybinds.ts" "$TEST_ROOT/mambodot-keybinds-test" \
+    --root "$ags_config" --gtk 4 >/dev/null
+XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-keybinds-test"
 
 lua "$SCRIPT_DIR/test_hypr.lua" "$PROJECT_DIR"
 
@@ -288,6 +291,8 @@ grep -Fq -- '--systemd PATH XDG_CURRENT_DESKTOP' "$session_exec"
 grep -Fq 'ags request launcher clipboard' "$session_keys"
 grep -Fq 'ags toggle sidebar-left' "$session_keys"
 grep -Fq 'ags toggle sidebar-right' "$session_keys"
+grep -Fq 'ags toggle keybinds' "$session_keys"
+grep -Fq 'Toggle keybind sheet' "$PROJECT_DIR/docs/Keybinds.md"
 
 if grep -Eq 'systemctl --user import-environment|hyprland-session.target' "$session_exec" ||
     grep -Eq '\b(mako|makoctl|waybar|rofi)\b' "$session_exec" "$session_keys" "$session_refresh" ||

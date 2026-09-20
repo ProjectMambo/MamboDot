@@ -3,6 +3,7 @@ import app from "ags/gtk4/app"
 import Gtk from "gi://Gtk?version=4.0"
 import style from "./style.scss"
 import Bar from "./widgets/Bar"
+import Keybinds from "./widgets/Keybinds"
 import Launcher, { type LauncherController, type LauncherMode } from "./widgets/Launcher"
 import Notifications from "./widgets/Notifications"
 import Sidebars from "./widgets/Sidebars"
@@ -44,6 +45,7 @@ app.start({
   main() {
     launcher = Launcher()
     app.add_window(launcher.window)
+    app.add_window(Keybinds())
     app.add_window(Notifications())
     Sidebars().forEach((window) => app.add_window(window))
 

@@ -52,7 +52,9 @@ export default function Sidebars(): Gtk.Window[] {
             }
             sibling().visible = false
             const launcher = app.get_window("launcher")
+            const keybinds = app.get_window("keybinds")
             if (launcher) launcher.visible = false
+            if (keybinds) keybinds.visible = false
             backdrop.visible = true
             content.start()
           } else {

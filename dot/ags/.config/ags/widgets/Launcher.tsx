@@ -348,8 +348,10 @@ export default function Launcher(): LauncherController {
         if (visible) {
           const left = app.get_window("sidebar-left")
           const right = app.get_window("sidebar-right")
+          const keybinds = app.get_window("keybinds")
           if (left) left.visible = false
           if (right) right.visible = false
+          if (keybinds) keybinds.visible = false
           const focused = hyprland?.focusedMonitor.name
           const monitor = app.get_monitors().find(({ connector }) => connector === focused)
           if (monitor) win.gdkmonitor = monitor

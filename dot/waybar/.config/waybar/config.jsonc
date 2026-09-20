@@ -1,7 +1,6 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 34,
     "margin-top": 4,
     "margin-left": 4,
     "margin-right": 4,
@@ -82,12 +81,7 @@
     },
 
     //--- RIGHT ---
-    "modules-right": ["tray", "group/status"],
-
-    "tray": {
-        "icon-size": 18,
-        "spacing": 0,
-    },
+    "modules-right": ["group/status"],
 
     "custom/cam": {
         "format": "<span font='18' rise='-3000'>󰄀</span>",
@@ -104,7 +98,7 @@
     "group/status": {
         "orientation": "horizontal",
         "modules": [
-            "custom/uptime",
+            "idle_inhibitor",
             "network",
             "bluetooth",
             "pulseaudio",
@@ -112,14 +106,14 @@
         ],
     },
 
-    "custom/uptime": {
-        "exec": "~/.config/waybar/script/uptime.sh",
-        "return-type": "json",
-        "interval": 60,
-        "on-click": "~/.config/waybar/script/uptime.sh --toggle && pkill -RTMIN+8 waybar",
-        "signal": 8,
-        "format": "<span font='JetBrainsMono Nerd Font Mono 18' rise='-3000'>{}</span>",
-        "tooltip": true,
+    "idle_inhibitor": {
+        "format": "<span font='18' rise='-3000'>{icon}</span>",
+        "format-icons": {
+            "activated": "",
+            "deactivated": "",
+        },
+        "tooltip-format-activated": "Idle inhibitor on",
+        "tooltip-format-deactivated": "Idle inhibitor off",
     },
 
     "network": {

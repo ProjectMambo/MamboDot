@@ -320,6 +320,17 @@ grep -Fq 'ags toggle sidebar-left' "$session_keys"
 grep -Fq 'ags toggle sidebar-right' "$session_keys"
 grep -Fq 'ags toggle keybinds' "$session_keys"
 grep -Fq 'Toggle keybind sheet' "$PROJECT_DIR/docs/Keybinds.md"
+recovery_bar="$PROJECT_DIR/dot/waybar/.config/waybar/config.jsonc"
+grep -Fq '"idle_inhibitor"' "$recovery_bar"
+if grep -Fq '"tray"' "$recovery_bar"; then
+    echo 'Waybar recovery cannot share one tray across multiple output bars' >&2
+    exit 1
+fi
+if grep -REq 'custom/uptime|pkill[[:space:]]+(-x[[:space:]]+)?hypridle' \
+    "$PROJECT_DIR/dot/waybar"; then
+    echo 'Waybar recovery must use its native idle inhibitor' >&2
+    exit 1
+fi
 
 if grep -Eq 'systemctl --user import-environment|hyprland-session.target' "$session_exec" ||
     grep -Eq '\b(mako|makoctl|waybar|rofi)\b' "$session_exec" "$session_keys" "$session_refresh" ||

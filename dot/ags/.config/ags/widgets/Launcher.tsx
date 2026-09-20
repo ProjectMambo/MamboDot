@@ -53,8 +53,8 @@ const modeLabels: Array<[LauncherMode, string]> = [
 ]
 const powerActions = [
   ["lock", "Lock", "Lock this session", "system-lock-screen-symbolic", ""],
-  ["suspend", "Suspend", "Suspend this computer", "system-suspend-symbolic", "Suspend now?"],
-  ["hibernate", "Hibernate", "Hibernate this computer", "system-hibernate-symbolic", "Hibernate now?"],
+  ["suspend", "Suspend", "Suspend this computer", "media-playback-pause-symbolic", "Suspend now?"],
+  ["hibernate", "Hibernate", "Hibernate this computer", "drive-harddisk-symbolic", "Hibernate now?"],
   ["logout", "Log out", "End this Hyprland session", "system-log-out-symbolic", "Log out now?"],
   ["reboot", "Restart", "Restart this computer", "system-reboot-symbolic", "Restart now?"],
   ["windows", "Restart to Windows", "Select Windows for the next boot", "computer-symbolic", "Restart into Windows now?"],

@@ -35,8 +35,7 @@
 }
 
 #hardware,
-#status,
-#tray {
+#status {
     background-color: @border;
     padding: 0;
     margin: 4px 2px;
@@ -127,50 +126,12 @@
     margin: 0;
 }
 
-/* --- Tray --- */
-#tray {
-    margin-left: 2px;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-#tray > widget > * {
-    padding: 0 8px;
-    margin: 0;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-#tray > widget:hover > * {
-    background-color: @fg_muted;
-    box-shadow: none;
-    text-shadow: none;
-    transition: none;
-}
-
-/* Tray dropdown menu */
-#tray menu {
-    background: @bg;
-    border: 2px solid @dried_bark;
-    padding: 4px;
-}
-#tray menu menuitem {
-    color: @burnt_charcoal;
-    padding: 4px 8px;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-#tray menu menuitem:hover {
-    background-color: @fg_muted;
-    color: @crushed_clay;
-    transition: none;
-}
-#tray menu separator {
-    background-color: @border;
-    margin: 4px 0;
-}
-
-#custom-uptime {
-    color: @wild_plum;
-    padding: 0 8px;
-}
-#custom-uptime.disabled {
+#idle_inhibitor {
     color: @dry_straw;
+    padding: 0 8px;
+}
+#idle_inhibitor.activated {
+    color: @wild_plum;
 }
 
 /* Network States */
@@ -232,7 +193,7 @@
 #cpu,
 #disk,
 #custom-gpu,
-#custom-uptime,
+#idle_inhibitor,
 #network,
 #bluetooth,
 #pulseaudio,
@@ -246,7 +207,7 @@
 #cpu:hover,
 #disk:hover,
 #custom-gpu:hover,
-#custom-uptime:hover,
+#idle_inhibitor:hover,
 #network:hover,
 #bluetooth:hover,
 #pulseaudio:hover,
@@ -273,11 +234,11 @@
     color: @berry_bramble;
 }
 
-#custom-uptime:hover {
-    color: @dusk_shadow;
-}
-#custom-uptime.disabled:hover {
+#idle_inhibitor:hover {
     color: @roasted_cumin;
+}
+#idle_inhibitor.activated:hover {
+    color: @dusk_shadow;
 }
 
 #network:hover {

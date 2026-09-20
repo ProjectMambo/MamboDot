@@ -187,6 +187,7 @@ export default function Launcher(): LauncherController {
       confirm: confirm || undefined,
       run: () => {
         void execAsync([powerScript, id]).catch((error) => {
+          selectMode("power")
           win.visible = true
           setMessage(`Could not ${name.toLocaleLowerCase()}: ${error instanceof Error ? error.message : String(error)}`)
         })

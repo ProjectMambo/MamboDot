@@ -122,6 +122,11 @@ window.Bar {
     color: $audio;
   }
 
+  .idle-inhibitor.active {
+    background: $focus;
+    color: $on-brand;
+  }
+
   .battery {
     padding: 0 7px;
     color: $success;

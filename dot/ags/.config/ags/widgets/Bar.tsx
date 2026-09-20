@@ -1,4 +1,4 @@
-import { For, createBinding, onCleanup } from "ags"
+import { For, createBinding, createState, onCleanup } from "ags"
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process"
@@ -12,6 +12,39 @@ import GLib from "gi://GLib"
 import Pango from "gi://Pango"
 
 const hyprland = AstalHyprland.get_default()!
+const [idleInhibited, setIdleInhibited] = createState(false)
+let idleInhibitCookie = 0
+
+function IdleInhibitor() {
+  function toggle() {
+    if (idleInhibitCookie) {
+      app.uninhibit(idleInhibitCookie)
+      idleInhibitCookie = 0
+    } else {
+      idleInhibitCookie = app.inhibit(
+        null,
+        Gtk.ApplicationInhibitFlags.IDLE,
+        "Keep the session awake",
+      )
+      if (!idleInhibitCookie) {
+        void execAsync(["notify-send", "MamboDot", "Could not enable idle inhibitor"])
+      }
+    }
+    setIdleInhibited(idleInhibitCookie !== 0)
+  }
+
+  return (
+    <button
+      class={idleInhibited((active) => `status-button idle-inhibitor${active ? " active" : ""}`)}
+      tooltipText={idleInhibited((active) => active
+        ? "Idle inhibitor on · click to allow automatic locking"
+        : "Idle inhibitor off · click to keep the session awake")}
+      onClicked={toggle}
+    >
+      <label label={idleInhibited((active) => active ? "" : "")} />
+    </button>
+  )
+}
 
 function Workspaces({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   const monitor = hyprland.get_monitor_by_name(gdkmonitor.connector ?? "")
@@ -173,6 +206,7 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           <Clock />
         </box>
         <box $type="end" class="bar-section status" spacing={2}>
+          <IdleInhibitor />
           <Tray />
           <Network />
           <Audio />

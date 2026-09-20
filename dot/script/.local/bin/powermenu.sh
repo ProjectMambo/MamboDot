@@ -14,7 +14,10 @@ run_action() {
         reboot) systemctl reboot ;;
         windows)
             pkexec /usr/bin/grub-reboot "$WINDOWS_ENTRY"
-            systemctl reboot
+            if ! systemctl reboot; then
+                pkexec /usr/bin/grub-editenv /boot/grub/grubenv unset next_entry
+                return 1
+            fi
             ;;
         suspend) systemctl suspend ;;
         logout) hyprshutdown ;;

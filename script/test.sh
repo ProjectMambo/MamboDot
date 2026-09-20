@@ -145,7 +145,10 @@ for command in hyprshutdown pkexec systemctl; do
     ln -s mock "$POWER_BIN/$command"
 done
 
-MAMBODOT_TEST_LOG="$POWER_LOG" PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" logout
+for action in shutdown hibernate reboot suspend logout; do
+    MAMBODOT_TEST_LOG="$POWER_LOG" PATH="$POWER_BIN:/usr/bin:/bin" \
+        "$POWER_MENU" "$action"
+done
 MAMBODOT_TEST_LOG="$POWER_LOG" PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" windows
 if MAMBODOT_TEST_LOG="$POWER_LOG" PATH="$POWER_BIN:/usr/bin:/bin" \
     "$POWER_MENU" unknown >/dev/null 2>&1; then
@@ -153,9 +156,16 @@ if MAMBODOT_TEST_LOG="$POWER_LOG" PATH="$POWER_BIN:/usr/bin:/bin" \
     exit 1
 fi
 mapfile -t power_calls < "$POWER_LOG"
-[[ "${power_calls[0]}" == hyprshutdown ]]
-[[ "${power_calls[1]}" == 'pkexec|/usr/bin/grub-reboot|Windows Boot Manager (on /dev/nvme1n1p1)' ]]
-[[ "${power_calls[2]}" == 'systemctl|reboot' ]]
+expected_power_calls=(
+    'systemctl|poweroff'
+    'systemctl|hibernate'
+    'systemctl|reboot'
+    'systemctl|suspend'
+    'hyprshutdown'
+    'pkexec|/usr/bin/grub-reboot|Windows Boot Manager (on /dev/nvme1n1p1)'
+    'systemctl|reboot'
+)
+[[ "${power_calls[*]}" == "${expected_power_calls[*]}" ]]
 FAILED_POWER_LOG="$TEST_ROOT/power-failed.log"
 if MAMBODOT_TEST_LOG="$FAILED_POWER_LOG" MAMBODOT_TEST_FAIL=pkexec \
     PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" windows >/dev/null 2>&1; then
@@ -163,6 +173,17 @@ if MAMBODOT_TEST_LOG="$FAILED_POWER_LOG" MAMBODOT_TEST_FAIL=pkexec \
     exit 1
 fi
 [[ "$(cat "$FAILED_POWER_LOG")" == 'pkexec|/usr/bin/grub-reboot|Windows Boot Manager (on /dev/nvme1n1p1)' ]]
+FAILED_REBOOT_LOG="$TEST_ROOT/power-failed-reboot.log"
+if MAMBODOT_TEST_LOG="$FAILED_REBOOT_LOG" MAMBODOT_TEST_FAIL=systemctl \
+    PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" windows >/dev/null 2>&1; then
+    echo 'Windows action should fail when reboot fails' >&2
+    exit 1
+fi
+mapfile -t failed_reboot_calls < "$FAILED_REBOOT_LOG"
+[[ "${failed_reboot_calls[0]}" == 'pkexec|/usr/bin/grub-reboot|Windows Boot Manager (on /dev/nvme1n1p1)' ]]
+[[ "${failed_reboot_calls[1]}" == 'systemctl|reboot' ]]
+[[ "${failed_reboot_calls[2]}" == 'pkexec|/usr/bin/grub-editenv|/boot/grub/grubenv|unset|next_entry' ]]
+grep -Fq 'lock) /usr/bin/hyprlock ;;' "$POWER_MENU"
 "$POWER_MENU" --help | grep -q 'shutdown|hibernate|reboot|windows|suspend|logout|lock'
 if grep -Eq '(^|[[:space:]])eval([[:space:]]|$)' "$POWER_MENU"; then
     echo 'powermenu should not evaluate action strings' >&2
@@ -256,6 +277,12 @@ grep -Fq 'candidate.info.launch([], context)' "$ags_config/widgets/Launcher.tsx"
 grep -Fq "hl.dsp.focus({ window = \"address:0x\${client.address}\" })" \
     "$ags_config/widgets/Launcher.tsx"
 grep -Fq "hl.dsp.focus({ workspace = \${id} })" "$ags_config/widgets/Bar.tsx"
+grep -Fq 'Gtk.ApplicationInhibitFlags.IDLE' "$ags_config/widgets/Bar.tsx"
+grep -Fq 'app.uninhibit(idleInhibitCookie)' "$ags_config/widgets/Bar.tsx"
+grep -Fq 'execAsync([powerScript, id])' "$ags_config/widgets/Launcher.tsx"
+for action in lock suspend hibernate logout reboot windows shutdown; do
+    grep -Fq "[\"$action\"," "$ags_config/widgets/Launcher.tsx"
+done
 if grep -Fq 'hyprland.dispatch(' "$ags_config/widgets/Bar.tsx" ||
     grep -Fq 'client.focus()' "$ags_config/widgets/Launcher.tsx"; then
     echo 'AGS must use Hyprland Lua dispatch syntax' >&2

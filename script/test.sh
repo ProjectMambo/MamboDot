@@ -280,6 +280,15 @@ grep -Fq "hl.dsp.focus({ workspace = \${id} })" "$ags_config/widgets/Bar.tsx"
 grep -Fq 'Gtk.ApplicationInhibitFlags.IDLE' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'app.uninhibit(idleInhibitCookie)' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'execAsync([powerScript, id])' "$ags_config/widgets/Launcher.tsx"
+# shellcheck disable=SC2016 # Match the literal Gnim template expression.
+grep -Fq 'Alt+Shift+${index + 1}' "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'Gdk.KEY_exclam' "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'namespace="mambodot-launcher-backdrop"' "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'visible={createBinding(launcher, "visible")}' "$ags_config/widgets/Launcher.tsx"
+if grep -Fq 'Ctrl+' "$ags_config/widgets/Launcher.tsx"; then
+    echo 'launcher mode shortcuts should use Alt+Shift, not Ctrl' >&2
+    exit 1
+fi
 for action in lock suspend hibernate logout reboot windows shutdown; do
     grep -Fq "[\"$action\"," "$ags_config/widgets/Launcher.tsx"
 done
@@ -289,6 +298,9 @@ if grep -Fq 'hyprland.dispatch(' "$ags_config/widgets/Bar.tsx" ||
     exit 1
 fi
 grep -Fq -- '--device=nvidia_wmi_ec_backlight' "$ags_config/widgets/LeftSidebar.tsx"
+grep -Fq '["asusctl", "leds", "set"' "$ags_config/widgets/LeftSidebar.tsx"
+grep -Fq '"panel_overdrive"' "$ags_config/widgets/LeftSidebar.tsx"
+grep -Fq '"rog-control-center"' "$ags_config/widgets/LeftSidebar.tsx"
 grep -Fq 'ags request bar toggle | launcher apps [prime]|run|windows|power|clipboard' \
     "$ags_config/app.tsx"
 ags bundle "$ags_config/lib/schedule.ts" "$TEST_ROOT/mambodot-schedule-test" \
@@ -300,6 +312,9 @@ XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-clipbo
 ags bundle "$ags_config/lib/keybinds.ts" "$TEST_ROOT/mambodot-keybinds-test" \
     --root "$ags_config" --gtk 4 >/dev/null
 XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-keybinds-test"
+ags bundle "$ags_config/lib/hardware.ts" "$TEST_ROOT/mambodot-hardware-test" \
+    --root "$ags_config" --gtk 4 >/dev/null
+XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-hardware-test"
 
 lua "$SCRIPT_DIR/test_hypr.lua" "$PROJECT_DIR"
 

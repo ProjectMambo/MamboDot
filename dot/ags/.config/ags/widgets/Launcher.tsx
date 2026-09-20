@@ -1,4 +1,11 @@
-import { For, createComputed, createState } from "ags"
+import {
+  For,
+  createBinding,
+  createComputed,
+  createEffect,
+  createState,
+  onCleanup,
+} from "ags"
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process"
@@ -11,7 +18,7 @@ import { copyClipboard, listClipboard, type ClipboardItem } from "../lib/clipboa
 export type LauncherMode = "apps" | "run" | "windows" | "power" | "clipboard"
 
 export type LauncherController = {
-  window: Gtk.Window
+  window: Astal.Window
   open: (mode: LauncherMode, prime?: boolean) => void
 }
 
@@ -51,6 +58,18 @@ const modeLabels: Array<[LauncherMode, string]> = [
   ["power", "Power"],
   ["clipboard", "Clipboard"],
 ]
+const modeKeyvals = [
+  Gdk.KEY_exclam,
+  Gdk.KEY_at,
+  Gdk.KEY_numbersign,
+  Gdk.KEY_dollar,
+  Gdk.KEY_percent,
+]
+const modifierMask =
+  Gdk.ModifierType.SHIFT_MASK |
+  Gdk.ModifierType.CONTROL_MASK |
+  Gdk.ModifierType.ALT_MASK |
+  Gdk.ModifierType.SUPER_MASK
 const powerActions = [
   ["lock", "Lock", "Lock this session", "system-lock-screen-symbolic", ""],
   ["suspend", "Suspend", "Suspend this computer", "media-playback-pause-symbolic", "Suspend now?"],
@@ -81,6 +100,37 @@ const applications = Gio.AppInfo.get_all()
 
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
 
+export function LauncherBackdrop({
+  gdkmonitor,
+  launcher,
+}: {
+  gdkmonitor: Gdk.Monitor
+  launcher: Astal.Window
+}) {
+  let win: Astal.Window
+
+  onCleanup(() => win.destroy())
+
+  return (
+    <window
+      $={(self) => (win = self)}
+      visible={createBinding(launcher, "visible")}
+      name={`launcher-backdrop-${gdkmonitor.connector ?? "unknown"}`}
+      namespace="mambodot-launcher-backdrop"
+      class="LauncherBackdrop"
+      gdkmonitor={gdkmonitor}
+      anchor={TOP | BOTTOM | LEFT | RIGHT}
+      layer={Astal.Layer.TOP}
+      exclusivity={Astal.Exclusivity.IGNORE}
+      keymode={Astal.Keymode.NONE}
+      application={app}
+    >
+      <Gtk.GestureClick onPressed={() => (launcher.visible = false)} />
+      <box />
+    </window>
+  ) as Astal.Window
+}
+
 function matches(items: Candidate[], text: string, rank = true) {
   const needle = text.trim().toLocaleLowerCase()
   const terms = needle.split(/\s+/).filter(Boolean)
@@ -107,6 +157,7 @@ export default function Launcher(): LauncherController {
   let clipboardGeneration = 0
   let clipboardLoading = false
   const hyprland = AstalHyprland.get_default()
+  const monitors = createBinding(app, "monitors")
   const [mode, setMode] = createState<LauncherMode>("apps")
   const [prime, setPrime] = createState(false)
   const [results, setResults] = createState<Candidate[]>([])
@@ -308,16 +359,18 @@ export default function Launcher(): LauncherController {
       return true
     }
 
-    if (state & Gdk.ModifierType.CONTROL_MASK) {
-      for (const [index, [next]] of modeLabels.entries()) {
-        if (keyval === Gdk[`KEY_${index + 1}`]) {
-          selectMode(next)
-          return true
-        }
+    const modifiers = state & modifierMask
+    if (
+      modifiers === (Gdk.ModifierType.ALT_MASK | Gdk.ModifierType.SHIFT_MASK)
+    ) {
+      const index = modeKeyvals.indexOf(keyval)
+      if (index >= 0) {
+        selectMode(modeLabels[index][0])
+        return true
       }
     }
 
-    if (!pending && state & Gdk.ModifierType.ALT_MASK) {
+    if (!pending && modifiers === Gdk.ModifierType.ALT_MASK) {
       for (const number of [1, 2, 3, 4, 5, 6, 7, 8, 9] as const) {
         if (keyval === Gdk[`KEY_${number}`]) {
           activate(results.peek()[number - 1])
@@ -341,8 +394,10 @@ export default function Launcher(): LauncherController {
   win = (
     <window
       name="launcher"
+      namespace="mambodot-launcher"
       class="Launcher"
       anchor={TOP | BOTTOM | LEFT | RIGHT}
+      layer={Astal.Layer.OVERLAY}
       exclusivity={Astal.Exclusivity.IGNORE}
       keymode={Astal.Keymode.EXCLUSIVE}
       onNotifyVisible={({ visible }) => {
@@ -354,7 +409,9 @@ export default function Launcher(): LauncherController {
           if (right) right.visible = false
           if (keybinds) keybinds.visible = false
           const focused = hyprland?.focusedMonitor.name
-          const monitor = app.get_monitors().find(({ connector }) => connector === focused)
+          const monitor =
+            app.get_monitors().find(({ connector }) => connector === focused) ??
+            app.get_monitors()[0]
           if (monitor) win.gdkmonitor = monitor
           search(entry.text)
           entry.grab_focus()
@@ -386,7 +443,7 @@ export default function Launcher(): LauncherController {
               class={mode((current) => (current === id ? "active" : ""))}
               onClicked={() => selectMode(id)}
             >
-              <label label={`${label}  Ctrl+${index + 1}`} />
+              <label label={`${label}  Alt+Shift+${index + 1}`} />
             </button>
           ))}
         </box>
@@ -451,6 +508,16 @@ export default function Launcher(): LauncherController {
       </box>
     </window>
   ) as Astal.Window
+
+  createEffect(() => {
+    const active = monitors()
+    if (!win.visible || active.includes(win.gdkmonitor)) return
+    const focused = hyprland?.focusedMonitor.name
+    const replacement =
+      active.find(({ connector }) => connector === focused) ?? active[0]
+    if (replacement) win.gdkmonitor = replacement
+    else win.visible = false
+  })
 
   return {
     window: win,

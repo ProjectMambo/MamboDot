@@ -18,7 +18,8 @@ window.Bar {
   background: transparent;
   color: $text;
   font-family: "MamboFont", "JetBrainsMono Nerd Font Mono", monospace;
-  font-size: 14px;
+  font-size: 15px;
+  -gtk-icon-size: 18px;
 
   > centerbox {
     min-height: 34px;
@@ -75,6 +76,11 @@ window.Bar {
   .sidebar-button.quick-controls {
     background: $network;
     color: $on-brand;
+  }
+
+  .sidebar-button,
+  .idle-inhibitor {
+    font-size: 18px;
   }
 
   .sidebar-button:hover,
@@ -153,6 +159,7 @@ window.Sidebar {
   }
 
   &.left .sidebar-body {
+    min-width: 740px;
     border-right: 2px solid $surface-strong;
   }
 
@@ -184,6 +191,22 @@ window.Sidebar {
     padding: 12px;
   }
 
+  .laptop-dashboard-scroll {
+    min-width: 716px;
+  }
+
+  .dashboard-column {
+    min-width: 348px;
+  }
+
+  .dashboard-column .panel-section {
+    padding: 10px;
+  }
+
+  .button-row.compact button {
+    padding: 6px 7px;
+  }
+
   .panel-section {
     padding: 12px;
     border: 1px solid $surface-strong;
@@ -198,6 +221,7 @@ window.Sidebar {
 
   .section-state,
   .panel-note,
+  .detail-line,
   .metric-label,
   .control-state,
   .notification-body {
@@ -207,6 +231,11 @@ window.Sidebar {
 
   .section-state {
     margin-left: 10px;
+  }
+
+  .detail-line {
+    color: $text-subtle;
+    font-size: 12px;
   }
 
   .metric-strip {
@@ -347,8 +376,12 @@ window.Sidebar {
   }
 }
 
-window.Launcher {
+window.LauncherBackdrop {
   background: rgba(0, 0, 0, 0.58);
+}
+
+window.Launcher {
+  background: transparent;
   color: $text;
   font-family: "MamboFont", "JetBrainsMono Nerd Font Mono", monospace;
   font-size: 14px;

@@ -4,7 +4,11 @@ import Gtk from "gi://Gtk?version=4.0"
 import style from "./style.scss"
 import Bar from "./widgets/Bar"
 import Keybinds from "./widgets/Keybinds"
-import Launcher, { type LauncherController, type LauncherMode } from "./widgets/Launcher"
+import Launcher, {
+  LauncherBackdrop,
+  type LauncherController,
+  type LauncherMode,
+} from "./widgets/Launcher"
 import Notifications from "./widgets/Notifications"
 import Sidebars from "./widgets/Sidebars"
 
@@ -54,6 +58,10 @@ app.start({
         {(monitor) => (
           <This this={app}>
             <Bar gdkmonitor={monitor} />
+            <LauncherBackdrop
+              gdkmonitor={monitor}
+              launcher={launcher!.window}
+            />
           </This>
         )}
       </For>

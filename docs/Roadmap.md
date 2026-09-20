@@ -42,7 +42,7 @@ The sidebars run with the active shell:
 - The right overlay exposes Wi-Fi, Bluetooth, audio, Astal do-not-disturb, active notifications and history, a native calendar, and today's read-only schedule. Native NetworkManager, Blueman, PulseAudio, and Obsidian applications remain the advanced settings surfaces.
 - Both sidebars follow the focused monitor, slide through Hyprland's native layer animation, exclude one another and the launcher, close on Escape or outside click, and poll only while visible.
 
-The schedule reader resolves a local daily note such as `Periodic/2026-09-18-W38-D5.md`, tolerates the current padded or unpadded ISO-week filename, reads only the exact `## Schedule` section, and accepts bullets shaped as `- HH:mm - HH:mm event`. The Notes project should still standardize its `W` versus `WW` generator mismatch for single-digit weeks. The reader does not edit or index the vault.
+The schedule reader resolves a local daily note such as `Periodic/2026-09-18-W38-D5.md`, tolerates legacy padded ISO-week filenames, reads only the exact `## Schedule` section, and accepts bullets shaped as `- HH:mm - HH:mm event`. Periodic Notes and the weekly generator both use the unpadded `W` format. The reader does not edit or index the vault.
 
 Hyprland now starts Astal and AGS, and its shell keybindings target AGS. Waybar, Rofi, and Mako remain reviewed, linked manual-recovery configuration but are absent from normal startup. Removing them is deliberately deferred until the active shell has enough daily use to make that recovery path unnecessary.
 

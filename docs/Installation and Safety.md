@@ -184,7 +184,7 @@ The Power launcher uses the fixed `powermenu.sh` action interface. AGS confirms 
 
 The eye button in the bar's right status group uses GTK's application idle inhibitor, which Hypridle honors while remaining active. A warm button background means inhibition is on. The inhibitor defaults to off and is released when AGS exits or restarts, so it cannot silently persist after a shell crash.
 
-The right panel reads only today's `Periodic/` note under `MAMBO_NOTES_DIR` or `$HOME/ProjectMambo/notes`. It accepts the current padded or unpadded ISO-week filename, parses only `## Schedule` rows shaped as `- HH:mm - HH:mm event`, and never creates, edits, or indexes vault files. Its notification history is process-local and intentionally does not persist bodies to disk.
+The right panel reads only today's `Periodic/` note under `MAMBO_NOTES_DIR` or `$HOME/ProjectMambo/notes`. It uses the vault's unpadded ISO-week filename and still accepts legacy padded names, parses only `## Schedule` rows shaped as `- HH:mm - HH:mm event`, and never creates, edits, or indexes vault files. Its notification history is process-local and intentionally does not persist bodies to disk.
 
 ## Unlink
 

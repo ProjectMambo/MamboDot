@@ -73,7 +73,7 @@ The AGS keybind sheet renders the tables on this page. `dot/hypr/.config/hypr/ke
 |`SUPER` `Q`|Open terminal|
 |`SUPER` `W`|Open browser|
 |`SUPER` `E`|Open file manager|
-|`SUPER` `R`|Open notes editor|
+|`SUPER` `R`|Open text editor|
 |`SUPER` `T`|Open calculator|
 |`SUPER` `Alt` `KP_Insert`|Launch default preset|
 

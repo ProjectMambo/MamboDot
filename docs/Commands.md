@@ -92,7 +92,9 @@ ags request launcher power
 ags request launcher clipboard
 ```
 
-Apps searches visible desktop entries; `prime` launches the selected application with the dedicated-GPU environment. Run parses a command into an argument vector and does not invoke a shell, so pipes, redirects, globs, and substitutions are not expanded. Windows focuses a mapped Hyprland client. Power exposes only the fixed actions documented below. Clipboard searches newest-first Cliphist entries and copies the selected bytes unchanged, including images. Use `Alt-Shift-1` through `Alt-Shift-5` to change mode and `Alt-1` through `Alt-9` to activate a visible result.
+Apps opens the complete sorted list of visible desktop entries; `prime` launches the selected application with the dedicated-GPU environment. Run parses a command into an argument vector and does not invoke a shell, so pipes, redirects, globs, and substitutions are not expanded. Windows focuses a mapped Hyprland client. Power exposes only the fixed actions documented below. Clipboard searches every newest-first Cliphist entry and copies the selected bytes unchanged, including images. Apps and Clipboard use a virtualized scrolling list, so the shell does not create one GTK widget for every stored result. Use `Alt-Shift-1` through `Alt-Shift-5` to change mode and `Alt-1` through `Alt-9` to activate the first nine results; every result remains clickable.
+
+The two session Cliphist watchers retain up to 5,000 text or image entries in Cliphist's own database. MamboDot does not duplicate that history or silently prune it in AGS. The higher limit takes effect when the session watchers next start; existing entries remain intact.
 
 The 40-pixel bar exposes larger launcher, sidebar, status, and eye-shaped idle-inhibitor glyphs without reserving more screen space. Click the eye to keep the session awake; its warm background means inhibition is active. The control uses GTK's session idle inhibitor rather than stopping Hypridle, defaults to off, and is released automatically when AGS exits or restarts.
 

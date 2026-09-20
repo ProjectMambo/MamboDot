@@ -31,6 +31,7 @@ This is a personal workstation profile rather than a portable distribution or un
 - Hyprland session, hotplug display layout, idle, lock, wallpaper, window, workspace, group, input, and launcher behavior.
 - The active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, laptop-control sidebar, general/day-planner sidebar, and native notification UI, with Waybar/Rofi/Mako retained for manual recovery.
 - Kitty, Dolphin, KDE, Fcitx5, Zsh, Neovim, Code OSS, notification, and desktop-integration settings.
+- One deduplicated user-tool `PATH` shared by Hyprland applications, D-Bus/systemd user activations, and Zsh.
 - Reviewed Arch/AUR/Flatpak package and system/user service manifests for the current workstation.
 - MamboColour-generated Hyprland and Waybar palettes.
 - Screenshot, clipboard, media, cursor, floating-window, power, and application-launcher helpers.

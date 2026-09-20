@@ -8,7 +8,7 @@ order: 40
 
 # MamboDot roadmap
 
-MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. Safe deployment, session environment, displays, the active AGS shell, post-cutover stabilization, and reviewed workstation coverage are implemented.
+MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. Safe deployment, session environment, displays, the active AGS shell, post-cutover stabilization, reviewed workstation coverage, and user-tool environment hardening are implemented.
 
 ## Configuration ownership
 
@@ -55,5 +55,6 @@ Hyprland now starts Astal and AGS, and its shell keybindings target AGS. Waybar,
 6. **Cutover — implemented:** move notification ownership to Astal, add binary-safe Clipboard mode, switch startup and keybindings to AGS, validate the full shell under a guarded live preview, and document recovery while retaining Waybar/Rofi/Mako configuration outside normal startup.
 7. **Shell stabilization — implemented:** make every bar group opaque, distinguish both sidebar controls, launch desktop applications with the GJS-compatible empty file list, and move clickable workspace and window focus to Hyprland's Lua dispatcher syntax.
 8. **Coverage — implemented:** add reviewed package/service manifests, a read-only machine doctor, and only the stable Code OSS, Dolphin, KDE, Fcitx5, XDG, and host settings that survive the ownership rules above.
+9. **Environment and tooling — implemented:** give Hyprland applications and every Zsh the same deduplicated user-tool path, propagate it to D-Bus and systemd, and make Code OSS extension synchronization fail visibly instead of hiding query or installation errors.
 
-Future additions are maintenance rather than another broad import: benchmark and choose one owner for CPU/power policy before replacing the current `auto-cpufreq` plus `asusd` arrangement, promote a long-tail application setting only after it proves stable, and retire the Waybar/Rofi/Mako recovery set only after enough daily use makes that rollback unnecessary. Never run power-profiles-daemon or TLP alongside `auto-cpufreq`.
+Future additions are maintenance rather than another broad import: benchmark and choose one owner for CPU/power policy before replacing the current `auto-cpufreq` plus `asusd` arrangement, promote a long-tail application setting only after it proves stable, and retire the Waybar/Rofi/Mako recovery set only after enough daily use makes that rollback unnecessary. `asusd` and `auto-cpufreq` currently overlap on AMD governor and energy-performance preference writes; never add power-profiles-daemon or TLP to that stack. See the [ASUS Linux Arch guide](https://asus-linux.org/guides/arch-guide/) before changing ownership.

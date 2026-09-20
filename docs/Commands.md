@@ -133,7 +133,7 @@ Install the reviewed extension list explicitly:
 ./script/code-oss/install_extensions.sh
 ```
 
-This action is intentionally separate from linking configuration.
+The command accepts no arguments, compares extension IDs case-insensitively, installs only missing entries, and stops if listing or installation fails. It is intentionally separate from linking configuration.
 
 ## `tp`
 

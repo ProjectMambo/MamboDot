@@ -35,7 +35,7 @@ Run the read-only doctor before linking or after a system change:
 
 It reports missing packages, packages installed from the wrong source class, and disabled services. It ignores extra software and never installs, removes, enables, starts, or stops anything. Review each reported row before changing another machine: entries such as SDDM autologin, SSH, SMB, VPN, NVIDIA, and ASUS laptop services are intentionally specific to this workstation.
 
-The profile deliberately excludes `thermald`, which reports this Ryzen platform as unsupported, and installed `-debug` split packages that are not runtime requirements. Because extras are ignored, `doctor` will not ask to remove them. The current profile retains `auto-cpufreq` alongside `asusd` until their overlapping power policy is benchmarked; do not add or enable power-profiles-daemon or TLP at the same time.
+The profile deliberately excludes `thermald`, which reports this Ryzen platform as unsupported, and installed `-debug` split packages that are not runtime requirements. Because extras are ignored, `doctor` will not ask to remove them. The current profile retains `auto-cpufreq` alongside `asusd` until their overlapping power policy is benchmarked. Both currently write the AMD governor and energy-performance preference, so battery and manual ASUS profiles may be overwritten even though the current AC defaults happen to agree. Do not add or enable power-profiles-daemon or TLP at the same time. The [ASUS Linux Arch guide](https://asus-linux.org/guides/arch-guide/) likewise recommends choosing compatible power-policy ownership rather than stacking managers.
 
 ## Review machine-specific values
 
@@ -113,7 +113,7 @@ Code OSS extensions and generated colour output are explicit, independent action
 ./script/mambodot.sh update
 ```
 
-Run `update` only when `mbcolor` is installed and the generated palette artifacts should change. Review its diff before committing.
+The extension command accepts no arguments, installs only IDs missing from the reviewed list, and stops if Code OSS cannot list or install extensions. Run `update` only when `mbcolor` is installed and the generated palette artifacts should change. Review its diff before committing.
 
 ## Apply host-specific system policy
 
@@ -147,20 +147,23 @@ The active login path is `SDDM` → the standard Hyprland session → `/usr/bin/
 | Owner | Responsibility |
 |---|---|
 | SDDM's standard Hyprland desktop entry | Session identity: `XDG_CURRENT_DESKTOP`, `XDG_SESSION_DESKTOP`, and `XDG_SESSION_TYPE` |
-| `variables.lua` | XDG base directories and Qt/GTK preferences for applications launched by Hyprland |
-| `exec.lua` | Propagate the environment once to D-Bus and the systemd user manager, then start the current session processes |
+| `variables.lua` | XDG base directories, Qt/GTK preferences, and the user-tool `PATH` for applications launched by Hyprland |
+| `exec.lua` | Propagate the environment, including `PATH`, once to D-Bus and the systemd user manager, then start the current session processes |
 | Tracked `/etc/environment` host policy | Fcitx input-method variables |
+| `.zshenv` | Apply the same user-tool path prefix to every Zsh, including TTY and SSH shells |
 | `.zshrc` | Interactive shell behavior only; it must not redefine the desktop or input method |
 
 UWSM is not installed or required. Do not select the optional `Hyprland (uwsm-managed)` session unless a later phase deliberately migrates the complete login lifecycle to UWSM.
 
-Environment changes require a fresh login, preferably a reboot on the autologin host; `hyprctl reload` cannot replace the environment inherited by the compositor or already-running services. After login, verify that every layer agrees and that `KDE_SESSION_VERSION` is absent:
+The shared user-tool prefix is `$HOME/.local/bin`, `$HOME/.npm-global/bin`, `$HOME/.cargo/bin`, and `$HOME/.local/share/JetBrains/Toolbox/scripts`, followed by the inherited system path with duplicates removed.
+
+A fresh login, preferably a reboot on the autologin host, is the complete way to apply environment changes. `hyprctl reload` updates future Hyprland-launched applications but cannot replace variables already inherited by the compositor or running services; the startup propagation updates future D-Bus and systemd user activations. After login, verify that every layer agrees and that `KDE_SESSION_VERSION` is absent:
 
 ```bash
 loginctl show-session "$XDG_SESSION_ID" -p Desktop -p Type
 printenv XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE
 systemctl --user show-environment |
-    rg '^(XDG_CURRENT_DESKTOP|XDG_SESSION_DESKTOP|XDG_SESSION_TYPE|KDE_SESSION_VERSION)='
+    rg '^(PATH|XDG_CURRENT_DESKTOP|XDG_SESSION_DESKTOP|XDG_SESSION_TYPE|KDE_SESSION_VERSION)='
 ```
 
 ## Displays
@@ -206,4 +209,4 @@ git diff --check
 git status --short
 ```
 
-The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, all 12 staged MamboColour calls, an AGS production bundle, the fixed power-action backend and AGS request grammar, the schedule and binary-safe clipboard self-checks, session-process ownership, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, both AGS sidebars, all launcher modes, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them.
+The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, all 12 staged MamboColour calls, strict Code OSS extension synchronization, the shared user-tool path, an AGS production bundle, the fixed power-action backend and AGS request grammar, the schedule and binary-safe clipboard self-checks, session-process ownership, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, both AGS sidebars, all launcher modes, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them.

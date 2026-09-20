@@ -463,6 +463,15 @@ window.Launcher {
     color: $brand-hover;
   }
 
+  .launcher-results,
+  .launcher-results row {
+    background: transparent;
+  }
+
+  .launcher-results row {
+    padding: 0;
+  }
+
   .app-row {
     margin-top: 4px;
     padding: 8px 10px 8px 6px;
@@ -489,6 +498,13 @@ window.Launcher {
 
   .shortcut {
     margin-left: 12px;
+  }
+
+  scrollbar slider {
+    min-width: 5px;
+    min-height: 28px;
+    border-radius: 0;
+    background: $surface-strong;
   }
 }
 

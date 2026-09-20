@@ -14,8 +14,8 @@ hl.on("hyprland.start",
         "hyprlock", "astal-notifd daemon", "env GDK_BACKEND=wayland ags run",
         "hyprpaper", "hypridle", "avizo-service",
         "systemctl --user start hyprpolkitagent.service",
-        "wl-paste --type text --watch cliphist store",
-        "wl-paste --type image --watch cliphist store",
+        "wl-paste --type text --watch cliphist -max-items 5000 store",
+        "wl-paste --type image --watch cliphist -max-items 5000 store",
         "kbuildsycoca6 --noincremental",
     })
     :done()

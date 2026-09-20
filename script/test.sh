@@ -285,6 +285,14 @@ grep -Fq 'Alt+Shift+${index + 1}' "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'Gdk.KEY_exclam' "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'namespace="mambodot-launcher-backdrop"' "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'visible={createBinding(launcher, "visible")}' "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'class="launcher-results-scroll"' "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'Gtk.ListView.new(Gtk.NoSelection.new(resultModel), resultFactory)' \
+    "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'row.shortcut.visible = item.position < 9' "$ags_config/widgets/Launcher.tsx"
+if grep -Fq 'slice(0, 9)' "$ags_config/widgets/Launcher.tsx"; then
+    echo 'launcher results should remain complete and scrollable' >&2
+    exit 1
+fi
 if grep -Fq 'Ctrl+' "$ags_config/widgets/Launcher.tsx"; then
     echo 'launcher mode shortcuts should use Alt+Shift, not Ctrl' >&2
     exit 1
@@ -330,6 +338,7 @@ grep -Fq -- '--systemd PATH XDG_CURRENT_DESKTOP' "$session_exec"
 [[ "$(grep -Fc 'astal-notifd daemon' "$session_exec")" -eq 1 ]]
 [[ "$(grep -Fc 'env GDK_BACKEND=wayland ags run' "$session_exec")" -eq 1 ]]
 [[ "$(grep -Fc 'systemctl --user start hyprpolkitagent.service' "$session_exec")" -eq 1 ]]
+[[ "$(grep -Fc 'cliphist -max-items 5000 store' "$session_exec")" -eq 2 ]]
 grep -Fq 'ags request launcher clipboard' "$session_keys"
 grep -Fq 'ags toggle sidebar-left' "$session_keys"
 grep -Fq 'ags toggle sidebar-right' "$session_keys"

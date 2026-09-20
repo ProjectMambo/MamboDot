@@ -1,5 +1,4 @@
 import {
-  For,
   createBinding,
   createComputed,
   createEffect,
@@ -39,6 +38,13 @@ type Candidate = {
   icon: Gio.Icon
   run: () => boolean | void
   confirm?: string
+}
+
+type ResultRow = {
+  icon: Gtk.Image
+  name: Gtk.Label
+  description: Gtk.Label
+  shortcut: Gtk.Label
 }
 
 const fallbackIcon = Gio.ThemedIcon.new("application-x-executable-symbolic")
@@ -134,7 +140,7 @@ export function LauncherBackdrop({
 function matches(items: Candidate[], text: string, rank = true) {
   const needle = text.trim().toLocaleLowerCase()
   const terms = needle.split(/\s+/).filter(Boolean)
-  if (!needle) return items.slice(0, 9)
+  if (!needle) return items
 
   const filtered = items
     .filter((candidate) => terms.every((term) => candidate.searchable.includes(term)))
@@ -145,17 +151,19 @@ function matches(items: Candidate[], text: string, rank = true) {
       return rankA - rankB || a.name.localeCompare(b.name)
     })
   }
-  return filtered.slice(0, 9)
+  return filtered
 }
 
 export default function Launcher(): LauncherController {
   let content: Gtk.Box
   let entry: Gtk.Entry
+  let resultsScroll: Gtk.ScrolledWindow
   let win: Astal.Window
   let pending: Candidate | undefined
   let clipboardItems: ClipboardItem[] = []
   let clipboardGeneration = 0
   let clipboardLoading = false
+  let currentResults: Candidate[] = []
   const hyprland = AstalHyprland.get_default()
   const monitors = createBinding(app, "monitors")
   const [mode, setMode] = createState<LauncherMode>("apps")
@@ -166,6 +174,65 @@ export default function Launcher(): LauncherController {
   const [message, setMessage] = createState("")
   const [placeholder, setPlaceholder] = createState("Search applications")
   const showEmpty = createComputed(() => results().length === 0 && !message())
+  const resultModel = Gtk.StringList.new([])
+  const resultFactory = new Gtk.SignalListItemFactory()
+  const resultRows = new WeakMap<Gtk.ListItem, ResultRow>()
+  const resultList = Gtk.ListView.new(Gtk.NoSelection.new(resultModel), resultFactory)
+  resultList.add_css_class("launcher-results")
+
+  resultFactory.connect("setup", (_factory, object) => {
+    const item = object as Gtk.ListItem
+    const icon = new Gtk.Image({ pixel_size: 32 })
+    const name = new Gtk.Label({ xalign: 0 })
+    const description = new Gtk.Label({ xalign: 0, max_width_chars: 58 })
+    const shortcut = new Gtk.Label()
+    const labels = new Gtk.Box({
+      hexpand: true,
+      orientation: Gtk.Orientation.VERTICAL,
+      valign: Gtk.Align.CENTER,
+    })
+    const content = new Gtk.Box({ spacing: 12 })
+    const button = new Gtk.Button()
+
+    description.add_css_class("app-description")
+    shortcut.add_css_class("shortcut")
+    content.append(icon)
+    labels.append(name)
+    labels.append(description)
+    content.append(labels)
+    content.append(shortcut)
+    button.add_css_class("app-row")
+    button.set_child(content)
+    button.connect("clicked", () => activate(currentResults[item.position]))
+    item.activatable = false
+    item.set_child(button)
+    resultRows.set(item, { icon, name, description, shortcut })
+  })
+
+  resultFactory.connect("bind", (_factory, object) => {
+    const item = object as Gtk.ListItem
+    const row = resultRows.get(item)
+    const candidate = currentResults[item.position]
+    if (!row || !candidate) return
+
+    row.icon.gicon = candidate.icon
+    row.name.label = candidate.name
+    row.description.label = candidate.description
+    row.description.visible = candidate.description.length > 0
+    row.shortcut.label = item.position < 9 ? `Alt+${item.position + 1}` : ""
+    row.shortcut.visible = item.position < 9
+  })
+
+  function showResults(items: Candidate[]) {
+    currentResults = items
+    setResults(items)
+    resultModel.splice(
+      0,
+      resultModel.get_n_items(),
+      items.map((_, index) => String(index)),
+    )
+    if (resultsScroll) resultsScroll.vadjustment.value = resultsScroll.vadjustment.lower
+  }
 
   function launchApplication(candidate: Application) {
     const context = Gdk.Display.get_default()?.get_app_launch_context() ?? null
@@ -275,7 +342,7 @@ export default function Launcher(): LauncherController {
     } catch (error) {
       if (generation !== clipboardGeneration || mode.peek() !== "clipboard") return
       clipboardLoading = false
-      setResults([])
+      showResults([])
       setMessage(`Could not load clipboard history: ${error instanceof Error ? error.message : String(error)}`)
     }
   }
@@ -285,22 +352,22 @@ export default function Launcher(): LauncherController {
     const query = text.trim()
 
     if (selected === "apps") {
-      setResults(query ? matches(applicationCandidates(), query) : [])
-      setEmpty(query ? "No matching applications" : "Type to search applications")
+      showResults(matches(applicationCandidates(), query))
+      setEmpty("No matching applications")
     } else if (selected === "run") {
-      setResults(runCandidate(query))
+      showResults(runCandidate(query))
       setEmpty("Type a command and its arguments")
     } else if (selected === "windows") {
-      setResults(matches(windowCandidates(), query))
+      showResults(matches(windowCandidates(), query))
       setEmpty(query ? "No matching windows" : "No open windows")
     } else if (selected === "power") {
-      setResults(matches(powerCandidates(), query))
+      showResults(matches(powerCandidates(), query))
       setEmpty(query ? "No matching power actions" : "No power actions available")
     } else if (clipboardLoading) {
-      setResults([])
+      showResults([])
       setEmpty("Loading clipboard history…")
     } else {
-      setResults(matches(clipboardCandidates(), query, false))
+      showResults(matches(clipboardCandidates(), query, false))
       setEmpty(query ? "No matching clipboard items" : "No clipboard history")
     }
   }
@@ -483,28 +550,15 @@ export default function Launcher(): LauncherController {
           label={empty}
           visible={showEmpty}
         />
-        <box class="app-results" orientation={Gtk.Orientation.VERTICAL}>
-          <For each={results}>
-            {(candidate, index) => (
-              <button class="app-row" onClicked={() => activate(candidate)}>
-                <box spacing={12}>
-                  <image gicon={candidate.icon} pixelSize={32} />
-                  <box hexpand orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.CENTER}>
-                    <label label={candidate.name} xalign={0} />
-                    <label
-                      class="app-description"
-                      label={candidate.description}
-                      visible={candidate.description.length > 0}
-                      xalign={0}
-                      maxWidthChars={58}
-                    />
-                  </box>
-                  <label class="shortcut" label={index((value) => `Alt+${value + 1}`)} />
-                </box>
-              </button>
-            )}
-          </For>
-        </box>
+        <Gtk.ScrolledWindow
+          $={(self) => (resultsScroll = self)}
+          class="launcher-results-scroll"
+          maxContentHeight={520}
+          propagateNaturalHeight
+          hscrollbarPolicy={Gtk.PolicyType.NEVER}
+        >
+          {resultList}
+        </Gtk.ScrolledWindow>
       </box>
     </window>
   ) as Astal.Window

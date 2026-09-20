@@ -38,7 +38,7 @@ export default function Sidebars(): Gtk.Window[] {
         name={`sidebar-${side}`}
         namespace={`mambodot-sidebar-${side}`}
         class={`Sidebar ${side}`}
-        marginTop={34}
+        marginTop={40}
         anchor={TOP | BOTTOM | (side === "left" ? LEFT : RIGHT)}
         layer={Astal.Layer.OVERLAY}
         exclusivity={Astal.Exclusivity.IGNORE}
@@ -83,7 +83,7 @@ export default function Sidebars(): Gtk.Window[] {
       name="sidebar-backdrop"
       namespace="mambodot-sidebar-backdrop"
       class="SidebarBackdrop"
-      marginTop={34}
+      marginTop={40}
       anchor={TOP | BOTTOM | LEFT | RIGHT}
       layer={Astal.Layer.TOP}
       exclusivity={Astal.Exclusivity.IGNORE}

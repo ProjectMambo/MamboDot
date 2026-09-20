@@ -28,8 +28,8 @@ Coverage now includes reviewed Arch/AUR/Flatpak and enabled-service manifests, a
 
 The active shell uses the already-installed AGS 3, Astal, GTK4, and Gio stack without another launcher framework:
 
-- A hotplug-aware bar is created for each monitor and shows its clickable ten-workspace block, focused title, clock, GTK idle inhibitor, tray, network, audio, and battery state without hardware polling scripts.
-- A keyboard-first launcher provides Apps, Run, Windows, Power, and binary-safe Clipboard modes, follows the focused monitor, accepts validated AGS requests, supports dedicated-GPU application launch, focuses mapped Hyprland clients, executes commands without a shell, and confirms disruptive power actions.
+- A hotplug-aware 40-pixel bar is created for each monitor and shows its clickable ten-workspace block, focused title, clock, larger GTK idle-inhibitor and status glyphs, tray, network, audio, and battery state without hardware polling scripts.
+- A keyboard-first launcher provides Apps, Run, Windows, Power, and binary-safe Clipboard modes, follows the focused monitor while dimming every output, accepts validated AGS requests, switches modes with `Alt-Shift-1` through `Alt-Shift-5`, supports dedicated-GPU application launch, focuses mapped Hyprland clients, executes commands without a shell, and confirms disruptive power actions.
 - A focused-monitor keybind sheet renders the maintained keybind documentation directly, so the overlay adds no second shortcut registry.
 - Astal owns notification delivery independently of AGS restarts. AGS renders square top-right popups with actions, applies do-not-disturb in the frontend, and retains bounded process-local history without persisting notification bodies.
 - The interface follows MamboSite's dark semantic palette, MamboFont-first typography, opaque bar groups, square controls, strong two-pixel structure, distinct sidebar accents, and short eased state transitions.
@@ -38,7 +38,7 @@ The workspace buttons and Windows launcher mode deliberately send Hyprland's cur
 
 The sidebars run with the active shell:
 
-- The left overlay shows battery status and care, CPU/iGPU telemetry, fan RPM, firmware thermal profiles, confirmed graphics-mode requests, and current display brightness. Raw fan curves and CPU-governor switches stay out of AGS. Brightness writes now target the FA507XV backlight through `brightnessctl`'s native systemd-logind path, without a new host permission.
+- The left overlay uses a dense two-column 1080p layout for battery health/rate, CPU policy and load, CPU/iGPU/dGPU temperatures and utilization, active-dGPU VRAM and power, fan RPM and curve ownership, memory, NVMe read/write rate, and storage/DIMM temperatures. It controls battery care, firmware thermal profiles, confirmed graphics modes, display and keyboard brightness, and panel overdrive; full fan-curve editing opens ROG Control Center. Raw PWM, CPU-governor, and TDP writes stay out of AGS. Brightness writes target the FA507XV backlight through `brightnessctl`'s native systemd-logind path, without a new host permission.
 - The right overlay exposes Wi-Fi, Bluetooth, audio, Astal do-not-disturb, active notifications and history, a native calendar, and today's read-only schedule. Native NetworkManager, Blueman, PulseAudio, and Obsidian applications remain the advanced settings surfaces.
 - Both sidebars follow the focused monitor, slide through Hyprland's native layer animation, exclude one another and the launcher, close on Escape or outside click, and poll only while visible.
 
@@ -59,5 +59,6 @@ Hyprland now starts Astal and AGS, and its shell keybindings target AGS. Waybar,
 9. **Environment and tooling — implemented:** give Hyprland applications and every Zsh the same deduplicated user-tool path, propagate it to D-Bus and systemd, and make Code OSS extension synchronization fail visibly instead of hiding query or installation errors.
 10. **Keybind reference — implemented:** add a square AGS overlay on `SUPER /` that renders the maintained keybind tables, closes with Escape or an outside click, and remains mutually exclusive with the launcher and sidebars.
 11. **Power and idle controls — implemented:** verify all seven fixed Power actions and host prerequisites, clear GRUB's one-shot Windows entry if reboot fails, keep failures in Power mode, and restore a visible GTK idle inhibitor to every AGS bar without stopping Hypridle.
+12. **Shell density and hardware detail — implemented:** enlarge bar text and glyphs without changing its 40-pixel reservation, dim all active outputs behind the focused launcher, move mode shortcuts to `Alt-Shift`, and replace the laptop stack with a live two-column dashboard and safe supported ASUS controls.
 
 Future additions are maintenance rather than another broad import: benchmark and choose one owner for CPU/power policy before replacing the current `auto-cpufreq` plus `asusd` arrangement, promote a long-tail application setting only after it proves stable, and retire the Waybar/Rofi/Mako recovery set only after enough daily use makes that rollback unnecessary. `asusd` and `auto-cpufreq` currently overlap on AMD governor and energy-performance preference writes; never add power-profiles-daemon or TLP to that stack. See the [ASUS Linux Arch guide](https://asus-linux.org/guides/arch-guide/) before changing ownership.

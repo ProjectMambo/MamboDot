@@ -116,6 +116,8 @@ rofi -show drun -show-icons -terminal kitty
 
 Restore the managed shell with a fresh login. For an immediate retry, stop Waybar and Mako, start `astal-notifd daemon`, then run AGS with `GDK_BACKEND=wayland`. Mako and Astal must not compete for `org.freedesktop.Notifications`.
 
+The recovery Waybar uses its native idle inhibitor and natural widget height. It intentionally omits the tray because the installed multi-output build cannot safely parent one tray across both output bars; AGS remains the complete tray shell.
+
 ## Power actions
 
 After the `script` Stow package is linked, the shared backend accepts one fixed action:

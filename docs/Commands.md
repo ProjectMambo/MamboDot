@@ -73,6 +73,7 @@ The standalone daemon remains the notification owner while AGS restarts and AGS 
 
 ```bash
 ags toggle launcher
+ags toggle keybinds
 ags toggle sidebar-left
 ags toggle sidebar-right
 ags request bar toggle
@@ -93,7 +94,7 @@ ags request launcher clipboard
 
 Apps searches visible desktop entries; `prime` launches the selected application with the dedicated-GPU environment. Run parses a command into an argument vector and does not invoke a shell, so pipes, redirects, globs, and substitutions are not expanded. Windows focuses a mapped Hyprland client. Power exposes only the fixed actions documented below. Clipboard searches newest-first Cliphist entries and copies the selected bytes unchanged, including images. Use `Ctrl-1` through `Ctrl-5` to change mode and `Alt-1` through `Alt-9` to activate a visible result.
 
-The bar exposes the same three shell toggles. The launcher and sidebars follow the focused monitor, exclude one another, and close with Escape or an outside click. Sidebar telemetry refreshes only while its panel is visible. The forced GTK backend is intentional because an XWayland-launched terminal may otherwise make GTK layer-shell unavailable.
+The bar exposes the launcher and sidebar toggles. The keybind sheet, launcher, and sidebars follow the focused monitor, exclude one another, and close with Escape or an outside click. The sheet renders the maintained tables from `docs/Keybinds.md`; toggle it with `SUPER /` or the command above. Sidebar telemetry refreshes only while its panel is visible. The forced GTK backend is intentional because an XWayland-launched terminal may otherwise make GTK layer-shell unavailable.
 
 The left panel uses `asusctl` and `supergfxctl` without `sudo`; graphics-mode changes require an explicit second confirmation and never log out or reboot automatically. Brightness controls target `nvidia_wmi_ec_backlight` explicitly and let `brightnessctl` use the active session's systemd-logind `SetBrightness` path; no repository-managed backlight permission is required. The right panel reads today's Obsidian `## Schedule` section without writing to the vault and shows the five newest notifications retained by the current AGS process.
 

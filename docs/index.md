@@ -19,7 +19,7 @@ MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a L
 
 - Hyprland windows, workspaces, groups, launchers, input methods, screenshots, media, and power controls.
 - Native display hotplug, output-agnostic wallpapers, and monitor-relative floating-window geometry.
-- An active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, two focused-monitor sidebars, and native notification popups and history.
+- An active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, documentation-backed keybind sheet, two focused-monitor sidebars, and native notification popups and history.
 - Stow packages for the shell, terminal, editors, bar, launcher, file manager, and desktop services.
 - Reviewed package/service manifests with a read-only drift doctor.
 - Generated light and dark palettes supplied by MamboColour.

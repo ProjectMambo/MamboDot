@@ -30,6 +30,7 @@ The active shell uses the already-installed AGS 3, Astal, GTK4, and Gio stack wi
 
 - A hotplug-aware bar is created for each monitor and shows its clickable ten-workspace block, focused title, clock, tray, network, audio, and battery state without hardware polling scripts.
 - A keyboard-first launcher provides Apps, Run, Windows, Power, and binary-safe Clipboard modes, follows the focused monitor, accepts validated AGS requests, supports dedicated-GPU application launch, focuses mapped Hyprland clients, executes commands without a shell, and confirms disruptive power actions.
+- A focused-monitor keybind sheet renders the maintained keybind documentation directly, so the overlay adds no second shortcut registry.
 - Astal owns notification delivery independently of AGS restarts. AGS renders square top-right popups with actions, applies do-not-disturb in the frontend, and retains bounded process-local history without persisting notification bodies.
 - The interface follows MamboSite's dark semantic palette, MamboFont-first typography, opaque bar groups, square controls, strong two-pixel structure, distinct sidebar accents, and short eased state transitions.
 
@@ -56,5 +57,6 @@ Hyprland now starts Astal and AGS, and its shell keybindings target AGS. Waybar,
 7. **Shell stabilization — implemented:** make every bar group opaque, distinguish both sidebar controls, launch desktop applications with the GJS-compatible empty file list, and move clickable workspace and window focus to Hyprland's Lua dispatcher syntax.
 8. **Coverage — implemented:** add reviewed package/service manifests, a read-only machine doctor, and only the stable Code OSS, Dolphin, KDE, Fcitx5, XDG, and host settings that survive the ownership rules above.
 9. **Environment and tooling — implemented:** give Hyprland applications and every Zsh the same deduplicated user-tool path, propagate it to D-Bus and systemd, and make Code OSS extension synchronization fail visibly instead of hiding query or installation errors.
+10. **Keybind reference — implemented:** add a square AGS overlay on `SUPER /` that renders the maintained keybind tables, closes with Escape or an outside click, and remains mutually exclusive with the launcher and sidebars.
 
 Future additions are maintenance rather than another broad import: benchmark and choose one owner for CPU/power policy before replacing the current `auto-cpufreq` plus `asusd` arrangement, promote a long-tail application setting only after it proves stable, and retire the Waybar/Rofi/Mako recovery set only after enough daily use makes that rollback unnecessary. `asusd` and `auto-cpufreq` currently overlap on AMD governor and energy-performance preference writes; never add power-profiles-daemon or TLP to that stack. See the [ASUS Linux Arch guide](https://asus-linux.org/guides/arch-guide/) before changing ownership.

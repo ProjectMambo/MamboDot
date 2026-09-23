@@ -102,6 +102,11 @@ if grep -Eq $'\t(thermald|illogical-impulse-microtex-git-debug|wl-kbptr-debug)$'
     echo 'package manifest includes a reviewed exclusion' >&2
     exit 1
 fi
+if grep -Eq $'\t(auto-cpufreq|power-profiles-daemon|tlp)\.service$' \
+    "$PROJECT_DIR/manifest/services.tsv"; then
+    echo 'service manifest includes a competing power-policy owner' >&2
+    exit 1
+fi
 
 CODE_BIN="$TEST_ROOT/code-bin"
 CODE_LOG="$TEST_ROOT/code.log"

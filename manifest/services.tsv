@@ -1,5 +1,4 @@
 system	NetworkManager.service
-system	auto-cpufreq.service
 system	bluetooth.service
 system	ollama.service
 system	proton.VPN.service

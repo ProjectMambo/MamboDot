@@ -62,14 +62,15 @@ The check covers guarded Stow deployment, stubs `mbcolor` with copies of the cur
 
 ## AGS desktop shell
 
-Hyprland starts a standalone Astal notification daemon and the Stow-managed AGS shell as ordinary session processes:
+Hyprland first propagates its session environment, then starts `mambodot-shell.target`; its shutdown event stops the target again. The systemd user manager supervises the standalone Astal notification daemon, the Stow-managed AGS shell, and separate text and image Cliphist watchers. The target is session-started rather than enabled, so it cannot run before `WAYLAND_DISPLAY` reaches the user manager.
 
 ```bash
-astal-notifd daemon
-env GDK_BACKEND=wayland ags run
+systemctl --user status mambodot-shell.target mambodot-ags.service mambodot-notifd.service 'mambodot-cliphist@*.service'
+systemctl --user restart mambodot-ags.service
+journalctl --user -u mambodot-ags.service -b
 ```
 
-The standalone daemon remains the notification owner while AGS restarts and AGS acts as its visual frontend. No systemd user service is involved. Control the bar, launcher, sidebars, or instance from a terminal with:
+The standalone daemon remains the notification owner while AGS restarts, and AGS acts as its visual frontend. Control the bar, launcher, sidebars, or instance from a terminal with:
 
 ```bash
 ags toggle launcher
@@ -78,7 +79,6 @@ ags toggle sidebar-left
 ags toggle sidebar-right
 ags request bar toggle
 ags list
-ags quit
 ```
 
 Open a specific launcher mode through the validated request interface:
@@ -94,7 +94,7 @@ ags request launcher clipboard
 
 Apps opens the complete sorted list of visible desktop entries and refreshes it whenever the launcher opens; `prime` launches the selected application with the dedicated-GPU environment. Run parses a command into an argument vector and does not invoke a shell, so pipes, redirects, globs, and substitutions are not expanded. Windows focuses a mapped Hyprland client. Power exposes only the fixed actions documented below. Clipboard searches every newest-first Cliphist entry and copies the selected bytes unchanged, including images. Apps and Clipboard use a virtualized scrolling list, so the shell does not create one GTK widget for every stored result. Use `Alt-Shift-1` through `Alt-Shift-5` to change mode, Up/Down or Page Up/Page Down to move through results, Enter to activate the selection, and `Alt-1` through `Alt-9` to activate the first nine results; every result remains clickable.
 
-The two session Cliphist watchers retain up to 5,000 text or image entries in Cliphist's own database. MamboDot does not duplicate that history or silently prune it in AGS. Existing entries remain intact when the watchers restart.
+The two supervised Cliphist watchers retain up to 5,000 text or image entries in Cliphist's own database. MamboDot does not duplicate that history or silently prune it in AGS. Existing entries remain intact when the watchers restart.
 
 The 40-pixel bar exposes larger launcher, sidebar, status, and eye-shaped idle-inhibitor glyphs without reserving more screen space. Click the eye to keep the session awake; its warm background means inhibition is active. The control uses GTK's session idle inhibitor rather than stopping Hypridle, defaults to off, and is released automatically when AGS exits or restarts.
 
@@ -106,17 +106,24 @@ Top-right notification popups support sender actions and dismissal. Do-not-distu
 
 ### Manual recovery
 
-Waybar, Rofi, and Mako remain linked as a reviewed recovery shell. From `SUPER Q`, stop AGS and Astal, then start the old bar and notification daemon; Rofi can be opened directly:
+Waybar, Rofi, and Mako remain linked as a reviewed recovery shell. From `SUPER Q`, stop the managed shell target, then start the old bar and notification daemon; Rofi can be opened directly:
 
 ```bash
-ags quit
-pkill -x astal-notifd
+systemctl --user stop mambodot-shell.target
 env GDK_BACKEND=wayland waybar >/dev/null 2>&1 &
 mako >/dev/null 2>&1 &
 rofi -show drun -show-icons -terminal kitty
 ```
 
-Restore the managed shell with a fresh login. For an immediate retry, stop Waybar and Mako, start `astal-notifd daemon`, then run AGS with `GDK_BACKEND=wayland`. Mako and Astal must not compete for `org.freedesktop.Notifications`.
+Restore the managed shell with a fresh login. For an immediate retry, stop Waybar and Mako, then start the target:
+
+```bash
+pkill -x waybar
+pkill -x mako
+systemctl --user start mambodot-shell.target
+```
+
+Mako and Astal must not compete for `org.freedesktop.Notifications`.
 
 The recovery Waybar uses its native idle inhibitor and natural widget height. It intentionally omits the tray because the installed multi-output build cannot safely parent one tray across both output bars; AGS remains the complete tray shell.
 

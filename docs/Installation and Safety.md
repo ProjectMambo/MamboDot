@@ -74,7 +74,7 @@ Use `all` only after reviewing every package:
 ./script/mambodot.sh link all
 ```
 
-Linking does not install packages, rebuild caches, reload Hyprland, source shell files, or start services.
+Linking does not install packages, rebuild caches, reload Hyprland, source shell files, or start services. The `hypr` package also links the shell's systemd user units. After changing those unit files, run `systemctl --user daemon-reload`; a fresh login is the normal activation path.
 
 ## Configuration coverage
 
@@ -82,7 +82,7 @@ Stow only intentional user preferences. Current ownership is deliberately narrow
 
 | Area | Tracked | Deliberately outside MamboDot |
 |---|---|---|
-| Hyprland and desktop shell | Hyprland, AGS, scripts, Kitty, Avizo, HyprQuickFrame, wl-kbptr, plus Waybar/Rofi/Mako recovery settings | Runtime sockets, logs, notification bodies, clipboard contents, and generated caches |
+| Hyprland and desktop shell | Hyprland, AGS, systemd user units for the shell lifecycle, scripts, Kitty, Avizo, HyprQuickFrame, wl-kbptr, plus Waybar/Rofi/Mako recovery settings | Runtime sockets, logs, notification bodies, clipboard contents, and generated caches |
 | Editors | Neovim configuration; Code OSS settings and reviewed extension IDs | Code chat/session storage, history, logs, machine IDs, and authentication |
 | Developer identity | Git user identity, default branch, and credential-helper choice | `.git-credentials`, `gh/hosts.yml`, tokens, SSH keys, and repository-local settings |
 | File manager and desktop integration | Dolphin preferences, metadata-field visibility, service-menu choices; KDE appearance and I/O policy; XDG MIME and portal defaults | KDE activities, global shortcuts owned by Hyprland, window/session state, trash state, and KDE Connect keys |
@@ -151,7 +151,7 @@ The active login path is `SDDM` → the standard Hyprland session → `/usr/bin/
 |---|---|
 | SDDM's standard Hyprland desktop entry | Session identity: `XDG_CURRENT_DESKTOP`, `XDG_SESSION_DESKTOP`, and `XDG_SESSION_TYPE` |
 | `variables.lua` | XDG base directories, Qt/GTK preferences, and the user-tool `PATH` for applications launched by Hyprland |
-| `exec.lua` | Propagate the environment, including `PATH`, once to D-Bus and the systemd user manager, then start the current session processes |
+| `exec.lua` | Propagate the environment, including `PATH`, once to D-Bus and the systemd user manager, then start `mambodot-shell.target` |
 | Tracked `/etc/environment` host policy | Fcitx input-method variables |
 | `.zshenv` | Apply the same user-tool path prefix to every Zsh, including TTY and SSH shells |
 | `.zshrc` | Interactive shell behavior only; it must not redefine the desktop or input method |
@@ -177,7 +177,7 @@ Reload Hyprland for layout and geometry changes. Hyprpaper reads its configurati
 
 ## AGS shell and recovery
 
-The `ags` Stow package is the active desktop shell: a per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, documentation-backed keybind sheet, two sidebars, and notification popups. Hyprland starts `astal-notifd daemon` and `env GDK_BACKEND=wayland ags run`, keeps both `wl-paste` Cliphist watchers, and no longer starts Waybar or Mako. These are ordinary session processes rather than systemd user services.
+The `ags` Stow package supplies the active desktop UI: a per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, documentation-backed keybind sheet, two sidebars, and notification popups. The `hypr` package supplies its systemd user lifecycle. After propagating the Wayland environment, Hyprland starts `mambodot-shell.target` and stops it again during compositor shutdown; the target supervises Astal, AGS, and both Cliphist watchers and does not start Waybar or Mako. These units are deliberately not enabled under the user manager's default target.
 
 Astal must be the sole owner of `org.freedesktop.Notifications`; it cannot proxy Mako. Waybar, Rofi, and Mako remain linked for manual recovery, but do not start Mako while Astal owns that bus name. The [command reference](Commands.md#manual-recovery) is authoritative for stopping the managed shell and restoring the recovery tools.
 
@@ -196,11 +196,13 @@ The right panel reads only today's `Periodic/` note under `MAMBO_NOTES_DIR` or `
 ## Unlink
 
 ```bash
+systemctl --user stop mambodot-shell.target
 ./script/mambodot.sh unlink hypr kitty zsh
 ./script/mambodot.sh unlink all
+systemctl --user daemon-reload
 ```
 
-Unlinking previews the complete selection before removing managed links. It does not remove application-created runtime files, uninstall packages, or revert settings outside those links.
+Stop the shell target before unlinking `hypr`, which owns its unit files. Unlinking previews the complete selection before removing managed links. It does not remove application-created runtime files, uninstall packages, or revert settings outside those links.
 
 ## Verify
 
@@ -218,4 +220,4 @@ git diff --check
 git status --short
 ```
 
-The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, all 12 staged MamboColour calls, strict Code OSS extension synchronization, the shared user-tool path, an AGS production bundle, all seven fixed power-action mappings and both restart-to-Windows failure paths, the idle-inhibitor wiring, multi-output launcher backdrop and mode-shortcut contracts, hardware telemetry parsers, AGS request grammar, the keybind, schedule, and binary-safe clipboard parser self-checks, session-process ownership, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, the keybind sheet, both AGS sidebars, all launcher modes, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them. Suspend and hibernate prerequisites can be inspected safely, but logout, sleep, restart, Windows boot selection, and shutdown still require deliberate manual testing.
+The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, all 12 staged MamboColour calls, strict Code OSS extension synchronization, the shared user-tool path, an AGS production bundle, all seven fixed power-action mappings and both restart-to-Windows failure paths, the idle-inhibitor wiring, multi-output launcher backdrop and mode-shortcut contracts, hardware telemetry parsers, AGS request grammar, the keybind, schedule, and binary-safe clipboard parser self-checks, systemd shell-unit ownership, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, the keybind sheet, both AGS sidebars, all launcher modes, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them. Suspend and hibernate prerequisites can be inspected safely, but logout, sleep, restart, Windows boot selection, and shutdown still require deliberate manual testing.

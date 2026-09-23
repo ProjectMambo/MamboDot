@@ -44,7 +44,7 @@ The sidebars run with the active shell:
 
 The schedule reader resolves a local daily note such as `Periodic/2026-09-18-W38-D5.md`, tolerates legacy padded ISO-week filenames, reads only the exact `## Schedule` section, and accepts bullets shaped as `- HH:mm - HH:mm event`. Periodic Notes and the weekly generator both use the unpadded `W` format. The reader does not edit or index the vault.
 
-Hyprland now starts Astal and AGS, and its shell keybindings target AGS. Waybar, Rofi, and Mako remain reviewed, linked manual-recovery configuration but are absent from normal startup. Removing them is deliberately deferred until the active shell has enough daily use to make that recovery path unnecessary.
+After propagating the session environment, Hyprland starts one Stow-managed systemd user target. It supervises Astal, AGS, and both Cliphist watchers, while the shell keybindings target AGS. Waybar, Rofi, and Mako remain reviewed, linked manual-recovery configuration but are absent from normal startup. Removing them is deliberately deferred until the active shell has enough daily use to make that recovery path unnecessary.
 
 ## Delivery phases
 
@@ -63,5 +63,6 @@ Hyprland now starts Astal and AGS, and its shell keybindings target AGS. Waybar,
 13. **Deep launcher lists — implemented:** show and keyboard-navigate the complete refreshed desktop-application list, search every retained clipboard entry, virtualize the shared scrolling result view, and raise native Cliphist retention to 5,000 entries without adding a second history store.
 14. **Git coverage — implemented:** Stow the stable global identity, default branch, and helper selection while keeping credential payloads, GitHub authentication, SSH keys, and repository-local settings outside MamboDot.
 15. **Power-policy ownership — implemented:** disable the conflicting `auto-cpufreq` service, keep `asusd` as the sole platform-profile and energy-preference owner, and verify that Quiet remains at `power` after the former writer's update interval.
+16. **Session supervision — implemented:** move AGS, Astal notification ownership, and both 5,000-entry Cliphist watchers into Stow-managed systemd user units, bracket one shell target with Hyprland's propagated startup and shutdown events, and route refresh and recovery through that target.
 
 Future additions are maintenance rather than another broad import: compare battery life and performance before removing the retained `auto-cpufreq` rollback package, promote a long-tail application setting only after it proves stable, and retire the Waybar/Rofi/Mako recovery set only after enough daily use makes that rollback unnecessary. Never add power-profiles-daemon or TLP alongside the selected `asusd` owner. See the [ASUS Linux Arch guide](https://asus-linux.org/guides/arch-guide/) before changing ownership.

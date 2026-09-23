@@ -63,7 +63,7 @@ Using another location requires updating the corresponding path configuration fi
 Each direct child of `dot/` is a Stow package. Prefer an explicit reviewed list:
 
 ```bash
-./script/mambodot.sh link hypr ags script kitty zsh
+./script/mambodot.sh link hypr ags script git kitty zsh
 ```
 
 The command validates every name, previews the complete selection, and only applies it when the preview succeeds. It runs GNU Stow with `--no-folding`, so real parent directories contain leaf symlinks and applications may keep their untracked runtime files beside them. User Stow resource files are ignored, preventing a local `.stowrc` from silently changing this policy.
@@ -84,6 +84,7 @@ Stow only intentional user preferences. Current ownership is deliberately narrow
 |---|---|---|
 | Hyprland and desktop shell | Hyprland, AGS, scripts, Kitty, Avizo, HyprQuickFrame, wl-kbptr, plus Waybar/Rofi/Mako recovery settings | Runtime sockets, logs, notification bodies, clipboard contents, and generated caches |
 | Editors | Neovim configuration; Code OSS settings and reviewed extension IDs | Code chat/session storage, history, logs, machine IDs, and authentication |
+| Developer identity | Git user identity, default branch, and credential-helper choice | `.git-credentials`, `gh/hosts.yml`, tokens, SSH keys, and repository-local settings |
 | File manager and desktop integration | Dolphin preferences, metadata-field visibility, service-menu choices; KDE appearance and I/O policy; XDG MIME and portal defaults | KDE activities, global shortcuts owned by Hyprland, window/session state, trash state, and KDE Connect keys |
 | Input | Fcitx5 profile, hotkeys, Pinyin, punctuation, notifications, and conversion preferences | Mozc history/databases, cached layouts, temporary files, and learned input data |
 | Notes | The read-only AGS schedule integration | The Obsidian vault and `.obsidian`, which remain owned by the Notes project |
@@ -91,6 +92,8 @@ Stow only intentional user preferences. Current ownership is deliberately narrow
 | Other applications | Package presence is recorded in the manifest | Browser/Electron profiles, credentials, cookies, caches, game state, and mixed runtime preference files remain local until a stable leaf file is reviewed |
 
 GTK theme selection is already owned by Hyprland's environment and KDE globals. The current GTK CSS files are stale generated Matugen output without tracked source templates, so duplicating them would make the repository less reproducible rather than more complete.
+
+The tracked Git configuration preserves the current `credential.helper=store` choice but never tracks its payload. Git stores that helper's credentials unencrypted in the mode-600 `~/.git-credentials` file; keep that file local, do not commit or sync it, and choose a different helper before using this profile on a machine where plaintext credential storage is inappropriate.
 
 ## Resolve a conflict
 

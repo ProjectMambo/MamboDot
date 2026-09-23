@@ -30,7 +30,7 @@ This is a personal workstation profile rather than a portable distribution or un
 
 - Hyprland session, hotplug display layout, idle, lock, wallpaper, window, workspace, group, input, and launcher behavior.
 - The active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, keybind sheet, laptop-control sidebar, general/day-planner sidebar, and native notification UI, with Waybar/Rofi/Mako retained for manual recovery.
-- Kitty, Dolphin, KDE, Fcitx5, Zsh, Neovim, Code OSS, notification, and desktop-integration settings.
+- Git, Kitty, Dolphin, KDE, Fcitx5, Zsh, Neovim, Code OSS, notification, and desktop-integration settings.
 - One deduplicated user-tool `PATH` shared by Hyprland applications, D-Bus/systemd user activations, and Zsh.
 - Reviewed Arch/AUR/Flatpak package and system/user service manifests for the current workstation.
 - MamboColour-generated Hyprland and Waybar palettes.
@@ -59,7 +59,7 @@ git clone https://github.com/ProjectMambo/MamboDot.git "$HOME/ProjectMambo/Mambo
 cd "$HOME/ProjectMambo/MamboDot"
 ./script/test.sh
 ./script/mambodot.sh doctor
-./script/mambodot.sh link hypr ags script kitty zsh
+./script/mambodot.sh link hypr ags script git kitty zsh
 ```
 
 Replace that package list with the configuration you reviewed. Do not use `all` before reading [Installation and Safety](docs/Installation%20and%20Safety.md). Existing conflicting files are left unchanged and must be resolved deliberately.
@@ -69,6 +69,7 @@ Replace that package list with the configuration you reviewed. Do not use `all` 
 ```text
 dot/<package>/                 Stow packages rooted at the home directory
 dot/ags/.config/ags/          active AGS bar, launcher, sidebars, notifications, and square Mambo styling
+dot/git/.gitconfig            reviewed Git identity, credential-helper choice, and default branch
 dot/hypr/.config/hypr/        Lua Hyprland entry, modules, rules, and assets
 dot/zsh/.config/zsh/          Zsh configuration and local bookmark storage
 manifest/                     reviewed package and enabled-service inventories

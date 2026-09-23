@@ -264,10 +264,13 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" link all >/dev/null 2>&1
 [[ -L "$ALL_HOME/.config/kiorc" ]]
 [[ -L "$ALL_HOME/.config/nvim/init.lua" ]]
 [[ -L "$ALL_HOME/.config/waybar/config.jsonc" ]]
+[[ -L "$ALL_HOME/.gitconfig" ]]
+[[ ! -e "$ALL_HOME/.git-credentials" ]]
 shell_path="$(ZDOTDIR="$ALL_HOME" PATH=/usr/bin zsh -c 'print -r -- "$PATH"')"
 [[ "$shell_path" == "$HOME/.local/bin:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/.local/share/JetBrains/Toolbox/scripts:/usr/bin" ]]
 HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 [[ ! -e "$ALL_HOME/.config/nvim/init.lua" ]]
+[[ ! -e "$ALL_HOME/.gitconfig" ]]
 
 ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null
@@ -286,9 +289,13 @@ grep -Fq 'Gdk.KEY_exclam' "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'namespace="mambodot-launcher-backdrop"' "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'visible={createBinding(launcher, "visible")}' "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'class="launcher-results-scroll"' "$ags_config/widgets/Launcher.tsx"
-grep -Fq 'Gtk.ListView.new(Gtk.NoSelection.new(resultModel), resultFactory)' \
+grep -Fq 'Gtk.ListView.new(resultSelection, resultFactory)' \
     "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'row.shortcut.visible = item.position < 9' "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'resultList.scroll_to(next, Gtk.ListScrollFlags.SELECT, null)' \
+    "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'Gdk.KEY_Page_Down' "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'applications = loadApplications()' "$ags_config/widgets/Launcher.tsx"
 if grep -Fq 'slice(0, 9)' "$ags_config/widgets/Launcher.tsx"; then
     echo 'launcher results should remain complete and scrollable' >&2
     exit 1

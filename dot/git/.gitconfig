@@ -1,0 +1,7 @@
+[user]
+	email = kohkohnut1202@gmail.com
+	name = KohKoh-Nut
+[credential]
+	helper = store
+[init]
+	defaultBranch = main

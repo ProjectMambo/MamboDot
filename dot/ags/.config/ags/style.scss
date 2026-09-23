@@ -485,7 +485,8 @@ window.Launcher {
   }
 
   .app-row:hover,
-  .app-row:focus {
+  .app-row:focus,
+  .launcher-results row:selected .app-row {
     border-left-color: $brand;
     background: $surface-strong;
   }

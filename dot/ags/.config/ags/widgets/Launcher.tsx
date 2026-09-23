@@ -85,24 +85,26 @@ const powerActions = [
   ["windows", "Restart to Windows", "Select Windows for the next boot", "computer-symbolic", "Restart into Windows now?"],
   ["shutdown", "Shut down", "Power off this computer", "system-shutdown-symbolic", "Shut down now?"],
 ] as const
-const applications = Gio.AppInfo.get_all()
-  .filter((info) => info.should_show())
-  .map((info): Application => {
-    const name = info.get_display_name()
-    const description = info.get_description() ?? ""
+function loadApplications() {
+  return Gio.AppInfo.get_all()
+    .filter((info) => info.should_show())
+    .map((info): Application => {
+      const name = info.get_display_name()
+      const description = info.get_description() ?? ""
 
-    return {
-      info,
-      name,
-      description,
-      nameLower: name.toLocaleLowerCase(),
-      searchable: [name, description, info.get_executable()]
-        .join("\n")
-        .toLocaleLowerCase(),
-      icon: info.get_icon() ?? fallbackIcon,
-    }
-  })
-  .sort((a, b) => a.name.localeCompare(b.name))
+      return {
+        info,
+        name,
+        description,
+        nameLower: name.toLocaleLowerCase(),
+        searchable: [name, description, info.get_executable()]
+          .join("\n")
+          .toLocaleLowerCase(),
+        icon: info.get_icon() ?? fallbackIcon,
+      }
+    })
+    .sort((a, b) => a.name.localeCompare(b.name))
+}
 
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
 
@@ -163,6 +165,7 @@ export default function Launcher(): LauncherController {
   let clipboardItems: ClipboardItem[] = []
   let clipboardGeneration = 0
   let clipboardLoading = false
+  let applications = loadApplications()
   let currentResults: Candidate[] = []
   const hyprland = AstalHyprland.get_default()
   const monitors = createBinding(app, "monitors")
@@ -177,7 +180,8 @@ export default function Launcher(): LauncherController {
   const resultModel = Gtk.StringList.new([])
   const resultFactory = new Gtk.SignalListItemFactory()
   const resultRows = new WeakMap<Gtk.ListItem, ResultRow>()
-  const resultList = Gtk.ListView.new(Gtk.NoSelection.new(resultModel), resultFactory)
+  const resultSelection = Gtk.SingleSelection.new(resultModel)
+  const resultList = Gtk.ListView.new(resultSelection, resultFactory)
   resultList.add_css_class("launcher-results")
 
   resultFactory.connect("setup", (_factory, object) => {
@@ -231,7 +235,16 @@ export default function Launcher(): LauncherController {
       resultModel.get_n_items(),
       items.map((_, index) => String(index)),
     )
+    if (items.length > 0) resultSelection.selected = 0
     if (resultsScroll) resultsScroll.vadjustment.value = resultsScroll.vadjustment.lower
+  }
+
+  function moveResult(offset: number) {
+    if (currentResults.length === 0) return false
+    const current = Math.min(resultSelection.selected, currentResults.length - 1)
+    const next = Math.max(0, Math.min(current + offset, currentResults.length - 1))
+    resultList.scroll_to(next, Gtk.ListScrollFlags.SELECT, null)
+    return true
   }
 
   function launchApplication(candidate: Application) {
@@ -427,6 +440,13 @@ export default function Launcher(): LauncherController {
     }
 
     const modifiers = state & modifierMask
+    if (!pending && modifiers === 0) {
+      if (keyval === Gdk.KEY_Down) return moveResult(1)
+      if (keyval === Gdk.KEY_Up) return moveResult(-1)
+      if (keyval === Gdk.KEY_Page_Down) return moveResult(8)
+      if (keyval === Gdk.KEY_Page_Up) return moveResult(-8)
+    }
+
     if (
       modifiers === (Gdk.ModifierType.ALT_MASK | Gdk.ModifierType.SHIFT_MASK)
     ) {
@@ -475,6 +495,7 @@ export default function Launcher(): LauncherController {
           if (left) left.visible = false
           if (right) right.visible = false
           if (keybinds) keybinds.visible = false
+          if (mode.peek() === "apps") applications = loadApplications()
           const focused = hyprland?.focusedMonitor.name
           const monitor =
             app.get_monitors().find(({ connector }) => connector === focused) ??
@@ -520,7 +541,9 @@ export default function Launcher(): LauncherController {
             if (pending) cancelConfirmation()
             search(text)
           }}
-          onActivate={() => pending ? activate(pending, true) : activate(results.peek()[0])}
+          onActivate={() => pending
+            ? activate(pending, true)
+            : activate(currentResults[resultSelection.selected] ?? currentResults[0])}
           placeholderText={placeholder}
         />
         <box

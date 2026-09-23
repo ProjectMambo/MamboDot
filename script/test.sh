@@ -264,6 +264,10 @@ ALL_HOME="$TEST_ROOT/all-home"
 mkdir -p "$ALL_HOME"
 HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" link all >/dev/null 2>&1
 [[ -L "$ALL_HOME/.config/ags/app.tsx" ]]
+[[ -L "$ALL_HOME/.config/systemd/user/mambodot-shell.target" ]]
+[[ -L "$ALL_HOME/.config/systemd/user/mambodot-ags.service" ]]
+[[ -L "$ALL_HOME/.config/systemd/user/mambodot-notifd.service" ]]
+[[ -L "$ALL_HOME/.config/systemd/user/mambodot-cliphist@.service" ]]
 [[ -L "$ALL_HOME/.config/fcitx5/config" ]]
 [[ -L "$ALL_HOME/.config/dolphinrc" ]]
 [[ -L "$ALL_HOME/.config/kiorc" ]]
@@ -275,6 +279,7 @@ shell_path="$(ZDOTDIR="$ALL_HOME" PATH=/usr/bin zsh -c 'print -r -- "$PATH"')"
 [[ "$shell_path" == "$HOME/.local/bin:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/.local/share/JetBrains/Toolbox/scripts:/usr/bin" ]]
 HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 [[ ! -e "$ALL_HOME/.config/nvim/init.lua" ]]
+[[ ! -e "$ALL_HOME/.config/systemd/user/mambodot-shell.target" ]]
 [[ ! -e "$ALL_HOME/.gitconfig" ]]
 
 ags_config="$PROJECT_DIR/dot/ags/.config/ags"
@@ -347,10 +352,38 @@ shell_rc="$PROJECT_DIR/dot/zsh/.config/zsh/.zshrc"
 [[ "$(grep -Fc 'dbus-update-activation-environment --systemd' "$session_exec")" -eq 1 ]]
 grep -Fq 'XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE' "$session_exec"
 grep -Fq -- '--systemd PATH XDG_CURRENT_DESKTOP' "$session_exec"
-[[ "$(grep -Fc 'astal-notifd daemon' "$session_exec")" -eq 1 ]]
-[[ "$(grep -Fc 'env GDK_BACKEND=wayland ags run' "$session_exec")" -eq 1 ]]
-[[ "$(grep -Fc 'systemctl --user start hyprpolkitagent.service' "$session_exec")" -eq 1 ]]
-[[ "$(grep -Fc 'cliphist -max-items 5000 store' "$session_exec")" -eq 2 ]]
+grep -Fq 'WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE' "$session_exec"
+[[ "$(grep -Fc 'systemctl --user restart mambodot-shell.target' "$session_exec")" -eq 1 ]]
+[[ "$(grep -Fc 'systemctl --user stop mambodot-shell.target' "$session_exec")" -eq 1 ]]
+grep -Fq 'hl.on("hyprland.shutdown"' "$session_exec"
+if grep -Eq 'astal-notifd daemon|ags run|wl-paste .*cliphist' "$session_exec"; then
+    echo 'Hyprland should start only the supervised shell target' >&2
+    exit 1
+fi
+shell_units="$PROJECT_DIR/dot/hypr/.config/systemd/user"
+grep -Fq 'Wants=mambodot-notifd.service mambodot-ags.service' \
+    "$shell_units/mambodot-shell.target"
+grep -Fq 'Wants=mambodot-cliphist@text.service mambodot-cliphist@image.service' \
+    "$shell_units/mambodot-shell.target"
+grep -Fq 'ExecStart=/usr/bin/ags run' "$shell_units/mambodot-ags.service"
+grep -Fq 'BusName=org.freedesktop.Notifications' "$shell_units/mambodot-notifd.service"
+grep -Fq 'ExecStart=/usr/bin/astal-notifd daemon' "$shell_units/mambodot-notifd.service"
+grep -Fq 'ExecStart=/usr/bin/wl-paste --type %i --watch /usr/bin/cliphist -max-items 5000 store' \
+    "$shell_units/mambodot-cliphist@.service"
+for unit in "$shell_units"/*.service; do
+    grep -Fq 'PartOf=mambodot-shell.target' "$unit"
+    grep -Fq 'Restart=on-failure' "$unit"
+done
+if grep -Rq '^\[Install\]' "$shell_units" ||
+    grep -Fq 'mambodot-shell' "$PROJECT_DIR/manifest/services.tsv"; then
+    echo 'session shell units must be started after Hyprland environment propagation, not enabled' >&2
+    exit 1
+fi
+grep -Fq 'systemctl --user restart mambodot-ags.service' "$session_refresh"
+if grep -Eq 'ags quit|ags run' "$session_refresh"; then
+    echo 'refresh should use the supervised AGS unit' >&2
+    exit 1
+fi
 grep -Fq 'ags request launcher clipboard' "$session_keys"
 grep -Fq 'ags toggle sidebar-left' "$session_keys"
 grep -Fq 'ags toggle sidebar-right' "$session_keys"

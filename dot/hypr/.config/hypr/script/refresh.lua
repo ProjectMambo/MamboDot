@@ -5,7 +5,7 @@ function M.refresh()
     return f.new()
         :notify("Refreshing...")
         :exec({
-            "ags quit >/dev/null 2>&1; env GDK_BACKEND=wayland ags run",
+            "systemctl --user restart mambodot-ags.service",
             "hyprctl reload",
         })
         :done()

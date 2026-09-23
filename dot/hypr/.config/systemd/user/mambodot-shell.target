@@ -1,0 +1,5 @@
+[Unit]
+Description=MamboDot desktop shell
+Wants=mambodot-notifd.service mambodot-ags.service
+Wants=mambodot-cliphist@text.service mambodot-cliphist@image.service
+After=mambodot-notifd.service

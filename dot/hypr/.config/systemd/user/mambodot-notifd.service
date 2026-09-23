@@ -1,0 +1,12 @@
+[Unit]
+Description=MamboDot Astal notification daemon
+PartOf=mambodot-shell.target
+Conflicts=mako.service
+
+[Service]
+Type=dbus
+BusName=org.freedesktop.Notifications
+Slice=session.slice
+ExecStart=/usr/bin/astal-notifd daemon
+Restart=on-failure
+RestartSec=1

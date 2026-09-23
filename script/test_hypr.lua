@@ -80,7 +80,7 @@ assert(table.concat(queried_workspaces, ",") == "12,13,special:temp")
 commands = {}
 require("script.refresh").refresh()()
 assert(table.concat(commands, "\n") == table.concat({
-    "ags quit >/dev/null 2>&1; env GDK_BACKEND=wayland ags run",
+    "systemctl --user restart mambodot-ags.service",
     "hyprctl reload",
 }, "\n"))
 

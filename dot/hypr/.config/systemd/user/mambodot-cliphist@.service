@@ -1,0 +1,11 @@
+[Unit]
+Description=MamboDot Cliphist %I watcher
+PartOf=mambodot-shell.target
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=simple
+Slice=session.slice
+ExecStart=/usr/bin/wl-paste --type %i --watch /usr/bin/cliphist -max-items 5000 store
+Restart=on-failure
+RestartSec=1

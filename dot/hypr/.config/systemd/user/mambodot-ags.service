@@ -1,0 +1,15 @@
+[Unit]
+Description=MamboDot AGS shell
+PartOf=mambodot-shell.target
+Wants=mambodot-notifd.service
+After=mambodot-notifd.service
+ConditionEnvironment=WAYLAND_DISPLAY
+ConditionEnvironment=HYPRLAND_INSTANCE_SIGNATURE
+
+[Service]
+Type=simple
+Slice=session.slice
+Environment=GDK_BACKEND=wayland
+ExecStart=/usr/bin/ags run
+Restart=on-failure
+RestartSec=1

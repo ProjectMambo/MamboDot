@@ -70,6 +70,8 @@ systemctl --user restart mambodot-ags.service
 journalctl --user -u mambodot-ags.service -b
 ```
 
+Long-lived applications launched by AGS, including Apps and Run selections, enter transient `app.slice` scopes. Restarting `mambodot-ags.service` therefore neither terminates those applications nor leaves their resource accounting attached to the shell service. The Astal daemon discards standard output so notification bodies are not persisted in the user journal; standard error remains journaled for diagnosis.
+
 The standalone daemon remains the notification owner while AGS restarts, and AGS acts as its visual frontend. Control the bar, launcher, sidebars, or instance from a terminal with:
 
 ```bash

@@ -179,6 +179,9 @@ Reload Hyprland for layout and geometry changes. Hyprpaper reads its configurati
 
 The `ags` Stow package supplies the active desktop UI: a per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, documentation-backed keybind sheet, two sidebars, and notification popups. The `hypr` package supplies its systemd user lifecycle. After propagating the Wayland environment, Hyprland starts `mambodot-shell.target` and stops it again during compositor shutdown; the target supervises Astal, AGS, and both Cliphist watchers and does not start Waybar or Mako. These units are deliberately not enabled under the user manager's default target.
 
+> [!WARNING]
+> `systemctl --user is-enabled` may report these Stow-backed units as `linked`; that means their files are discoverable, not that the default target starts them. To remove them, stop `mambodot-shell.target` and run `./script/mambodot.sh unlink hypr`; never run `systemctl --user disable` on the linked units, because that can remove their Stow symlinks.
+
 Astal must be the sole owner of `org.freedesktop.Notifications`; it cannot proxy Mako. Waybar, Rofi, and Mako remain linked for manual recovery, but do not start Mako while Astal owns that bus name. The [command reference](Commands.md#manual-recovery) is authoritative for stopping the managed shell and restoring the recovery tools.
 
 The left panel reads `/proc`, reviewed sysfs status, `sensors`, and `nvidia-smi` only while visible. It queries NVIDIA only when `supergfxctl` reports the dGPU active, avoiding a periodic wake-up while it sleeps. Firmware thermal profiles provide the safe quick fan control; the Advanced button opens ROG Control Center for deliberate curve editing. AGS never writes raw PWM, CPU-governor, boost, or TDP values, and it confirms every graphics-mode request because that change may require logout or reboot. It never performs that disruptive follow-up itself.

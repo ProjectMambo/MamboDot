@@ -8,5 +8,6 @@ Type=dbus
 BusName=org.freedesktop.Notifications
 Slice=session.slice
 ExecStart=/usr/bin/astal-notifd daemon
+StandardOutput=null
 Restart=on-failure
 RestartSec=1

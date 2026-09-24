@@ -286,7 +286,16 @@ ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null
 [[ -x "$TEST_ROOT/mambodot-ags" ]]
 grep -Fq 'GLib.shell_parse_argv' "$ags_config/widgets/Launcher.tsx"
-grep -Fq 'candidate.info.launch([], context)' "$ags_config/widgets/Launcher.tsx"
+grep -Fq '["/usr/bin/gtk4-launch", id]' "$ags_config/widgets/Launcher.tsx"
+grep -Fq 'launchScoped(argv)' "$ags_config/widgets/Launcher.tsx"
+if grep -Fq 'candidate.info.launch(' "$ags_config/widgets/Launcher.tsx" ||
+    grep -Fq 'Gio.Subprocess.new(argv' "$ags_config/widgets/Launcher.tsx"; then
+    echo 'launcher children should leave the AGS service cgroup' >&2
+    exit 1
+fi
+grep -Fq 'launchScoped(["nm-connection-editor"])' "$ags_config/widgets/Bar.tsx"
+grep -Fq 'launchScoped(["rog-control-center"])' "$ags_config/widgets/LeftSidebar.tsx"
+grep -Fq 'launchScoped(command)' "$ags_config/widgets/RightSidebar.tsx"
 grep -Fq "hl.dsp.focus({ window = \"address:0x\${client.address}\" })" \
     "$ags_config/widgets/Launcher.tsx"
 grep -Fq "hl.dsp.focus({ workspace = \${id} })" "$ags_config/widgets/Bar.tsx"
@@ -306,6 +315,7 @@ grep -Fq 'resultList.scroll_to(next, Gtk.ListScrollFlags.SELECT, null)' \
     "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'Gdk.KEY_Page_Down' "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'applications = loadApplications()' "$ags_config/widgets/Launcher.tsx"
+grep -Fq '!icon.file.query_exists(null)' "$ags_config/widgets/Launcher.tsx"
 if grep -Fq 'slice(0, 9)' "$ags_config/widgets/Launcher.tsx"; then
     echo 'launcher results should remain complete and scrollable' >&2
     exit 1
@@ -328,6 +338,9 @@ grep -Fq '"panel_overdrive"' "$ags_config/widgets/LeftSidebar.tsx"
 grep -Fq '"rog-control-center"' "$ags_config/widgets/LeftSidebar.tsx"
 grep -Fq 'ags request bar toggle | launcher apps [prime]|run|windows|power|clipboard' \
     "$ags_config/app.tsx"
+ags bundle "$ags_config/lib/launch.ts" "$TEST_ROOT/mambodot-launch-test" \
+    --root "$ags_config" --gtk 4 >/dev/null
+XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-launch-test"
 ags bundle "$ags_config/lib/schedule.ts" "$TEST_ROOT/mambodot-schedule-test" \
     --root "$ags_config" --gtk 4 >/dev/null
 XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-schedule-test"
@@ -368,6 +381,7 @@ grep -Fq 'Wants=mambodot-cliphist@text.service mambodot-cliphist@image.service' 
 grep -Fq 'ExecStart=/usr/bin/ags run' "$shell_units/mambodot-ags.service"
 grep -Fq 'BusName=org.freedesktop.Notifications' "$shell_units/mambodot-notifd.service"
 grep -Fq 'ExecStart=/usr/bin/astal-notifd daemon' "$shell_units/mambodot-notifd.service"
+grep -Fq 'StandardOutput=null' "$shell_units/mambodot-notifd.service"
 grep -Fq 'ExecStart=/usr/bin/wl-paste --type %i --watch /usr/bin/cliphist -max-items 5000 store' \
     "$shell_units/mambodot-cliphist@.service"
 for unit in "$shell_units"/*.service; do

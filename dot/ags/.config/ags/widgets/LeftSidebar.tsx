@@ -5,7 +5,6 @@ import { readFile } from "ags/file"
 import { execAsync } from "ags/process"
 import { interval } from "ags/time"
 import AstalBattery from "gi://AstalBattery"
-import Gio from "gi://Gio"
 import GLib from "gi://GLib"
 import {
   cpuUsage,
@@ -17,6 +16,7 @@ import {
   type CpuSample,
   type DiskSample,
 } from "../lib/hardware"
+import { launchScoped } from "../lib/launch"
 
 export type PanelContent = {
   widget: Gtk.Widget
@@ -321,7 +321,7 @@ export default function LeftSidebar(): PanelContent {
 
   function launchCurves() {
     try {
-      Gio.Subprocess.new(["rog-control-center"], Gio.SubprocessFlags.NONE)
+      launchScoped(["rog-control-center"])
     } catch (error) {
       setMessage(`Unavailable: ${error instanceof Error ? error.message : String(error)}`)
     }

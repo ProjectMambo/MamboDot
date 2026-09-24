@@ -13,6 +13,7 @@ import Gio from "gi://Gio"
 import GLib from "gi://GLib"
 import Graphene from "gi://Graphene"
 import { copyClipboard, listClipboard, type ClipboardItem } from "../lib/clipboard"
+import { launchScoped } from "../lib/launch"
 
 export type LauncherMode = "apps" | "run" | "windows" | "power" | "clipboard"
 
@@ -91,6 +92,7 @@ function loadApplications() {
     .map((info): Application => {
       const name = info.get_display_name()
       const description = info.get_description() ?? ""
+      const icon = info.get_icon()
 
       return {
         info,
@@ -100,7 +102,11 @@ function loadApplications() {
         searchable: [name, description, info.get_executable()]
           .join("\n")
           .toLocaleLowerCase(),
-        icon: info.get_icon() ?? fallbackIcon,
+        icon: icon instanceof Gio.FileIcon &&
+          icon.file.is_native() &&
+          !icon.file.query_exists(null)
+          ? fallbackIcon
+          : icon ?? fallbackIcon,
       }
     })
     .sort((a, b) => a.name.localeCompare(b.name))
@@ -248,13 +254,18 @@ export default function Launcher(): LauncherController {
   }
 
   function launchApplication(candidate: Application) {
-    const context = Gdk.Display.get_default()?.get_app_launch_context() ?? null
-    if (prime.peek() && context) {
-      context.setenv("__NV_PRIME_RENDER_OFFLOAD", "1")
-      context.setenv("__VK_LAYER_NV_optimus", "NVIDIA_only")
-      context.setenv("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
-    }
-    return candidate.info.launch([], context)
+    const id = candidate.info.get_id()
+    if (!id) throw new Error("Application has no desktop ID")
+    launchScoped(
+      ["/usr/bin/gtk4-launch", id],
+      prime.peek()
+        ? {
+            __NV_PRIME_RENDER_OFFLOAD: "1",
+            __VK_LAYER_NV_optimus: "NVIDIA_only",
+            __GLX_VENDOR_LIBRARY_NAME: "nvidia",
+          }
+        : {},
+    )
   }
 
   function applicationCandidates(): Candidate[] {
@@ -279,7 +290,7 @@ export default function Launcher(): LauncherController {
       icon: commandIcon,
       run: () => {
         const [, argv] = GLib.shell_parse_argv(command)
-        Gio.Subprocess.new(argv, Gio.SubprocessFlags.NONE)
+        launchScoped(argv)
       },
     }]
   }

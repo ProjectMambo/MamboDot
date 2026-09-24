@@ -7,6 +7,7 @@ import { interval } from "ags/time"
 import AstalNetwork from "gi://AstalNetwork"
 import AstalWp from "gi://AstalWp"
 import GLib from "gi://GLib"
+import { launchScoped } from "../lib/launch"
 import { parseSchedule, type ScheduleEntry } from "../lib/schedule"
 import type { PanelContent } from "./LeftSidebar"
 import {
@@ -118,9 +119,11 @@ export default function RightSidebar(): PanelContent {
   }
 
   function launch(command: string[]) {
-    void execAsync(command).catch((error) => {
+    try {
+      launchScoped(command)
+    } catch (error) {
       setMessage(`Unavailable: ${error instanceof Error ? error.message : String(error)}`)
-    })
+    }
   }
 
   function start() {

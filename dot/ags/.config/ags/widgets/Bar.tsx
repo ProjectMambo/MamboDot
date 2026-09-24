@@ -10,6 +10,7 @@ import AstalTray from "gi://AstalTray"
 import AstalWp from "gi://AstalWp"
 import GLib from "gi://GLib"
 import Pango from "gi://Pango"
+import { launchScoped } from "../lib/launch"
 
 const hyprland = AstalHyprland.get_default()!
 const [idleInhibited, setIdleInhibited] = createState(false)
@@ -109,7 +110,7 @@ function Network() {
     <button
       class="status-button network"
       tooltipText={tooltip}
-      onClicked={() => void execAsync(["nm-connection-editor"])}
+      onClicked={() => launchScoped(["nm-connection-editor"])}
     >
       <image iconName={icon} />
     </button>
@@ -124,7 +125,7 @@ function Audio() {
     <button
       class="status-button audio"
       tooltipText="Audio settings"
-      onClicked={() => void execAsync(["pavucontrol"])}
+      onClicked={() => launchScoped(["pavucontrol"])}
     >
       <box spacing={4}>
         <image iconName={createBinding(speaker, "volumeIcon")} />

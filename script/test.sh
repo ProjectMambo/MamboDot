@@ -269,11 +269,13 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" link all >/dev/null 2>&1
 [[ -L "$ALL_HOME/.config/systemd/user/mambodot-notifd.service" ]]
 [[ -L "$ALL_HOME/.config/systemd/user/mambodot-cliphist@.service" ]]
 [[ -L "$ALL_HOME/.config/fcitx5/config" ]]
+[[ -L "$ALL_HOME/.config/rog/rog-control-center.cfg" ]]
 [[ -L "$ALL_HOME/.config/dolphinrc" ]]
 [[ -L "$ALL_HOME/.config/kiorc" ]]
 [[ -L "$ALL_HOME/.config/nvim/init.lua" ]]
 [[ -L "$ALL_HOME/.config/waybar/config.jsonc" ]]
 [[ -L "$ALL_HOME/.gitconfig" ]]
+[[ -L "$ALL_HOME/.local/share/applications/feh.desktop" ]]
 [[ ! -e "$ALL_HOME/.git-credentials" ]]
 shell_path="$(ZDOTDIR="$ALL_HOME" PATH=/usr/bin zsh -c 'print -r -- "$PATH"')"
 [[ "$shell_path" == "$HOME/.local/bin:$HOME/.npm-global/bin:$HOME/.cargo/bin:$HOME/.local/share/JetBrains/Toolbox/scripts:/usr/bin" ]]
@@ -281,6 +283,19 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 [[ ! -e "$ALL_HOME/.config/nvim/init.lua" ]]
 [[ ! -e "$ALL_HOME/.config/systemd/user/mambodot-shell.target" ]]
 [[ ! -e "$ALL_HOME/.gitconfig" ]]
+[[ ! -e "$ALL_HOME/.config/rog/rog-control-center.cfg" ]]
+[[ ! -e "$ALL_HOME/.local/share/applications/feh.desktop" ]]
+
+grep -Fq 'run_in_background: false' \
+    "$PROJECT_DIR/dot/rog/.config/rog/rog-control-center.cfg"
+grep -Fq 'enable_tray_icon: false' \
+    "$PROJECT_DIR/dot/rog/.config/rog/rog-control-center.cfg"
+[[ ! -e "$PROJECT_DIR/dot/rog/.config/rog/aura-default.ron" ]]
+[[ ! -e "$PROJECT_DIR/dot/rog/.config/rog/rog-user.ron" ]]
+grep -Fq 'Exec=feh --start-at %u' \
+    "$PROJECT_DIR/dot/feh/.local/share/applications/feh.desktop"
+grep -Fq 'NoDisplay=false' \
+    "$PROJECT_DIR/dot/feh/.local/share/applications/feh.desktop"
 
 ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null

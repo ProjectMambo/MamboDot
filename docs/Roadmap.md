@@ -1,12 +1,12 @@
 ---
-title: MamboDot roadmap
+title: Roadmap
 description: Implemented deployment, session, display, AGS shell, and reviewed workstation coverage.
 order: 40
 ---
 
 ::page{layout="docs" width="normal" sidebar=true}
 
-# MamboDot roadmap
+# Roadmap
 
 MamboDot should reproduce intentional workstation configuration without treating volatile application state as configuration. Safe deployment, session environment, displays, the active AGS shell, post-cutover stabilization, reviewed workstation coverage, and user-tool environment hardening are implemented.
 

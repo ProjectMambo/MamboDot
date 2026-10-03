@@ -1,12 +1,12 @@
 ---
-title: MamboDot Keybinds
+title: Keybindings
 description: Keyboard and pointer controls defined by the active Hyprland configuration.
 order: 30
 ---
 
 ::page{layout="docs" width="normal" sidebar=true}
 
-# MamboDot Keybinds
+# Keybindings
 
 The AGS keybind sheet renders the tables on this page. `dot/hypr/.config/hypr/keybinds.lua` remains authoritative for live behavior, so update this guide with every binding change.
 

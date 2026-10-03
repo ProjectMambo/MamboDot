@@ -65,16 +65,16 @@ cd "$HOME/ProjectMambo/MamboDot"
 ./script/mambodot.sh link hypr ags script git kitty zsh
 ```
 
-Replace that package list with the configuration you reviewed. Do not use `all` before reading [Installation and Safety](Installation%20and%20Safety.md). Existing conflicting files are left unchanged and must be resolved deliberately.
+Replace that package list with the configuration you reviewed. Do not use `all` before reading [Installation and safety](Installation%20and%20Safety.md). Existing conflicting files are left unchanged and must be resolved deliberately.
 
 ## Documentation
 
 | Goal | Document |
 |---|---|
 | Read the published documentation | [projectmambo.org/mambodot/](https://projectmambo.org/mambodot/) |
-| Review requirements and install safely | [Installation and Safety](Installation%20and%20Safety.md) |
-| Learn desktop shortcuts | [Keybinds](Keybinds.md) |
-| Link configuration, control or recover AGS, regenerate colours, or use `tp` | [Command Reference](Commands.md) |
+| Review requirements and install safely | [Installation and safety](Installation%20and%20Safety.md) |
+| Learn desktop shortcuts | [Keybindings](Keybinds.md) |
+| Link configuration, control or recover AGS, regenerate colours, or use `tp` | [Command reference](Commands.md) |
 | Review implemented milestones and remaining refinements | [Roadmap](Roadmap.md) |
 
 ## Project structure

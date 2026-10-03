@@ -1,12 +1,12 @@
 ---
-title: MamboDot command reference
+title: Command reference
 description: Link configuration, control or recover AGS, run safe power actions, regenerate colour artifacts, install editor extensions, and use the Zsh directory-bookmark helper.
 order: 20
 ---
 
 ::page{layout="docs" width="normal" sidebar=true}
 
-# MamboDot command reference
+# Command reference
 
 ## Configuration links
 

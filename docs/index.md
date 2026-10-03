@@ -25,9 +25,13 @@ MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a L
 - Generated light and dark palettes supplied by MamboColour.
 - Machine-specific monitor, boot, application, and filesystem assumptions.
 
-## Documentation
+## Use and recover MamboDot
 
-::children{view="list" sort="order" direction="asc" show=["title","description"]}
+::children{include=["[[Installation and Safety]]","[[Commands]]","[[Keybinds]]"] view="list" sort="order" direction="asc" show=["title","description"]}
+
+## Plan changes
+
+::children{include=["[[Roadmap]]"] view="list" sort="order" direction="asc" show=["title","description"]}
 
 ## Current status
 

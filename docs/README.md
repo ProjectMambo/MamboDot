@@ -14,19 +14,33 @@
 
 MamboDot is the live, GNU Stow-managed Arch Linux desktop configuration used by Project Mambo. It combines a Lua-driven Hyprland setup with application dotfiles, generated MamboColour themes, shell helpers, and a guarded repository command.
 
-This is a personal workstation profile rather than a portable distribution or unattended installer. Review its paths, hardware identifiers, and applications before using it. Linking is previewed as one operation and stops on existing-file conflicts; MamboDot never adopts home-directory files into the repository.
+## Motivation
 
-## Start here
+MamboDot keeps one reviewable source for the maintainer's intentional workstation configuration while leaving credentials, caches, histories, databases, and other volatile application state on the machine that owns them. Its guarded Stow workflow makes configuration reproducible without silently adopting or overwriting existing home-directory files.
 
-| Goal | Document |
-|---|---|
-| Read the canonical Wiki documentation | [projectmambo.org/mambodot/](https://projectmambo.org/mambodot/) |
-| Review requirements and install safely | [Installation and Safety](Installation%20and%20Safety.md) |
-| Learn desktop shortcuts | [Keybinds](Keybinds.md) |
-| Link configuration, control or recover AGS, regenerate colours, or use `tp` | [Command Reference](Commands.md) |
-| Review implemented milestones and remaining refinements | [Roadmap](Roadmap.md) |
+## Status
 
-## Configuration scope
+MamboDot is active on the maintainer's Arch Linux workstation. It is a personal workstation profile rather than a portable distribution or unattended installer. Review its paths, hardware identifiers, and applications before using it. Linking is previewed as one operation and stops on existing-file conflicts; MamboDot never adopts home-directory files into the repository.
+
+### Machine assumptions
+
+- The checkout lives at `$HOME/ProjectMambo/MamboDot`.
+- Displays use their preferred mode, automatic placement, and scale 1; review the catch-all rule if an output needs a different arrangement.
+- The power menu contains a machine-specific Windows boot target.
+- AGS brightness controls target `nvidia_wmi_ec_backlight` and rely on active-session systemd-logind authorization.
+- Application commands assume the exact programs configured in `variables.lua` and the launch preset.
+- The manifests describe this FA507XV workstation rather than a minimal or distribution-neutral package set.
+- Some visual assets and status modules are specific to the maintainer's hardware and home layout.
+
+Adjust these before activating the configuration on another machine.
+
+## User stories
+
+- As the workstation owner, I can preview and link only the configuration packages I reviewed without replacing unrelated files.
+- As the workstation owner, I can detect missing packages or disabled services without an unattended tool changing the machine.
+- As a maintainer, I can regenerate shared colour artifacts and verify the desktop configuration before committing it.
+
+### Configuration scope
 
 - Hyprland session, hotplug display layout, idle, lock, wallpaper, window, workspace, group, input, and launcher behavior.
 - The active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, keybind sheet, laptop-control sidebar, general/day-planner sidebar, and native notification UI, with Waybar/Rofi/Mako retained for manual recovery.
@@ -41,19 +55,7 @@ This is a personal workstation profile rather than a portable distribution or un
 
 Direct children of `dot/` are Stow packages. `script/mambodot.sh` previews and links or unlinks explicit packages, reports package/service drift with `doctor`, and refreshes reviewed MamboColour output with `update`. None of these commands installs packages, enables services, or reloads the desktop.
 
-## Machine assumptions
-
-- The checkout lives at `$HOME/ProjectMambo/MamboDot`.
-- Displays use their preferred mode, automatic placement, and scale 1; review the catch-all rule if an output needs a different arrangement.
-- The power menu contains a machine-specific Windows boot target.
-- AGS brightness controls target `nvidia_wmi_ec_backlight` and rely on active-session systemd-logind authorization.
-- Application commands assume the exact programs configured in `variables.lua` and the launch preset.
-- The manifests describe this FA507XV workstation rather than a minimal or distribution-neutral package set.
-- Some visual assets and status modules are specific to the maintainer's hardware and home layout.
-
-Adjust these before activating the configuration on another machine.
-
-## Quick start
+## Getting started
 
 ```bash
 git clone https://github.com/ProjectMambo/MamboDot.git "$HOME/ProjectMambo/MamboDot"
@@ -65,7 +67,17 @@ cd "$HOME/ProjectMambo/MamboDot"
 
 Replace that package list with the configuration you reviewed. Do not use `all` before reading [Installation and Safety](Installation%20and%20Safety.md). Existing conflicting files are left unchanged and must be resolved deliberately.
 
-## Repository layout
+## Documentation
+
+| Goal | Document |
+|---|---|
+| Read the published documentation | [projectmambo.org/mambodot/](https://projectmambo.org/mambodot/) |
+| Review requirements and install safely | [Installation and Safety](Installation%20and%20Safety.md) |
+| Learn desktop shortcuts | [Keybinds](Keybinds.md) |
+| Link configuration, control or recover AGS, regenerate colours, or use `tp` | [Command Reference](Commands.md) |
+| Review implemented milestones and remaining refinements | [Roadmap](Roadmap.md) |
+
+## Project structure
 
 ```text
 dot/<package>/                 Stow packages rooted at the home directory
@@ -82,7 +94,7 @@ system/hosts/<host>/          reviewed root-owned host policy, applied explicitl
 docs/                         operating documentation
 ```
 
-## Development checks
+## Validation
 
 The repository has a focused local regression suite, but no CI workflow. Before committing configuration changes, run the available checks and inspect the exact diff:
 
@@ -96,9 +108,18 @@ git diff --check
 git status --short
 ```
 
-Run `./script/mambodot.sh update` as a separate reviewed step only when changing generated MamboColour output.
+The command reference documents the exit-status contract for the repository command. Run `./script/mambodot.sh update` as a separate reviewed step only when changing generated MamboColour output.
 
-## Issues and feedback
+## Development
+
+Canonical documentation lives under `notes/Docs/Projects/MamboDot/`. Edit that source, update the changed page's `updated` field, then synchronize the project and its published mount from the notes repository:
+
+```bash
+cd ~/ProjectMambo/notes
+node Scripts/sync_docs.js --sync MamboDot MamboWiki
+```
+
+Review the generated MamboDot and MamboWiki differences and rerun their owning checks before delivery. Repository `README.md` and `docs/` files are synchronized outputs.
 
 This is a personal desktop environment, so external pull requests are not currently requested. Bug reports and focused suggestions are welcome as repository issues.
 

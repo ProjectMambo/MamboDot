@@ -33,6 +33,10 @@ The command reads `manifest/packages.tsv` and `manifest/services.tsv`, checks Ar
 
 `doctor` is read-only: it does not install, remove, enable, start, or stop anything. The two-column TSV files are the reviewable machine profile; use the reported rows to decide which changes are appropriate for the target host.
 
+## Exit status
+
+`script/mambodot.sh` returns `0` after a successful command, `1` for operational failures such as missing tools, unsafe targets, provider failure, or detected machine drift, and `2` for invalid command syntax, package names, arguments, or manifest vocabulary. A failed child command may propagate its own non-zero status. No success status means that a requested link, unlink, or generated-output replacement completed.
+
 ## Colour update
 
 `script/mambodot.sh` is MamboDot's repository-local adapter for MamboColour. It is not installed as a global command.

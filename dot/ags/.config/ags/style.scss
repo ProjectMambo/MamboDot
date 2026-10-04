@@ -1,17 +1,19 @@
-$background: #181615;
-$surface: #24201e;
-$surface-strong: #3d3633;
-$text: #faf7f2;
-$text-muted: #d5c9b8;
-$text-subtle: #969085;
-$brand: #ff6b57;
-$brand-hover: #ffa775;
-$brand-active: #e65235;
-$on-brand: #181615;
-$focus: #d3a774;
-$success: #64705e;
-$audio: #e08a4f;
-$network: #9cbaac;
+@use "mambocolour" as mambo;
+
+$background: mambo.$bg;
+$surface: mambo.$bg_surface;
+$surface-strong: mambo.$border;
+$text: mambo.$fg;
+$text-muted: mambo.$fg_muted;
+$text-subtle: mambo.$fg_subtle;
+$brand: mambo.$brand;
+$brand-hover: mambo.$brand_hover;
+$brand-active: mambo.$brand_active;
+$on-brand: mambo.$on_brand;
+$focus: mambo.$focus;
+$success: mambo.$success;
+$audio: mambo.$accent_10;
+$network: mambo.$accent_04;
 $motion: 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
 
 window.Bar {

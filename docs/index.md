@@ -8,7 +8,7 @@ order: 30
 
 # MamboDot
 
-MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a Lua-driven Hyprland setup, shared MamboColour output, application settings, and workstation helper scripts.
+MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a Lua-driven Hyprland setup, a pinned MamboColour API boundary, application settings, and workstation helper scripts.
 
 ::button{label="Source code" href="https://github.com/ProjectMambo/MamboDot" variant="secondary" external=true}
 
@@ -22,7 +22,7 @@ MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a L
 - An active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, documentation-backed keybind sheet, two focused-monitor sidebars, and native notification popups and history.
 - Stow packages for the shell, Git defaults, terminal, editors, bar, launcher, file manager, and desktop services.
 - Reviewed package/service manifests with a read-only drift doctor.
-- Generated light and dark palettes supplied by MamboColour.
+- Stable UI roles loaded directly from a vendored MamboColour Lua API, plus MamboDot-owned static adapters and deterministic numbered accents for Hyprlock, Waybar, and AGS.
 - Machine-specific monitor, boot, application, and filesystem assumptions.
 
 ## Use and recover MamboDot

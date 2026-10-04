@@ -14,36 +14,36 @@ trap cleanup EXIT
 
 mkdir -p "$TEST_ROOT/bin" "$TEST_ROOT/runtime"
 chmod 700 "$TEST_ROOT/runtime"
-# shellcheck disable=SC2016 # These lines form the generated mbcolor test double.
-printf '%s\n' \
-    '#!/usr/bin/env bash' \
-    'set -euo pipefail' \
-    'printf "%s|%s|%s|%s\n" "$1" "$2" "$3" "$4" >> "$MAMBODOT_TEST_LOG"' \
-    'case "$2" in hyprlua) extension=lua; source_dir="$MAMBODOT_TEST_PROJECT/dot/hypr/.config/hypr/themes" ;; hyprlang) extension=conf; source_dir="$MAMBODOT_TEST_PROJECT/dot/hypr/.config/hypr/themes" ;; waybar) extension=css; source_dir="$MAMBODOT_TEST_PROJECT/dot/waybar/.config/waybar" ;; esac' \
-    'mkdir -p "$4"' \
-    'if [[ "${MAMBODOT_TEST_GENERATE_NEW:-0}" == 1 ]]; then printf "new\n" > "$4/$1.$extension"; else cp -- "$source_dir/$1.$extension" "$4/$1.$extension"; fi' \
-    > "$TEST_ROOT/bin/mbcolor"
-chmod +x "$TEST_ROOT/bin/mbcolor"
-
-export MAMBODOT_TEST_LOG="$TEST_ROOT/calls.log"
 export MAMBODOT_TEST_PROJECT="$PROJECT_DIR"
-PATH="$TEST_ROOT/bin:$PATH" "$SCRIPT_DIR/mambodot.sh" update >/dev/null
-
-mapfile -t calls < "$MAMBODOT_TEST_LOG"
-[[ ${#calls[@]} -eq 12 ]]
-
-themes=(mamboorchelight mamboorchedark mambooutbacklight mambooutbackdark)
-call_index=0
-for format in hyprlua hyprlang; do
-    for theme in "${themes[@]}"; do
-        [[ "${calls[$call_index]}" == "$theme|$format|--out|/tmp/mambodot-update."*"/hypr" ]]
-        ((call_index += 1))
-    done
+[[ "$(< "$PROJECT_DIR/vendor/mambocolour/REVISION")" == \
+    1c6f928991b3c15f740aa5d5754344ab086e2399 ]]
+[[ -s "$PROJECT_DIR/vendor/mambocolour/LICENSE" ]]
+lua "$SCRIPT_DIR/sync_mambocolour.lua" --check
+if lua "$SCRIPT_DIR/sync_mambocolour.lua" invalid >/dev/null 2>&1; then
+    echo 'MamboColour sync should reject unknown arguments' >&2
+    exit 1
+fi
+for adapter in \
+    "$PROJECT_DIR/dot/hypr/.config/hypr/themes/mambocolour.conf" \
+    "$PROJECT_DIR/dot/waybar/.config/waybar/mambocolour.css" \
+    "$PROJECT_DIR/dot/ags/.config/ags/_mambocolour.scss"; do
+    grep -Fq '1c6f928991b3c15f740aa5d5754344ab086e2399' "$adapter"
 done
-for theme in "${themes[@]}"; do
-    [[ "${calls[$call_index]}" == "$theme|waybar|--out|/tmp/mambodot-update."*"/waybar" ]]
-    ((call_index += 1))
+for old_theme in mamboorchelight mamboorchedark mambooutbacklight mambooutbackdark; do
+    [[ ! -e "$PROJECT_DIR/dot/hypr/.config/hypr/themes/$old_theme.lua" ]]
+    [[ ! -e "$PROJECT_DIR/dot/hypr/.config/hypr/themes/$old_theme.conf" ]]
+    [[ ! -e "$PROJECT_DIR/dot/waybar/.config/waybar/$old_theme.css" ]]
 done
+if grep -ERq \
+    'magma_dust|wildfire|rusty_canyon|baked_brick|crimson_creek|desert_rose|dusty_mauve|wild_plum|berry_bramble|dusk_shadow|canyon_flash|burnt_ochre|iron_oxide|ember_glow|tumbleweed|dry_straw|roasted_cumin|savannah_dusk|desert_sage|dusty_olive|lichen_crust|dry_moss|eucalyptus_leaf|overgrown_fern|swamp_murk|ancient_pine|shale_green|river_ooze|deep_teal|sunken_timber|outback_sky|eucalyptus_smoke|bluestone|storm_canopy|night_monsoon|weathered_wood|termite_mound|dried_bark|burnt_charcoal|crushed_clay' \
+    "$PROJECT_DIR/dot/hypr/.config/hypr/general.lua" \
+    "$PROJECT_DIR/dot/hypr/.config/hypr/windowrules.lua" \
+    "$PROJECT_DIR/dot/hypr/.config/hypr/hyprlock.conf" \
+    "$PROJECT_DIR/dot/waybar/.config/waybar/style.css" \
+    "$PROJECT_DIR/dot/ags/.config/ags/style.scss"; then
+    echo 'active desktop configs must not use MamboColour palette keys' >&2
+    exit 1
+fi
 
 "$SCRIPT_DIR/mambodot.sh" --help | grep -q 'mambodot.sh link PACKAGE'
 "$SCRIPT_DIR/mambodot.sh" --help | grep -q 'mambodot.sh doctor'
@@ -51,15 +51,6 @@ if "$SCRIPT_DIR/mambodot.sh" >/dev/null 2>&1; then
     echo 'mambodot.sh without a command should fail' >&2
     exit 1
 fi
-if PATH="$TEST_ROOT/bin:$PATH" "$SCRIPT_DIR/mambodot.sh" update extra >/dev/null 2>&1; then
-    echo 'mambodot.sh update should reject arguments' >&2
-    exit 1
-fi
-if PATH="/usr/bin:/bin" "$SCRIPT_DIR/mambodot.sh" update >/dev/null 2>&1; then
-    echo 'mambodot.sh update should require mbcolor' >&2
-    exit 1
-fi
-
 DOCTOR_BIN="$TEST_ROOT/doctor-bin"
 mkdir -p "$DOCTOR_BIN"
 # shellcheck disable=SC2016 # These lines form the generated machine-state test double.
@@ -194,30 +185,6 @@ if grep -Eq '(^|[[:space:]])eval([[:space:]]|$)' "$POWER_MENU"; then
     echo 'powermenu should not evaluate action strings' >&2
     exit 1
 fi
-
-TEST_PROJECT="$TEST_ROOT/project"
-mkdir -p \
-    "$TEST_PROJECT/script" \
-    "$TEST_PROJECT/dot/hypr/.config/hypr/themes" \
-    "$TEST_PROJECT/dot/waybar/.config/waybar"
-cp -- "$SCRIPT_DIR/mambodot.sh" "$TEST_PROJECT/script/mambodot.sh"
-for theme in "${themes[@]}"; do
-    printf 'old\n' > "$TEST_PROJECT/dot/hypr/.config/hypr/themes/$theme.lua"
-    printf 'old\n' > "$TEST_PROJECT/dot/hypr/.config/hypr/themes/$theme.conf"
-    printf 'old\n' > "$TEST_PROJECT/dot/waybar/.config/waybar/$theme.css"
-done
-late_target="$TEST_PROJECT/dot/waybar/.config/waybar/mambooutbackdark.css"
-unrelated="$TEST_ROOT/unrelated.css"
-printf 'keep\n' > "$unrelated"
-rm -- "$late_target"
-ln -s "$unrelated" "$late_target"
-if MAMBODOT_TEST_GENERATE_NEW=1 PATH="$TEST_ROOT/bin:$PATH" \
-    "$TEST_PROJECT/script/mambodot.sh" update >/dev/null 2>&1; then
-    echo 'update should refuse a symlink before publishing any output' >&2
-    exit 1
-fi
-[[ "$(cat "$TEST_PROJECT/dot/hypr/.config/hypr/themes/mamboorchelight.lua")" == old ]]
-[[ "$(cat "$unrelated")" == keep ]]
 
 STOW_HOME="$TEST_ROOT/stow-home"
 mkdir -p "$STOW_HOME"

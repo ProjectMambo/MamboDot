@@ -2,13 +2,15 @@
 -- WINDOW RULES
 -- =============================================================================
 local theme = require("variables").theme
+local ui = theme.ui
+local rgb = theme.hypr
 
 -- --- FLOATING ---
 hl.window_rule({
     match = {
         float = true,
     },
-    border_color = theme.color.drk.outback_sky,
+    border_color = rgb(ui:interactive()),
 })
 
 -- --- PINNED ---
@@ -16,7 +18,7 @@ hl.window_rule({
     match = {
         pin = true,
     },
-    border_color = theme.color.drk.dry_straw,
+    border_color = rgb(ui:warning()),
 })
 
 -- --- FLOATING ---

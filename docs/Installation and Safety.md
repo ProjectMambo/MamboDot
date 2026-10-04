@@ -21,7 +21,7 @@ The active configuration references these groups of software:
 - Kitty, Dolphin, FeatherPad, Qalculate-Qt, Neovim, Code OSS, Fastfetch, and KDE/Qt desktop utilities. Waybar, Rofi, and Mako remain recovery dependencies rather than active shell processes.
 - Fcitx5 with Pinyin and Mozc input methods.
 - Avizo volume/brightness helpers, Playerctl, Cliphist, wl-clipboard, wl-kbptr, Quickshell with HyprQuickFrame, and the screenshot tools used by that shell.
-- MamboColour's installed `mbcolor` command. MamboFont is not an installation dependency.
+- A Lua runtime for the vendored MamboColour API and repository checks. MamboColour itself is pinned and copied under `vendor/mambocolour/`; neither an adjacent provider checkout nor the former `mbcolor` command is an installation dependency. MamboFont is not an installation dependency.
 
 The repository does not install system packages or enable services. `manifest/packages.tsv` records the reviewed Arch, foreign/AUR, and Flatpak applications for this workstation; `manifest/services.tsv` records intended system and user enablement. They are a host profile, not an unattended bootstrap or a minimal dependency list.
 
@@ -109,14 +109,24 @@ Do not bypass this process with Stow's `--adopt` option.
 
 ## Optional initialization
 
-Code OSS extensions and generated colour output are explicit, independent actions:
+Code OSS extensions are an explicit, independent action:
 
 ```bash
 ./script/code-oss/install_extensions.sh
-./script/mambodot.sh update
 ```
 
-The extension command accepts no arguments, installs only IDs missing from the reviewed list, and stops if Code OSS cannot list or install extensions. Run `update` only when `mbcolor` is installed and the generated palette artifacts should change. Review its diff before committing.
+The extension command accepts no arguments, installs only IDs missing from the reviewed list, and stops if Code OSS cannot list or install extensions.
+
+## Colour boundary maintenance
+
+The exact MamboColour source revision is recorded in `vendor/mambocolour/REVISION`. Hyprland loads that vendored Lua API directly and uses stable UI roles. Hyprlock, Waybar, and AGS use three committed adapters owned by MamboDot; refresh or verify them separately from deployment:
+
+```bash
+lua script/sync_mambocolour.lua
+lua script/sync_mambocolour.lua --check
+```
+
+The adapter script emits the dark UI roles and 12 deterministic numbered accents. It does not download a provider version or modify the vendored source. To update the dependency, copy the Lua module, all four `palettes/mamboorche/*.csv` files, and the upstream `LICENSE` from one reviewed MamboColour commit; update `REVISION`; run the adapter generator and `./script/test.sh`; then inspect the complete diff. The detailed sequence is in the [command reference](Commands.md#colour-api-and-adapter-refresh).
 
 ## Apply host-specific system policy
 
@@ -223,4 +233,4 @@ git diff --check
 git status --short
 ```
 
-The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, all 12 staged MamboColour calls, strict Code OSS extension synchronization, the shared user-tool path, an AGS production bundle, all seven fixed power-action mappings and both restart-to-Windows failure paths, the idle-inhibitor wiring, multi-output launcher backdrop and mode-shortcut contracts, hardware telemetry parsers, AGS request grammar, the keybind, schedule, and binary-safe clipboard parser self-checks, systemd shell-unit ownership, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, the keybind sheet, both AGS sidebars, all launcher modes, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them. Suspend and hibernate prerequisites can be inspected safely, but logout, sleep, restart, Windows boot selection, and shutdown still require deliberate manual testing.
+The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, the exact vendored MamboColour revision, all three semantic adapters, stable UI roles and deterministic accents, strict Code OSS extension synchronization, the shared user-tool path, an AGS production bundle, all seven fixed power-action mappings and both restart-to-Windows failure paths, the idle-inhibitor wiring, multi-output launcher backdrop and mode-shortcut contracts, hardware telemetry parsers, AGS request grammar, the keybind, schedule, and binary-safe clipboard parser self-checks, systemd shell-unit ownership, monitor-relative sizing, the catch-all display and wallpaper rules, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Test physical display connect/disconnect, the keybind sheet, both AGS sidebars, all launcher modes, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them. Suspend and hibernate prerequisites can be inspected safely, but logout, sleep, restart, Windows boot selection, and shutdown still require deliberate manual testing.

@@ -1,0 +1,31 @@
+/* Generated from MamboColour 1c6f928991b3c15f740aa5d5754344ab086e2399 by script/sync_mambocolour.lua. */
+/* Do not edit; run the sync script instead. */
+@define-color mambo_bg #181615;
+@define-color mambo_bg_surface #24201e;
+@define-color mambo_border #3d3633;
+@define-color mambo_fg #faf7f2;
+@define-color mambo_fg_muted #d5c9b8;
+@define-color mambo_fg_subtle #969085;
+@define-color mambo_brand #ff6b57;
+@define-color mambo_brand_hover #ffa775;
+@define-color mambo_brand_active #e65235;
+@define-color mambo_on_brand #181615;
+@define-color mambo_selection #d44b36;
+@define-color mambo_focus #d3a774;
+@define-color mambo_interactive #7a8574;
+@define-color mambo_interactive_hover #64705e;
+@define-color mambo_success #64705e;
+@define-color mambo_warning #d3a774;
+@define-color mambo_error #d44b36;
+@define-color mambo_accent_01 #a2b088;
+@define-color mambo_accent_02 #657549;
+@define-color mambo_accent_03 #678061;
+@define-color mambo_accent_04 #7da190;
+@define-color mambo_accent_05 #8b9cbd;
+@define-color mambo_accent_06 #627294;
+@define-color mambo_accent_07 #e65235;
+@define-color mambo_accent_08 #d98c84;
+@define-color mambo_accent_09 #9e5b68;
+@define-color mambo_accent_10 #bd6c36;
+@define-color mambo_accent_11 #946b28;
+@define-color mambo_accent_12 #829466;

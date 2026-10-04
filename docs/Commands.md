@@ -1,6 +1,6 @@
 ---
 title: Command reference
-description: Link configuration, control or recover AGS, run safe power actions, regenerate colour artifacts, install editor extensions, and use the Zsh directory-bookmark helper.
+description: Link configuration, control or recover AGS, run safe power actions, refresh colour adapters, install editor extensions, and use the Zsh directory-bookmark helper.
 order: 20
 ---
 
@@ -35,34 +35,46 @@ The command reads `manifest/packages.tsv` and `manifest/services.tsv`, checks Ar
 
 ## Exit status
 
-`script/mambodot.sh` returns `0` after a successful command, `1` for operational failures such as missing tools, unsafe targets, provider failure, or detected machine drift, and `2` for invalid command syntax, package names, arguments, or manifest vocabulary. A failed child command may propagate its own non-zero status. No success status means that a requested link, unlink, or generated-output replacement completed.
+`script/mambodot.sh` accepts exactly `doctor`, `link`, and `unlink`. It returns `0` after a successful command, `1` for operational failures such as missing tools, unsafe targets, or detected machine drift, and `2` for invalid command syntax, package names, arguments, or manifest vocabulary. A failed child command may propagate its own non-zero status. No success status means that a requested link or unlink completed.
 
-## Colour update
+## Colour API and adapter refresh
 
-`script/mambodot.sh` is MamboDot's repository-local adapter for MamboColour. It is not installed as a global command.
+MamboDot vendors the MamboColour Lua API and its four `mamboorche` CSV files at exact provider revision `1c6f928991b3c15f740aa5d5754344ab086e2399`. `vendor/mambocolour/REVISION` records that source revision, and `vendor/mambocolour/LICENSE` preserves the upstream MIT terms. Ordinary desktop startup does not require an adjacent MamboColour checkout or an installed provider command.
+
+Hyprland loads `vendor/mambocolour/lua/mambocolour.lua` directly from `variables.lua`, selects the dark theme, and gives the remaining Lua modules the stable role API. Rules therefore ask for roles such as `fg()`, `border()`, or `interactive()` rather than provider-internal palette names.
+
+Consumers that cannot load Lua use three committed, MamboDot-owned adapters:
+
+| Consumer | Adapter |
+|---|---|
+| Hyprlock | `dot/hypr/.config/hypr/themes/mambocolour.conf` |
+| Waybar | `dot/waybar/.config/waybar/mambocolour.css` |
+| AGS | `dot/ags/.config/ags/_mambocolour.scss` |
+
+Refresh or check those adapters with the consumer-owned script:
 
 ```bash
-./script/mambodot.sh update
+lua script/sync_mambocolour.lua
+lua script/sync_mambocolour.lua --check
 ```
 
-The command requires `mbcolor` on `PATH` and makes exactly 12 calls into a temporary staging directory:
+The script renders the dark UI roles plus 12 deterministic numbered accents, `accent_01` through `accent_12`, selected with seeds 0 through 11. The static formats expose only semantic role names and numbered accents. The script does not fetch or update MamboColour, and `--check` writes nothing; it reports a missing or stale adapter and exits non-zero. The former four palette families, their 12 format-specific files, the `mbcolor` command dependency, and `mambodot.sh update` no longer exist.
 
-| Consumer | Formats per theme | Themes | Calls |
-|---|---|---:|---:|
-| `dot/hypr/.config/hypr/themes/` | `hyprlua`, `hyprlang` | 4 | 8 |
-| `dot/waybar/.config/waybar/` | `waybar` | 4 | 4 |
+To update the pinned provider manually:
 
-The four themes are `mamboorchelight`, `mamboorchedark`, `mambooutbacklight`, and `mambooutbackdark`. All 12 staged files must exist and be non-empty before the wrapper replaces tracked outputs, and symlinked targets are refused. A provider failure therefore leaves the committed model untouched. The command does not compile MamboFont or run font-cache commands.
+1. Review the desired MamboColour commit and its public Lua API.
+2. Replace `vendor/mambocolour/lua/mambocolour.lua`, `vendor/mambocolour/palettes/mamboorche/*.csv`, and `vendor/mambocolour/LICENSE` with the exact files from that one commit.
+3. Replace the single hash in `vendor/mambocolour/REVISION` with that commit ID.
+4. Run `lua script/sync_mambocolour.lua` and then `./script/test.sh`.
+5. Inspect the vendored snapshot, all three adapters, and their embedded revision before committing.
 
-The current tracked model was refreshed and reviewed with MamboColour commit `66f0c26d6d6462c54c023a4842e49dc6fa0b3c1c`.
-
-Run the regression suite after changing the command or its tests:
+Run the regression suite after changing the provider snapshot, adapter script, or its consumers:
 
 ```bash
 ./script/test.sh
 ```
 
-The check covers guarded Stow deployment, stubs `mbcolor` with copies of the current tracked model, verifies the exact staged calls, checks usage failures, and runs focused Lua regressions. It is not currently run by CI.
+The check verifies the exact vendored revision, rejects invalid adapter arguments, checks that all three committed adapters are current, validates stable roles and deterministic accent parity, and runs focused Hyprland Lua regressions alongside the guarded Stow suite. It is not currently run by CI.
 
 ## AGS desktop shell
 

@@ -19,18 +19,6 @@ for path in (table.concat({
     end
 end
 
--- Helper to recursively load themes
-local function load_themes(t)
-    for k, v in pairs(t) do
-        if type(v) == "table" then
-            load_themes(v)
-        else
-            t[k] = require(v)
-        end
-    end
-    return t
-end
-
 -- Environment Variables
 M.env = {
     -- XDG Base Directories
@@ -53,6 +41,13 @@ end
 
 -- Paths
 local projectDir = home .. "/ProjectMambo/MamboDot"
+local mambocolour = dofile(projectDir .. "/vendor/mambocolour/lua/mambocolour.lua")
+local selectedTheme = mambocolour.theme("dark")
+
+local function hyprColour(colour)
+    return "rgb(" .. colour:hex():sub(2) .. ")"
+end
+
 M.paths = {
     hypr   = projectDir .. "/dot/hypr/.config/hypr",
     script = projectDir .. "/script/hypr",
@@ -71,16 +66,10 @@ M.apps = {
 -- Misc
 M.scratchpadName = "minimized"
 
--- Themes (Grouped & Loaded)
-M.theme = load_themes({
-    ui = {
-        lgt = "themes.mamboorchelight",
-        drk = "themes.mamboorchedark",
-    },
-    color = {
-        lgt = "themes.mambooutbacklight",
-        drk = "themes.mambooutbackdark",
-    }
-})
+M.theme = {
+    ui = selectedTheme:ui(),
+    colour = selectedTheme:colour(),
+    hypr = hyprColour,
+}
 
 return M

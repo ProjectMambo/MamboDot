@@ -5,10 +5,19 @@ local commands = {}
 local notifications = {}
 local queried_workspaces = {}
 local environment = {}
+local configurations = {}
+local window_rules = {}
 
 hl = {
     env = function(key, value)
         environment[key] = value
+    end,
+    config = function(value)
+        table.insert(configurations, value)
+    end,
+    layer_rule = function() end,
+    window_rule = function(value)
+        table.insert(window_rules, value)
     end,
     dispatch = function(command)
         table.insert(commands, command)
@@ -36,6 +45,23 @@ hl = {
 }
 
 local variables = require("variables")
+local mambocolour = dofile(root .. "/vendor/mambocolour/lua/mambocolour.lua")
+local dark = mambocolour.theme("dark")
+local light = mambocolour.theme("light")
+assert(dark:ui():fg():hex() == "#faf7f2")
+assert(light:ui():fg():hex() == "#1c1111")
+assert(dark:colour():len() == 21)
+assert(dark:colour():random_seeded(0):hex() == "#a2b088")
+assert(dark:colour():random():hex():match("^#[0-9a-f]+$"))
+assert(variables.theme.ui:fg():hex() == dark:ui():fg():hex())
+assert(variables.theme.colour:len() == dark:colour():len())
+assert(variables.theme.hypr(variables.theme.ui:fg()) == "rgb(faf7f2)")
+require("general")
+require("windowrules")
+assert(configurations[1].general.col.active_border == "rgb(64705e)")
+assert(configurations[1].general.col.inactive_border == "rgb(3d3633)")
+assert(window_rules[1].border_color == "rgb(7a8574)")
+assert(window_rules[2].border_color == "rgb(d3a774)")
 local home = assert(os.getenv("HOME"))
 local user_paths = {
     home .. "/.local/bin",

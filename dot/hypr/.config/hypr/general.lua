@@ -4,6 +4,8 @@
 
 local vars = require("variables")
 local theme = vars.theme
+local ui = theme.ui
+local rgb = theme.hypr
 
 hl.config({
     general = {
@@ -11,8 +13,8 @@ hl.config({
         gaps_out = 5,
         border_size = 2,
         col = {
-            active_border = theme.color.drk.overgrown_fern,
-            inactive_border = theme.color.drk.wild_plum,
+            active_border = rgb(ui:interactive_hover()),
+            inactive_border = rgb(ui:border()),
         },
         layout = "dwindle",
         no_focus_fallback = false,
@@ -37,18 +39,18 @@ hl.config({
     },
     group = {
         col = {
-            border_active = theme.color.drk.deep_teal,
-            border_inactive = theme.color.drk.baked_brick,
+            border_active = rgb(ui:interactive()),
+            border_inactive = rgb(ui:border()),
         },
         groupbar = {
             font_size = 10,
             height = 12,
-            text_color = theme.color.drk.river_silt,
+            text_color = rgb(ui:fg()),
             render_titles = true,
             gradients = true,
             col = {
-                active = theme.color.drk.deep_teal,
-                inactive = theme.color.drk.baked_brick,
+                active = rgb(ui:interactive()),
+                inactive = rgb(ui:border()),
             },
         },
     },

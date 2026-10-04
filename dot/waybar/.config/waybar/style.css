@@ -1,5 +1,4 @@
-@import "mamboorchedark.css";
-@import "mambooutbackdark.css";
+@import "mambocolour.css";
 
 /* --- Global Reset --- */
 * {
@@ -12,14 +11,14 @@
 /* --- Bar Style --- */
 #waybar {
     background-color: transparent;
-    color: @fg;
+    color: @mambo_fg;
 }
 
 /* --- Section Backgrounds (left/center/right groups only) --- */
 .modules-left,
 .modules-center,
 .modules-right {
-    background-color: @bg;
+    background-color: @mambo_bg;
     padding: 0 2px;
 }
 
@@ -27,19 +26,19 @@
 #utils,
 #clock.date,
 #clock.time {
-    background-color: @border;
+    background-color: @mambo_border;
     padding: 0 12px;
     margin: 4px 2px;
-    border: @bg;
+    border: @mambo_bg;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 #hardware,
 #status {
-    background-color: @border;
+    background-color: @mambo_border;
     padding: 0;
     margin: 4px 2px;
-    border: @bg;
+    border: @mambo_bg;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -51,31 +50,31 @@
 }
 
 #memory {
-    color: @desert_sage;
+    color: @mambo_accent_01;
     padding: 0 8px;
 }
 #cpu {
-    color: @tumbleweed;
+    color: @mambo_accent_02;
     padding: 0 8px;
 }
 #disk {
-    color: @eucalyptus_smoke;
+    color: @mambo_accent_05;
     padding: 0 8px;
 }
 #custom-gpu {
-    color: @dusty_mauve;
+    color: @mambo_accent_08;
     padding: 0 8px;
 }
 
 #window {
     margin-left: 8px;
     margin-right: 8px;
-    color: @burnt_charcoal;
+    color: @mambo_fg;
     background-color: transparent;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 #window:hover {
-    color: @dried_bark;
+    color: @mambo_fg_muted;
     transition: none;
 }
 
@@ -88,34 +87,34 @@
     border: none;
     box-shadow: none;
     text-shadow: none;
-    color: @termite_mound;
+    color: @mambo_fg_muted;
     padding: 0 6px;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 #workspaces button.active {
-    color: @burnt_charcoal;
+    color: @mambo_fg;
 }
 #workspaces button:hover {
-    background-color: @fg_muted;
+    background-color: @mambo_fg_muted;
     box-shadow: none;
     text-shadow: none;
     transition: none;
-    color: @crushed_clay;
+    color: @mambo_brand;
 }
 #workspaces button.active:hover {
-    color: @dusk_shadow;
+    color: @mambo_brand_hover;
 }
 #workspaces button.urgent {
-    color: @brand;
+    color: @mambo_brand;
 }
 
 #clock.date {
     margin-left: 2px;
-    color: @burnt_charcoal;
+    color: @mambo_fg;
 }
 #clock.time {
     margin-right: 2px;
-    color: @burnt_charcoal;
+    color: @mambo_fg;
     font-weight: 500;
 }
 
@@ -127,62 +126,62 @@
 }
 
 #idle_inhibitor {
-    color: @dry_straw;
+    color: @mambo_warning;
     padding: 0 8px;
 }
 #idle_inhibitor.activated {
-    color: @wild_plum;
+    color: @mambo_accent_09;
 }
 
 /* Network States */
 #network {
-    color: @dry_moss;
+    color: @mambo_success;
     padding: 0 8px;
 }
 #network.disconnected {
-    color: @crimson_creek;
+    color: @mambo_error;
 }
 #network.ethernet {
-    color: @bluestone;
+    color: @mambo_accent_06;
 }
 
 /* Bluetooth States */
 #bluetooth {
-    color: @termite_mound;
+    color: @mambo_fg_muted;
     padding: 0 8px;
 }
 #bluetooth.connected {
-    color: @bluestone;
+    color: @mambo_accent_06;
 }
 #bluetooth.off {
-    color: @baked_brick;
+    color: @mambo_brand_active;
 }
 
 /* Audio States */
 #pulseaudio {
-    color: @burnt_ochre;
+    color: @mambo_accent_10;
     padding: 0 8px;
 }
 #pulseaudio.muted {
-    color: @crimson_creek;
+    color: @mambo_error;
 }
 
 /* Battery States */
 #battery {
-    color: @river_ooze;
+    color: @mambo_accent_04;
     padding: 0 8px;
 }
 #battery.charging {
-    color: @lichen_crust;
+    color: @mambo_accent_12;
 }
 #battery.plugged {
-    color: @savannah_dusk;
+    color: @mambo_accent_11;
 }
 #battery.warning:not(.charging) {
-    color: @berry_bramble;
+    color: @mambo_focus;
 }
 #battery.critical:not(.charging) {
-    color: @brand;
+    color: @mambo_error;
     animation-name: blink;
     animation-duration: 1s;
     animation-iteration-count: infinite;
@@ -214,7 +213,7 @@
 #battery:hover,
 #clock.date:hover,
 #clock.time:hover {
-    background-color: @fg_muted;
+    background-color: @mambo_fg_muted;
     box-shadow: none;
     text-shadow: none;
     transition: none;
@@ -222,87 +221,87 @@
 
 /* Darker text variants on hover, per widget */
 #memory:hover {
-    color: @swamp_murk;
+    color: @mambo_interactive_hover;
 }
 #cpu:hover {
-    color: @savannah_dusk;
+    color: @mambo_accent_11;
 }
 #disk:hover {
-    color: @storm_canopy;
+    color: @mambo_accent_05;
 }
 #custom-gpu:hover {
-    color: @berry_bramble;
+    color: @mambo_focus;
 }
 
 #idle_inhibitor:hover {
-    color: @roasted_cumin;
+    color: @mambo_warning;
 }
 #idle_inhibitor.activated:hover {
-    color: @dusk_shadow;
+    color: @mambo_brand_hover;
 }
 
 #network:hover {
-    color: @ancient_pine;
+    color: @mambo_interactive_hover;
 }
 #network.disconnected:hover {
-    color: @crimson_creek;
+    color: @mambo_error;
 }
 #network.ethernet:hover {
-    color: @night_monsoon;
+    color: @mambo_accent_06;
 }
 
 #bluetooth:hover {
-    color: @weathered_wood;
+    color: @mambo_fg_muted;
 }
 #bluetooth.connected:hover {
-    color: @storm_canopy;
+    color: @mambo_accent_05;
 }
 #bluetooth.off:hover {
-    color: @crimson_creek;
+    color: @mambo_error;
 }
 
 #pulseaudio:hover {
-    color: @ember_glow;
+    color: @mambo_brand_hover;
 }
 #pulseaudio.muted:hover {
-    color: @crimson_creek;
+    color: @mambo_error;
 }
 
 #battery:hover {
-    color: @sunken_timber;
+    color: @mambo_interactive;
 }
 #battery.charging:hover {
-    color: @dry_moss;
+    color: @mambo_success;
 }
 #battery.plugged:hover {
-    color: @savannah_dusk;
+    color: @mambo_accent_11;
 }
 #battery.warning:not(.charging):hover {
-    color: @dusk_shadow;
+    color: @mambo_brand_hover;
 }
 #battery.critical:not(.charging):hover {
-    color: @crimson_creek;
+    color: @mambo_error;
 }
 
 #clock.date:hover,
 #clock.time:hover {
-    color: @dusk_shadow;
+    color: @mambo_brand_hover;
 }
 
 /* --- Tooltip Styling --- */
 tooltip {
-    background: @bg;
-    border: 2px solid @dried_bark;
+    background: @mambo_bg;
+    border: 2px solid @mambo_border;
 }
 tooltip label {
-    color: @burnt_charcoal;
+    color: @mambo_fg;
     padding: 2px 4px;
 }
 
 /* --- Animations --- */
 @keyframes blink {
     to {
-        background-color: @bg;
-        color: @dried_bark;
+        background-color: @mambo_bg;
+        color: @mambo_fg_muted;
     }
 }

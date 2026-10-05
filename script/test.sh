@@ -16,7 +16,7 @@ mkdir -p "$TEST_ROOT/bin" "$TEST_ROOT/runtime"
 chmod 700 "$TEST_ROOT/runtime"
 export MAMBODOT_TEST_PROJECT="$PROJECT_DIR"
 [[ "$(< "$PROJECT_DIR/vendor/mambocolour/REVISION")" == \
-    39f0b4e45ce3bb7be8a3ecda8081d7f77c6948e0 ]]
+    c703092a619b3ee9b05503eaf2a553ae52595d35 ]]
 [[ -s "$PROJECT_DIR/vendor/mambocolour/LICENSE" ]]
 lua "$SCRIPT_DIR/sync_mambocolour.lua" --check
 if lua "$SCRIPT_DIR/sync_mambocolour.lua" invalid >/dev/null 2>&1; then
@@ -27,7 +27,7 @@ for adapter in \
     "$PROJECT_DIR/dot/hypr/.config/hypr/themes/mambocolour.conf" \
     "$PROJECT_DIR/dot/waybar/.config/waybar/mambocolour.css" \
     "$PROJECT_DIR/dot/ags/.config/ags/_mambocolour.scss"; do
-    grep -Fq '39f0b4e45ce3bb7be8a3ecda8081d7f77c6948e0' "$adapter"
+    grep -Fq 'c703092a619b3ee9b05503eaf2a553ae52595d35' "$adapter"
 done
 for old_theme in mamboorchelight mamboorchedark mambooutbacklight mambooutbackdark; do
     [[ ! -e "$PROJECT_DIR/dot/hypr/.config/hypr/themes/$old_theme.lua" ]]

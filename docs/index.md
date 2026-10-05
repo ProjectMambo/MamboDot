@@ -22,7 +22,7 @@ MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a L
 - An active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, documentation-backed keybind sheet, two focused-monitor sidebars, and native notification popups and history.
 - Stow packages for the shell, Git defaults, terminal, editors, bar, launcher, file manager, and desktop services.
 - Reviewed package/service manifests with a read-only drift doctor.
-- Stable UI roles loaded directly from a vendored MamboColour Lua API, plus MamboDot-owned static adapters and deterministic numbered accents for Hyprlock, Waybar, and AGS.
+- Stable UI roles and zero-based direct colour access from a vendored MamboColour Lua API, plus MamboDot-owned static adapters and deterministic numbered accents for Hyprlock, Waybar, and AGS.
 - Machine-specific monitor, boot, application, and filesystem assumptions.
 
 ## Use and recover MamboDot

@@ -121,7 +121,7 @@ The extension command accepts no arguments, installs only IDs missing from the r
 
 ## Colour boundary maintenance
 
-The exact MamboColour source revision is `39f0b4e45ce3bb7be8a3ecda8081d7f77c6948e0`, recorded in `vendor/mambocolour/REVISION`. Hyprland loads that vendored Lua API directly and uses stable UI roles. Provider 0.2 eagerly validates both schemes and their paired accent keys and order while loading, and `random_seeded(seed)` accepts the shared `u32` domain `0` through `4294967295`. Hyprlock, Waybar, and AGS use three committed adapters owned by MamboDot; refresh or verify them separately from deployment:
+The exact MamboColour source revision is `c703092a619b3ee9b05503eaf2a553ae52595d35`, recorded in `vendor/mambocolour/REVISION`. Hyprland loads that vendored Lua API directly and uses stable UI roles. Provider 0.3 eagerly validates both schemes and their paired accent keys and order while loading, exposes zero-based `get(index)` for direct colour positions, and keeps `random_seeded(seed)` in the shared `u32` domain `0` through `4294967295`. Hyprlock, Waybar, and AGS use three committed adapters owned by MamboDot; refresh or verify them separately from deployment:
 
 ```bash
 lua script/sync_mambocolour.lua

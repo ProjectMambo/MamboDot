@@ -62,6 +62,9 @@ assert(configurations[1].general.col.active_border == "rgb(64705e)")
 assert(configurations[1].general.col.inactive_border == "rgb(3d3633)")
 assert(window_rules[1].border_color == "rgb(7a8574)")
 assert(window_rules[2].border_color == "rgb(d3a774)")
+assert(dark:colour():get(0):hex() == "#ff6b57")
+assert(light:colour():get(0):hex() == "#b84233")
+assert(dark:colour():get(dark:colour():len()) == nil)
 local home = assert(os.getenv("HOME"))
 local user_paths = {
     home .. "/.local/bin",

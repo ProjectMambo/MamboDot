@@ -39,9 +39,11 @@ The command reads `manifest/packages.tsv` and `manifest/services.tsv`, checks Ar
 
 ## Colour API and adapter refresh
 
-MamboDot vendors the MamboColour Lua API and its four `mamboorche` CSV files at exact provider revision `39f0b4e45ce3bb7be8a3ecda8081d7f77c6948e0`. `vendor/mambocolour/REVISION` records that source revision, and `vendor/mambocolour/LICENSE` preserves the upstream MIT terms. Provider 0.2 eagerly reads and validates all four files together: both UI files must use the exact role sequence, and the light and dark accent files must have matching keys in matching order. Its `random_seeded(seed)` contract is the shared unsigned 32-bit range `0` through `4294967295`; Lua enforces the same bounds as Rust's `u32`. Ordinary desktop startup does not require an adjacent MamboColour checkout or an installed provider command.
+MamboDot vendors the MamboColour Lua API and its four `mamboorche` CSV files at exact provider revision `c703092a619b3ee9b05503eaf2a553ae52595d35`. `vendor/mambocolour/REVISION` records that source revision, and `vendor/mambocolour/LICENSE` preserves the upstream MIT terms. Provider 0.3 eagerly reads and validates all four files together: both UI files must use the exact role sequence, and the light and dark accent files must have matching keys in matching order. `get(index)` provides zero-based direct colour access without exposing private names, while `random_seeded(seed)` accepts the shared unsigned 32-bit range `0` through `4294967295`. Ordinary desktop startup does not require an adjacent MamboColour checkout or an installed provider command.
 
-Hyprland loads `vendor/mambocolour/lua/mambocolour.lua` directly from `variables.lua`, selects the dark theme, and gives the remaining Lua modules the stable role API. Rules therefore ask for roles such as `fg()`, `border()`, or `interactive()` rather than provider-internal palette names.
+Hyprland loads `vendor/mambocolour/lua/mambocolour.lua` directly from `variables.lua`, selects the dark theme, and gives the remaining Lua modules both `ui` and `colour` palettes. MamboDot owns the desktop-specific mapping: a normal active border uses `interactive_hover()`, a normal inactive border uses `border()`, a floating override uses `interactive()`, and a pinned override uses `warning()`. Group borders and groupbar backgrounds use `interactive()` and `border()`, with `fg()` for titles. These are generic provider roles mapped locally; MamboColour does not define `normal`, `floating`, `pinned`, or Hyprland-specific roles.
+
+When a semantic role is not appropriate, Lua consumers can use `theme.colour:get(index)` for a direct zero-based position or the random methods for decorative selection. Descriptive CSV keys remain private. The active window-border mappings intentionally use UI roles rather than fixed colour positions.
 
 Consumers that cannot load Lua use three committed, MamboDot-owned adapters:
 
@@ -58,7 +60,7 @@ lua script/sync_mambocolour.lua
 lua script/sync_mambocolour.lua --check
 ```
 
-The script renders the dark UI roles plus 12 deterministic numbered accents, `accent_01` through `accent_12`, selected with seeds 0 through 11. The static formats expose only semantic role names and numbered accents. The script does not fetch or update MamboColour, and `--check` writes nothing; it reports a missing or stale adapter and exits non-zero. The former four palette families, their 12 format-specific files, the `mbcolor` command dependency, and `mambodot.sh update` no longer exist.
+The script renders the dark UI roles plus 12 deterministic numbered accents, `accent_01` through `accent_12`, selected with seeds 0 through 11. The active AGS and recovery Waybar styles use UI roles for surfaces, text, interaction, and status, then use numbered colour-palette accents for decorative widget identity such as network, audio, hardware, and battery indicators. The script does not fetch or update MamboColour, and `--check` writes nothing; it reports a missing or stale adapter and exits non-zero. The former four palette families, their 12 format-specific files, the `mbcolor` command dependency, and `mambodot.sh update` no longer exist.
 
 To update the pinned provider manually:
 

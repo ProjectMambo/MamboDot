@@ -22,7 +22,7 @@ Use GNU Stow for portable, user-owned text configuration:
 | Obsidian vault and `.obsidian` | Owned by the Notes project; MamboDot owns only the AGS reader and optional `MAMBO_NOTES_DIR` override |
 | Root-owned hardware and login policy | Explicit `system/hosts/<host>/` files applied individually, never normal Stow or wholesale daemon state |
 
-Coverage now includes reviewed Arch/AUR/Flatpak and enabled-service manifests, a read-only machine doctor, Git identity and defaults, every installed Code OSS extension ID, stable Dolphin and KDE leaf settings, Fcitx5 preferences, Feh launcher visibility, ROG Control Center shell-ownership preferences, and the FA507XV SDDM/Fcitx/PAM host policy. Browser and Electron profiles, credentials, histories, learned input data, generated daemon state, and mixed runtime preference files remain local. Additional application settings should be added only when a stable leaf file has a clear owner and does not dirty the repository during ordinary use.
+Coverage now includes reviewed Arch/AUR/Flatpak and enabled-service manifests, a read-only machine doctor with bounded managed-dotfile drift checks, Git identity and defaults, every installed Code OSS extension ID, stable Dolphin and KDE leaf settings, Fcitx5 preferences, Feh launcher visibility, ROG Control Center shell-ownership preferences, and the FA507XV SDDM/Fcitx/PAM host policy. Browser and Electron profiles, credentials, histories, learned input data, generated daemon state, and mixed runtime preference files remain local. Additional application settings should be added only when a stable leaf file has a clear owner and does not dirty the repository during ordinary use.
 
 ## AGS desktop shell
 

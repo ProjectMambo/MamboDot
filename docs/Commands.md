@@ -29,9 +29,9 @@ Compare the current host with the reviewed package and enabled-service manifests
 ./script/mambodot.sh doctor
 ```
 
-The command reads `manifest/packages.tsv` and `manifest/services.tsv`, checks Arch and foreign package provenance, checks Flatpak applications, and checks system and user service enablement. It prints only missing or disabled entries and exits non-zero when the machine drifts. Extra packages and services are intentionally ignored.
+The command reads `manifest/packages.tsv` and `manifest/services.tsv`, checks Arch and foreign package provenance, checks Flatpak applications, and checks system and user service enablement. It also performs a bounded managed-dotfile check: it flags known retired MamboColour links and simulates Stow for packages it can infer are currently or partially linked, reporting missing or wrong links for those packages. Intentionally unlinked packages and packages with no surviving link are not assumed. It prints only missing, disabled, or drifted entries and exits non-zero when the machine drifts. Extra packages and services are intentionally ignored.
 
-`doctor` is read-only: it does not install, remove, enable, start, or stop anything. The two-column TSV files are the reviewable machine profile; use the reported rows to decide which changes are appropriate for the target host.
+`doctor` is read-only: it does not install, remove, enable, start, or stop anything. The two-column TSV files are the reviewable machine profile; use the reported rows to decide which changes are appropriate for the target host. After changing the repository layout, rerun `./script/mambodot.sh link <package>` for each affected package, then run `doctor` again.
 
 ## Exit status
 
@@ -39,7 +39,7 @@ The command reads `manifest/packages.tsv` and `manifest/services.tsv`, checks Ar
 
 ## Colour API and adapter refresh
 
-MamboDot vendors the MamboColour Lua API and its four `mamboorche` CSV files at exact provider revision `1c6f928991b3c15f740aa5d5754344ab086e2399`. `vendor/mambocolour/REVISION` records that source revision, and `vendor/mambocolour/LICENSE` preserves the upstream MIT terms. Ordinary desktop startup does not require an adjacent MamboColour checkout or an installed provider command.
+MamboDot vendors the MamboColour Lua API and its four `mamboorche` CSV files at exact provider revision `39f0b4e45ce3bb7be8a3ecda8081d7f77c6948e0`. `vendor/mambocolour/REVISION` records that source revision, and `vendor/mambocolour/LICENSE` preserves the upstream MIT terms. Provider 0.2 eagerly reads and validates all four files together: both UI files must use the exact role sequence, and the light and dark accent files must have matching keys in matching order. Its `random_seeded(seed)` contract is the shared unsigned 32-bit range `0` through `4294967295`; Lua enforces the same bounds as Rust's `u32`. Ordinary desktop startup does not require an adjacent MamboColour checkout or an installed provider command.
 
 Hyprland loads `vendor/mambocolour/lua/mambocolour.lua` directly from `variables.lua`, selects the dark theme, and gives the remaining Lua modules the stable role API. Rules therefore ask for roles such as `fg()`, `border()`, or `interactive()` rather than provider-internal palette names.
 

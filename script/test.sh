@@ -16,7 +16,7 @@ mkdir -p "$TEST_ROOT/bin" "$TEST_ROOT/runtime"
 chmod 700 "$TEST_ROOT/runtime"
 export MAMBODOT_TEST_PROJECT="$PROJECT_DIR"
 [[ "$(< "$PROJECT_DIR/vendor/mambocolour/REVISION")" == \
-    1c6f928991b3c15f740aa5d5754344ab086e2399 ]]
+    39f0b4e45ce3bb7be8a3ecda8081d7f77c6948e0 ]]
 [[ -s "$PROJECT_DIR/vendor/mambocolour/LICENSE" ]]
 lua "$SCRIPT_DIR/sync_mambocolour.lua" --check
 if lua "$SCRIPT_DIR/sync_mambocolour.lua" invalid >/dev/null 2>&1; then
@@ -27,7 +27,7 @@ for adapter in \
     "$PROJECT_DIR/dot/hypr/.config/hypr/themes/mambocolour.conf" \
     "$PROJECT_DIR/dot/waybar/.config/waybar/mambocolour.css" \
     "$PROJECT_DIR/dot/ags/.config/ags/_mambocolour.scss"; do
-    grep -Fq '1c6f928991b3c15f740aa5d5754344ab086e2399' "$adapter"
+    grep -Fq '39f0b4e45ce3bb7be8a3ecda8081d7f77c6948e0' "$adapter"
 done
 for old_theme in mamboorchelight mamboorchedark mambooutbacklight mambooutbackdark; do
     [[ ! -e "$PROJECT_DIR/dot/hypr/.config/hypr/themes/$old_theme.lua" ]]
@@ -52,7 +52,8 @@ if "$SCRIPT_DIR/mambodot.sh" >/dev/null 2>&1; then
     exit 1
 fi
 DOCTOR_BIN="$TEST_ROOT/doctor-bin"
-mkdir -p "$DOCTOR_BIN"
+DOCTOR_HOME="$TEST_ROOT/doctor-home"
+mkdir -p "$DOCTOR_BIN" "$DOCTOR_HOME"
 # shellcheck disable=SC2016 # These lines form the generated machine-state test double.
 printf '%s\n' \
     '#!/usr/bin/env bash' \
@@ -71,19 +72,30 @@ for command in pacman flatpak systemctl; do
     ln -s mock "$DOCTOR_BIN/$command"
 done
 
-doctor_output="$(PATH="$DOCTOR_BIN:/usr/bin:/bin" "$SCRIPT_DIR/mambodot.sh" doctor)"
+doctor_output="$(HOME="$DOCTOR_HOME" PATH="$DOCTOR_BIN:/usr/bin:/bin" \
+    "$SCRIPT_DIR/mambodot.sh" doctor)"
 [[ "$doctor_output" == *'Machine matches'* ]]
-if MAMBODOT_TEST_MISSING=hyprland PATH="$DOCTOR_BIN:/usr/bin:/bin" \
+if HOME="$DOCTOR_HOME" MAMBODOT_TEST_MISSING=hyprland PATH="$DOCTOR_BIN:/usr/bin:/bin" \
     "$SCRIPT_DIR/mambodot.sh" doctor 2> "$TEST_ROOT/doctor.err"; then
     echo 'doctor should report manifest drift' >&2
     exit 1
 fi
 grep -Fq 'Missing arch package: hyprland' "$TEST_ROOT/doctor.err"
-if PATH="$DOCTOR_BIN:/usr/bin:/bin" "$SCRIPT_DIR/mambodot.sh" doctor extra \
+if HOME="$DOCTOR_HOME" PATH="$DOCTOR_BIN:/usr/bin:/bin" \
+    "$SCRIPT_DIR/mambodot.sh" doctor extra \
     >/dev/null 2>&1; then
     echo 'doctor should reject arguments' >&2
     exit 1
 fi
+
+BOUNDED_HOME="$TEST_ROOT/bounded-home"
+mkdir -p "$BOUNDED_HOME/.config/unmanaged"
+ln -s "$PROJECT_DIR/dot/waybar/.config/waybar/mambocolour.css" \
+    "$BOUNDED_HOME/.config/unmanaged/repo-link"
+bounded_output="$(HOME="$BOUNDED_HOME" PATH="$DOCTOR_BIN:/usr/bin:/bin" \
+    "$SCRIPT_DIR/mambodot.sh" doctor)"
+[[ "$bounded_output" == *'Machine matches'* ]]
+
 LC_ALL=C sort -cu "$PROJECT_DIR/manifest/packages.tsv"
 LC_ALL=C sort -cu "$PROJECT_DIR/manifest/services.tsv"
 awk -F '\t' 'NF != 2 || $1 == "" || $2 == "" { exit 1 }' \
@@ -226,6 +238,47 @@ if HOME="$CONFLICT_HOME" "$SCRIPT_DIR/mambodot.sh" link feh >/dev/null 2>&1; the
 fi
 [[ "$(cat "$CONFLICT_HOME/.config/feh/themes")" == 'home copy' ]]
 [[ "$(cat "$PROJECT_DIR/dot/feh/.config/feh/themes")" == "$repo_theme" ]]
+
+UPGRADE_HOME="$TEST_ROOT/upgrade-home"
+mkdir -p "$UPGRADE_HOME"
+HOME="$UPGRADE_HOME" "$SCRIPT_DIR/mambodot.sh" link hypr ags >/dev/null 2>&1
+rm -- \
+    "$UPGRADE_HOME/.config/hypr/themes/mambocolour.conf" \
+    "$UPGRADE_HOME/.config/ags/_mambocolour.scss"
+retired_target="$(realpath -m --relative-to="$UPGRADE_HOME/.config/hypr/themes" \
+    "$PROJECT_DIR/dot/hypr/.config/hypr/themes/mamboorchedark.conf")"
+ln -s "$retired_target" \
+    "$UPGRADE_HOME/.config/hypr/themes/mamboorchedark.conf"
+if HOME="$UPGRADE_HOME" PATH="$DOCTOR_BIN:/usr/bin:/bin" \
+    "$SCRIPT_DIR/mambodot.sh" doctor 2> "$TEST_ROOT/upgrade-doctor.err"; then
+    echo 'doctor should report managed Stow package drift' >&2
+    exit 1
+fi
+grep -Fq 'Retired Stow link:' "$TEST_ROOT/upgrade-doctor.err"
+grep -Fq 'Stow package drift: ags' "$TEST_ROOT/upgrade-doctor.err"
+grep -Fq 'Stow package drift: hypr' "$TEST_ROOT/upgrade-doctor.err"
+if grep -Fq 'Stow package drift: waybar' "$TEST_ROOT/upgrade-doctor.err"; then
+    echo 'doctor should not require intentionally unlinked packages' >&2
+    exit 1
+fi
+HOME="$UPGRADE_HOME" "$SCRIPT_DIR/mambodot.sh" link hypr ags >/dev/null 2>&1
+[[ ! -L "$UPGRADE_HOME/.config/hypr/themes/mamboorchedark.conf" ]]
+[[ -L "$UPGRADE_HOME/.config/hypr/themes/mambocolour.conf" ]]
+[[ -L "$UPGRADE_HOME/.config/ags/_mambocolour.scss" ]]
+[[ ! -e "$UPGRADE_HOME/.config/waybar/mambocolour.css" ]]
+HOME="$UPGRADE_HOME" PATH="$DOCTOR_BIN:/usr/bin:/bin" \
+    "$SCRIPT_DIR/mambodot.sh" doctor >/dev/null
+rm -- "$UPGRADE_HOME/.config/hypr/themes/mambocolour.conf"
+ln -s "$PROJECT_DIR/README.md" \
+    "$UPGRADE_HOME/.config/hypr/themes/mambocolour.conf"
+if HOME="$UPGRADE_HOME" PATH="$DOCTOR_BIN:/usr/bin:/bin" \
+    "$SCRIPT_DIR/mambodot.sh" doctor 2> "$TEST_ROOT/wrong-link-doctor.err"; then
+    echo 'doctor should report a wrong managed Stow link' >&2
+    exit 1
+fi
+grep -Fq 'Stow package drift: hypr' "$TEST_ROOT/wrong-link-doctor.err"
+[[ "$(readlink "$UPGRADE_HOME/.config/hypr/themes/mambocolour.conf")" == \
+    "$PROJECT_DIR/README.md" ]]
 
 ALL_HOME="$TEST_ROOT/all-home"
 mkdir -p "$ALL_HOME"

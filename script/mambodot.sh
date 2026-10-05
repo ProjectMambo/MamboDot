@@ -13,7 +13,7 @@ usage() {
         '  mambodot.sh unlink PACKAGE...|all' \
         '' \
         'Commands:' \
-        '  doctor         Report missing packages and disabled services' \
+        '  doctor         Report package, service, and managed dotfile drift' \
         '  link PACKAGE   Preview and link selected Stow packages' \
         '  unlink PACKAGE Preview and unlink selected Stow packages'
 }
@@ -95,6 +95,91 @@ run_stow() {
     )
 }
 
+doctor_dotfiles() (
+    local target="${HOME:-}"
+    local source relative package target_path link_target resolved output clean_home retired
+    local status=0
+    local -A managed=()
+
+    if [[ "$target" != /* || "$target" == / || ! -d "$target" ]]; then
+        echo "[!] Refusing unsafe or missing Stow target: $target" >&2
+        return 1
+    fi
+
+    while IFS= read -r -d '' source; do
+        relative="${source#"$DOT_DIR/"}"
+        package="${relative%%/*}"
+        relative="${relative#*/}"
+        target_path="$target/$relative"
+        if [[ -e "$target_path" || -L "$target_path" ]]; then
+            resolved="$(readlink -m -- "$target_path")"
+            if [[ "$resolved" == "$(readlink -m -- "$source")" ]]; then
+                managed["$package"]=1
+            fi
+        fi
+    done < <(find "$DOT_DIR" -mindepth 2 \( -type f -o -type l \) -print0)
+
+    # Keep migration checks bounded to the retired MamboColour files we own.
+    for retired in \
+        'hypr:.config/hypr/themes/mamboorchedark.conf' \
+        'hypr:.config/hypr/themes/mamboorchedark.lua' \
+        'hypr:.config/hypr/themes/mamboorchelight.conf' \
+        'hypr:.config/hypr/themes/mamboorchelight.lua' \
+        'hypr:.config/hypr/themes/mambooutbackdark.conf' \
+        'hypr:.config/hypr/themes/mambooutbacklight.conf' \
+        'hypr:.config/hypr/themes/mambooutbackdark.lua' \
+        'hypr:.config/hypr/themes/mambooutbacklight.lua' \
+        'waybar:.config/waybar/mamboorchedark.css' \
+        'waybar:.config/waybar/mamboorchelight.css' \
+        'waybar:.config/waybar/mambooutbackdark.css' \
+        'waybar:.config/waybar/mambooutbacklight.css'; do
+        package="${retired%%:*}"
+        relative="${retired#*:}"
+        target_path="$target/$relative"
+        [[ -L "$target_path" ]] || continue
+        link_target="$(readlink -- "$target_path")"
+        if [[ "$link_target" != /* ]]; then
+            link_target="$(dirname "$target_path")/$link_target"
+        fi
+        resolved="$(readlink -m -- "$link_target")"
+        if [[ "$resolved" == "$(readlink -m -- "$DOT_DIR/$package/$relative")" ]]; then
+            echo "[!] Retired Stow link: $target_path" >&2
+            managed["$package"]=1
+            status=1
+        fi
+    done
+
+    if [[ ${#managed[@]} -eq 0 ]]; then
+        return "$status"
+    fi
+
+    clean_home="$(mktemp -d /tmp/mambodot-doctor.XXXXXX)"
+    # shellcheck disable=SC2329 # Invoked by the EXIT trap.
+    cleanup_doctor_home() {
+        if [[ -d "$clean_home" && "$clean_home" == /tmp/mambodot-doctor.* ]]; then
+            rm -rf -- "$clean_home"
+        fi
+    }
+    trap cleanup_doctor_home EXIT
+
+    while IFS= read -r package; do
+        [[ -d "$DOT_DIR/$package" ]] || continue
+        if output="$(
+            cd "$clean_home"
+            HOME="$clean_home" stow --simulate --verbose --no-folding \
+                --dir "$DOT_DIR" --target "$target" --stow "$package" 2>&1
+        )"; then
+            if ! grep -Eq '^(LINK|UNLINK|MKDIR|RMDIR|MV):' <<< "$output"; then
+                continue
+            fi
+        fi
+        echo "[!] Stow package drift: $package (run: mambodot.sh link $package)" >&2
+        status=1
+    done < <(printf '%s\n' "${!managed[@]}" | LC_ALL=C sort)
+
+    return "$status"
+)
+
 doctor_machine() {
     local packages="$PROJECT_DIR/manifest/packages.tsv"
     local services="$PROJECT_DIR/manifest/services.tsv"
@@ -110,7 +195,7 @@ doctor_machine() {
         fi
     done
 
-    for item in pacman flatpak systemctl; do
+    for item in pacman flatpak stow systemctl; do
         if ! command -v "$item" >/dev/null 2>&1; then
             echo "[!] Required command not found: $item" >&2
             return 1
@@ -153,8 +238,12 @@ doctor_machine() {
         fi
     done < "$services"
 
+    if ! doctor_dotfiles; then
+        status=1
+    fi
+
     if [[ $status -eq 0 ]]; then
-        echo '[*] Machine matches the package and service manifests.'
+        echo '[*] Machine matches the manifests and managed dotfiles.'
     fi
     return "$status"
 }

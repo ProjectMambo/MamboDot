@@ -33,7 +33,9 @@ Run the read-only doctor before linking or after a system change:
 ./script/mambodot.sh doctor
 ```
 
-It reports missing packages, packages installed from the wrong source class, and disabled services. It ignores extra software and never installs, removes, enables, starts, or stops anything. Review each reported row before changing another machine: entries such as SDDM autologin, SSH, SMB, VPN, NVIDIA, and ASUS laptop services are intentionally specific to this workstation.
+It reports missing packages, packages installed from the wrong source class, disabled services, and bounded managed-dotfile drift. For dotfiles it checks known retired MamboColour links and missing or wrong links only for packages it can infer are currently or partially linked; intentionally unlinked packages and wholly absent packages are not assumed. It ignores extra software and never installs, removes, enables, starts, or stops anything. Review each reported row before changing another machine: entries such as SDDM autologin, SSH, SMB, VPN, NVIDIA, and ASUS laptop services are intentionally specific to this workstation.
+
+After changing the repository layout, rerun `./script/mambodot.sh link <package>` for every affected package, then run `doctor` again. The doctor is read-only and cannot repair links.
 
 The profile deliberately excludes `thermald`, which reports this Ryzen platform as unsupported, and installed `-debug` split packages that are not runtime requirements. Because extras are ignored, `doctor` will not ask to remove them. `asusd` is the sole CPU and platform-profile policy owner: `auto-cpufreq.service` is intentionally disabled because its four-second loop overwrote the ASUS energy-performance preference selected by the bar's Quiet, Balanced, and Performance controls. The `auto-cpufreq` package remains temporarily recorded for rollback comparison, but its service is absent from the intended-service manifest. Do not enable it, power-profiles-daemon, or TLP alongside `asusd`. After a profile change, wait ten seconds and verify every policy still reports the expected preference: `power` for Quiet, `balance_power` for Balanced, or `performance` for Performance. See the [ASUS Linux Arch guide](https://asus-linux.org/guides/arch-guide/) before changing ownership.
 
@@ -66,7 +68,7 @@ Each direct child of `dot/` is a Stow package. Prefer an explicit reviewed list:
 ./script/mambodot.sh link hypr ags script git kitty zsh
 ```
 
-The command validates every name, previews the complete selection, and only applies it when the preview succeeds. It runs GNU Stow with `--no-folding`, so real parent directories contain leaf symlinks and applications may keep their untracked runtime files beside them. User Stow resource files are ignored, preventing a local `.stowrc` from silently changing this policy.
+The command validates every name, previews the complete selection, and only applies it when the preview succeeds. It runs GNU Stow with `--no-folding`, so real parent directories contain leaf symlinks and applications may keep their untracked runtime files beside them. User Stow resource files are ignored, preventing a local `.stowrc` from silently changing this policy. Rerun the affected package's `link` command after repository layout changes; `doctor` reports drift but does not repair it.
 
 Use `all` only after reviewing every package:
 
@@ -119,7 +121,7 @@ The extension command accepts no arguments, installs only IDs missing from the r
 
 ## Colour boundary maintenance
 
-The exact MamboColour source revision is recorded in `vendor/mambocolour/REVISION`. Hyprland loads that vendored Lua API directly and uses stable UI roles. Hyprlock, Waybar, and AGS use three committed adapters owned by MamboDot; refresh or verify them separately from deployment:
+The exact MamboColour source revision is `39f0b4e45ce3bb7be8a3ecda8081d7f77c6948e0`, recorded in `vendor/mambocolour/REVISION`. Hyprland loads that vendored Lua API directly and uses stable UI roles. Provider 0.2 eagerly validates both schemes and their paired accent keys and order while loading, and `random_seeded(seed)` accepts the shared `u32` domain `0` through `4294967295`. Hyprlock, Waybar, and AGS use three committed adapters owned by MamboDot; refresh or verify them separately from deployment:
 
 ```bash
 lua script/sync_mambocolour.lua

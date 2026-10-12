@@ -90,6 +90,8 @@ journalctl --user -u mambodot-ags.service -b
 
 Long-lived applications launched by AGS, including Apps and Run selections, enter transient `app.slice` scopes. Restarting `mambodot-ags.service` therefore neither terminates those applications nor leaves their resource accounting attached to the shell service. The Astal daemon discards standard output so notification bodies are not persisted in the user journal; standard error remains journaled for diagnosis.
 
+Before suspend or hibernate, Hypridle locks the session and stops AGS so GTK and D-Bus state cannot freeze across sleep. Resume starts a fresh supervised AGS instance; clean early exits are retried, and a stuck old process is force-stopped after three seconds. Astal and the Cliphist watchers remain supervised throughout. Hyprlock stays as the authenticated lock client and refreshes its clock every second instead of being replaced.
+
 The standalone daemon remains the notification owner while AGS restarts, and AGS acts as its visual frontend. Control the bar, launcher, sidebars, or instance from a terminal with:
 
 ```bash
@@ -116,7 +118,7 @@ Apps opens the complete sorted list of visible desktop entries and refreshes it 
 
 The two supervised Cliphist watchers retain up to 5,000 text or image entries in Cliphist's own database. MamboDot does not duplicate that history or silently prune it in AGS. Existing entries remain intact when the watchers restart.
 
-The 40-pixel bar exposes larger launcher, sidebar, status, and eye-shaped idle-inhibitor glyphs without reserving more screen space. Click the eye to keep the session awake; its warm background means inhibition is active. The control uses GTK's session idle inhibitor rather than stopping Hypridle, defaults to off, and is released automatically when AGS exits or restarts.
+The 40-pixel bar exposes larger launcher, sidebar, status, and eye-shaped idle-inhibitor glyphs without reserving more screen space. Click the eye to allow or prevent automatic idle locking; its warm background means inhibition is active. The control uses GTK's session idle inhibitor rather than stopping Hypridle and defaults to on whenever AGS starts, including after resume. Turning it off lasts until the next AGS restart. Explicit lock, suspend, and hibernate actions still lock the session.
 
 The keybind sheet, launcher, and sidebars follow the focused monitor, exclude one another, and close with Escape or an outside click. Launcher content stays on the focused monitor while its click-to-close dimming surface covers every active output. The sheet renders the maintained tables from `docs/Keybinds.md`; toggle it with `SUPER /` or the command above. Sidebar telemetry refreshes only while its panel is visible. The forced GTK backend is intentional because an XWayland-launched terminal may otherwise make GTK layer-shell unavailable.
 

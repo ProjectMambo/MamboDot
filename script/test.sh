@@ -334,6 +334,9 @@ grep -Fq 'launchScoped(command)' "$ags_config/widgets/RightSidebar.tsx"
 grep -Fq "hl.dsp.focus({ window = \"address:0x\${client.address}\" })" \
     "$ags_config/widgets/Launcher.tsx"
 grep -Fq "hl.dsp.focus({ workspace = \${id} })" "$ags_config/widgets/Bar.tsx"
+grep -Fq 'hyprland.connect("urgent"' "$ags_config/widgets/Bar.tsx"
+grep -Fq 'hyprland.connect("notify::focused-workspace"' "$ags_config/widgets/Bar.tsx"
+grep -Fq '.workspaces button.attention' "$ags_config/style.scss"
 grep -Fq 'Gtk.ApplicationInhibitFlags.IDLE' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'app.uninhibit(idleInhibitCookie)' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'enableIdleInhibitor()' "$ags_config/app.tsx"
@@ -377,6 +380,9 @@ grep -Fq 'ags request bar toggle | launcher apps [prime]|run|windows|power|clipb
 ags bundle "$ags_config/lib/launch.ts" "$TEST_ROOT/mambodot-launch-test" \
     --root "$ags_config" --gtk 4 >/dev/null
 XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-launch-test"
+ags bundle "$ags_config/lib/workspace.ts" "$TEST_ROOT/mambodot-workspace-test" \
+    --root "$ags_config" --gtk 4 >/dev/null
+XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-workspace-test"
 ags bundle "$ags_config/lib/schedule.ts" "$TEST_ROOT/mambodot-schedule-test" \
     --root "$ags_config" --gtk 4 >/dev/null
 XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-schedule-test"
@@ -397,6 +403,9 @@ session_keys="$PROJECT_DIR/dot/hypr/.config/hypr/keybinds.lua"
 session_refresh="$PROJECT_DIR/dot/hypr/.config/hypr/script/refresh.lua"
 session_vars="$PROJECT_DIR/dot/hypr/.config/hypr/variables.lua"
 shell_rc="$PROJECT_DIR/dot/zsh/.config/zsh/.zshrc"
+
+grep -Fq 'hl.on("monitor.added"' \
+    "$PROJECT_DIR/dot/hypr/.config/hypr/script/monitor.lua"
 
 [[ "$(grep -Fc 'dbus-update-activation-environment --systemd' "$session_exec")" -eq 1 ]]
 grep -Fq 'XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE' "$session_exec"

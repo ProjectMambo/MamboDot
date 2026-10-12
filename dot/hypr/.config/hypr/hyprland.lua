@@ -11,6 +11,7 @@ hl.monitor({
 })
 
 require("variables")
+require("script.monitor")
 require("exec")
 require("general")
 require("keybinds")

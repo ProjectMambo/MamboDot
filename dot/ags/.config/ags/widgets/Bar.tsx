@@ -1,4 +1,4 @@
-import { For, createBinding, createState, onCleanup } from "ags"
+import { For, createBinding, createComputed, createState, onCleanup } from "ags"
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import { execAsync } from "ags/process"
@@ -11,10 +11,28 @@ import AstalWp from "gi://AstalWp"
 import GLib from "gi://GLib"
 import Pango from "gi://Pango"
 import { launchScoped } from "../lib/launch"
+import { clearAttention, markAttention, workspaceClass } from "../lib/workspace"
 
 const hyprland = AstalHyprland.get_default()!
 const [idleInhibited, setIdleInhibited] = createState(false)
+const [attentionWorkspaces, setAttentionWorkspaces] = createState<number[]>([])
 let idleInhibitCookie = 0
+
+hyprland.connect("urgent", (_self, client) => {
+  setAttentionWorkspaces((ids) => markAttention(
+    ids,
+    client.workspace.id,
+    hyprland.focusedWorkspace.id,
+  ))
+})
+
+hyprland.connect("notify::focused-workspace", () => {
+  setAttentionWorkspaces((ids) => clearAttention(ids, hyprland.focusedWorkspace.id))
+})
+
+hyprland.connect("workspace-removed", (_self, id) => {
+  setAttentionWorkspaces((ids) => clearAttention(ids, id))
+})
 
 export function enableIdleInhibitor() {
   if (idleInhibitCookie) return
@@ -66,7 +84,7 @@ function Workspaces({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
         const id = offset + index + 1
         return (
           <button
-            class={active((activeId) => (activeId === id ? "active" : ""))}
+            class={createComputed(() => workspaceClass(id, active(), attentionWorkspaces()))}
             tooltipText={`Workspace ${index + 1}`}
             onClicked={() => void hyprland.message(
               `dispatch hl.dsp.focus({ workspace = ${id} })`,

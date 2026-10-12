@@ -7,6 +7,7 @@ local queried_workspaces = {}
 local environment = {}
 local configurations = {}
 local window_rules = {}
+local events = {}
 
 hl = {
     env = function(key, value)
@@ -16,6 +17,9 @@ hl = {
         table.insert(configurations, value)
     end,
     layer_rule = function() end,
+    on = function(name, callback)
+        events[name] = callback
+    end,
     window_rule = function(value)
         table.insert(window_rules, value)
     end,
@@ -25,12 +29,24 @@ hl = {
     end,
     dsp = {
         exec_cmd = function(command) return command end,
+        focus = function(rules)
+            if rules.monitor then return "focus-monitor:" .. rules.monitor.id end
+            return "focus-workspace:" .. rules.workspace .. ":" .. tostring(rules.on_current_monitor)
+        end,
+        cursor = {
+            move = function(position)
+                return "cursor:" .. position.x .. "," .. position.y
+            end,
+        },
     },
     get_active_monitor = function()
         return { id = 1, x = 1920, y = 100, width = 1920, height = 1080 }
     end,
     get_active_workspace = function()
         return { id = 12, name = "12" }
+    end,
+    get_cursor_pos = function()
+        return { x = 2100, y = 300 }
     end,
     get_workspace_windows = function(workspace)
         table.insert(queried_workspaces, workspace)
@@ -84,6 +100,19 @@ assert(environment.PATH == variables.env.PATH)
 
 local helper = require("script.helper")
 assert(helper.safe(2) == "12")
+
+require("script.monitor")
+assert(type(events["monitor.added"]) == "function")
+events["monitor.added"]({ id = 2, active_workspace = { id = 21 } })
+assert(#commands == 0)
+events["monitor.added"]({ id = 2, active_workspace = { id = 29 } })
+assert(table.concat(commands, ",") == table.concat({
+    "focus-monitor:2",
+    "focus-workspace:21:true",
+    "focus-monitor:1",
+    "cursor:2100,300",
+}, ","))
+commands = {}
 
 local monitor = hl.get_active_monitor()
 local window = { at = { x = 1930, y = 110 }, size = { x = 100, y = 200 } }

@@ -104,6 +104,13 @@ window.Bar {
     font-weight: 700;
   }
 
+  .workspaces button.attention {
+    border-bottom-color: $focus;
+    background: $focus;
+    color: $on-brand;
+    font-weight: 700;
+  }
+
   .window-title {
     padding: 0 8px;
     color: $text-muted;

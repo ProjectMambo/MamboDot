@@ -2,7 +2,7 @@ import { createBinding, For, This } from "ags"
 import app from "ags/gtk4/app"
 import Gtk from "gi://Gtk?version=4.0"
 import style from "./style.scss"
-import Bar from "./widgets/Bar"
+import Bar, { enableIdleInhibitor } from "./widgets/Bar"
 import Keybinds from "./widgets/Keybinds"
 import Launcher, {
   LauncherBackdrop,
@@ -47,6 +47,7 @@ app.start({
     respond("ok")
   },
   main() {
+    enableIdleInhibitor()
     launcher = Launcher()
     app.add_window(launcher.window)
     app.add_window(Keybinds())

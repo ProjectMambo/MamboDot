@@ -336,6 +336,7 @@ grep -Fq "hl.dsp.focus({ window = \"address:0x\${client.address}\" })" \
 grep -Fq "hl.dsp.focus({ workspace = \${id} })" "$ags_config/widgets/Bar.tsx"
 grep -Fq 'Gtk.ApplicationInhibitFlags.IDLE' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'app.uninhibit(idleInhibitCookie)' "$ags_config/widgets/Bar.tsx"
+grep -Fq 'enableIdleInhibitor()' "$ags_config/app.tsx"
 grep -Fq 'execAsync([powerScript, id])' "$ags_config/widgets/Launcher.tsx"
 # shellcheck disable=SC2016 # Match the literal Gnim template expression.
 grep -Fq 'Alt+Shift+${index + 1}' "$ags_config/widgets/Launcher.tsx"
@@ -414,6 +415,8 @@ grep -Fq 'Wants=mambodot-notifd.service mambodot-ags.service' \
 grep -Fq 'Wants=mambodot-cliphist@text.service mambodot-cliphist@image.service' \
     "$shell_units/mambodot-shell.target"
 grep -Fq 'ExecStart=/usr/bin/ags run' "$shell_units/mambodot-ags.service"
+grep -Fq 'Restart=always' "$shell_units/mambodot-ags.service"
+grep -Fq 'TimeoutStopSec=3' "$shell_units/mambodot-ags.service"
 grep -Fq 'BusName=org.freedesktop.Notifications' "$shell_units/mambodot-notifd.service"
 grep -Fq 'ExecStart=/usr/bin/astal-notifd daemon' "$shell_units/mambodot-notifd.service"
 grep -Fq 'StandardOutput=null' "$shell_units/mambodot-notifd.service"
@@ -421,14 +424,26 @@ grep -Fq 'ExecStart=/usr/bin/wl-paste --type %i --watch /usr/bin/cliphist -max-i
     "$shell_units/mambodot-cliphist@.service"
 for unit in "$shell_units"/*.service; do
     grep -Fq 'PartOf=mambodot-shell.target' "$unit"
-    grep -Fq 'Restart=on-failure' "$unit"
 done
+grep -Fq 'Restart=on-failure' "$shell_units/mambodot-notifd.service"
+grep -Fq 'Restart=on-failure' "$shell_units/mambodot-cliphist@.service"
 if grep -Rq '^\[Install\]' "$shell_units" ||
     grep -Fq 'mambodot-shell' "$PROJECT_DIR/manifest/services.tsv"; then
     echo 'session shell units must be started after Hyprland environment propagation, not enabled' >&2
     exit 1
 fi
 grep -Fq 'systemctl --user restart mambodot-ags.service' "$session_refresh"
+idle_config="$PROJECT_DIR/dot/hypr/.config/hypr/hypridle.conf"
+lock_config="$PROJECT_DIR/dot/hypr/.config/hypr/hyprlock.conf"
+grep -Fq 'before_sleep_cmd = loginctl lock-session; systemctl --user stop mambodot-ags.service' \
+    "$idle_config"
+grep -Fq 'after_sleep_cmd = systemctl --user start mambodot-ags.service' "$idle_config"
+grep -Fq 'cmd[update:1000]' "$lock_config"
+if grep -Fq 'cmd[update:0]' "$lock_config" ||
+    grep -Fq 'Restart=on-failure' "$shell_units/mambodot-ags.service"; then
+    echo 'hibernate recovery policy regressed' >&2
+    exit 1
+fi
 if grep -Eq 'ags quit|ags run' "$session_refresh"; then
     echo 'refresh should use the supervised AGS unit' >&2
     exit 1

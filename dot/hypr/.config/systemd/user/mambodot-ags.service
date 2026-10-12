@@ -11,5 +11,6 @@ Type=simple
 Slice=session.slice
 Environment=GDK_BACKEND=wayland
 ExecStart=/usr/bin/ags run
-Restart=on-failure
+Restart=always
 RestartSec=1
+TimeoutStopSec=3

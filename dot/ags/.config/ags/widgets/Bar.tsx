@@ -16,22 +16,28 @@ const hyprland = AstalHyprland.get_default()!
 const [idleInhibited, setIdleInhibited] = createState(false)
 let idleInhibitCookie = 0
 
+export function enableIdleInhibitor() {
+  if (idleInhibitCookie) return
+  idleInhibitCookie = app.inhibit(
+    null,
+    Gtk.ApplicationInhibitFlags.IDLE,
+    "Keep the session awake",
+  )
+  setIdleInhibited(idleInhibitCookie !== 0)
+  if (!idleInhibitCookie) {
+    void execAsync(["notify-send", "MamboDot", "Could not enable idle inhibitor"])
+  }
+}
+
 function IdleInhibitor() {
   function toggle() {
     if (idleInhibitCookie) {
       app.uninhibit(idleInhibitCookie)
       idleInhibitCookie = 0
+      setIdleInhibited(false)
     } else {
-      idleInhibitCookie = app.inhibit(
-        null,
-        Gtk.ApplicationInhibitFlags.IDLE,
-        "Keep the session awake",
-      )
-      if (!idleInhibitCookie) {
-        void execAsync(["notify-send", "MamboDot", "Could not enable idle inhibitor"])
-      }
+      enableIdleInhibitor()
     }
-    setIdleInhibited(idleInhibitCookie !== 0)
   }
 
   return (

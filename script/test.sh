@@ -291,7 +291,11 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" link all >/dev/null 2>&1
 [[ -L "$ALL_HOME/.config/fcitx5/config" ]]
 [[ -L "$ALL_HOME/.config/rog/rog-control-center.cfg" ]]
 [[ -L "$ALL_HOME/.config/dolphinrc" ]]
+[[ -L "$ALL_HOME/.config/baloofileinformationrc" ]]
+[[ -L "$ALL_HOME/.config/kservicemenurc" ]]
+[[ -L "$ALL_HOME/.config/kdeglobals" ]]
 [[ -L "$ALL_HOME/.config/kiorc" ]]
+[[ -L "$ALL_HOME/.config/featherpad/fp.conf" ]]
 [[ -L "$ALL_HOME/.config/nvim/init.lua" ]]
 [[ -L "$ALL_HOME/.config/waybar/config.jsonc" ]]
 [[ -L "$ALL_HOME/.gitconfig" ]]
@@ -304,6 +308,7 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 [[ ! -e "$ALL_HOME/.config/systemd/user/mambodot-shell.target" ]]
 [[ ! -e "$ALL_HOME/.gitconfig" ]]
 [[ ! -e "$ALL_HOME/.config/rog/rog-control-center.cfg" ]]
+[[ ! -e "$ALL_HOME/.config/featherpad/fp.conf" ]]
 [[ ! -e "$ALL_HOME/.local/share/applications/feh.desktop" ]]
 
 grep -Fq 'run_in_background: false' \
@@ -316,6 +321,20 @@ grep -Fq 'Exec=feh --start-at %u' \
     "$PROJECT_DIR/dot/feh/.local/share/applications/feh.desktop"
 grep -Fq 'NoDisplay=false' \
     "$PROJECT_DIR/dot/feh/.local/share/applications/feh.desktop"
+featherpad_config="$PROJECT_DIR/dot/featherpad/.config/featherpad/fp.conf"
+grep -Fxq 'recentFiles=' "$featherpad_config"
+grep -Fxq 'recentFilesNumber=0' "$featherpad_config"
+grep -Fxq 'saveLastFilesList=false' "$featherpad_config"
+grep -Fxq 'recentOpened=false' "$featherpad_config"
+grep -Fxq 'position=none' "$featherpad_config"
+grep -Fq 'fileSize=false' \
+    "$PROJECT_DIR/dot/dolphin/.config/baloofileinformationrc"
+grep -Fq 'kio-admin=true' \
+    "$PROJECT_DIR/dot/dolphin/.config/kservicemenurc"
+grep -Fq 'BrowserApplication=zen.desktop' \
+    "$PROJECT_DIR/dot/kde/.config/kdeglobals"
+grep -Fq 'behaviourOnLaunch=alwaysAsk' \
+    "$PROJECT_DIR/dot/kde/.config/kiorc"
 
 ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null
@@ -503,6 +522,12 @@ if grep -Fq 'ViewPropsTimestamp=' "$PROJECT_DIR/dot/dolphin/.config/dolphinrc"; 
     echo 'Dolphin runtime timestamps must not be tracked' >&2
     exit 1
 fi
+dolphin_files="$(find "$PROJECT_DIR/dot/dolphin" -type f -printf '%P\n' | LC_ALL=C sort)"
+[[ "$dolphin_files" == $'.config/baloofileinformationrc\n.config/dolphinrc\n.config/kservicemenurc' ]]
+kde_files="$(find "$PROJECT_DIR/dot/kde" -type f -printf '%P\n' | LC_ALL=C sort)"
+[[ "$kde_files" == $'.config/kdeglobals\n.config/kiorc' ]]
+featherpad_files="$(find "$PROJECT_DIR/dot/featherpad" -type f -printf '%P\n' | LC_ALL=C sort)"
+[[ "$featherpad_files" == '.config/featherpad/fp.conf' ]]
 grep -Fq 'x-scheme-handler/codex=chatgpt.desktop' \
     "$PROJECT_DIR/dot/xdg/.config/mimeapps.list"
 if grep -Fq 'qmigv' "$PROJECT_DIR/dot/xdg/.config/mimeapps.list"; then

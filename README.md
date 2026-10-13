@@ -43,12 +43,12 @@ Adjust these before activating the configuration on another machine.
 ### Configuration scope
 
 - Hyprland session, hotplug display layout, idle, lock, wallpaper, window, workspace, group, input, and launcher behavior.
-- The active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, keybind sheet, laptop-control sidebar, general/day-planner sidebar, and native notification UI, with Waybar/Rofi/Mako retained for manual recovery.
+- The active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, keybind sheet, laptop-control sidebar, general/day-planner sidebar, and native notification UI.
 - Stow-managed systemd user supervision for AGS, Astal notification ownership, and both Cliphist watchers.
 - Git, Kitty, Dolphin, KDE, Fcitx5, Zsh, Neovim, Code OSS, FeatherPad, Feh, qimgv, Input Remapper, ROG Control Center, notification, and desktop-integration settings.
 - One deduplicated user-tool `PATH` shared by Hyprland applications, D-Bus/systemd user activations, and Zsh.
 - Reviewed Arch/AUR/Flatpak package and system/user service manifests for the current workstation.
-- Stable MamboColour roles shared by Hyprland, Hyprlock, AGS, and the recovery Waybar without depending on provider-internal colour names.
+- Stable MamboColour roles shared by Hyprland, Hyprlock, and AGS without depending on provider-internal colour names.
 - Screenshot, clipboard, media, cursor, floating-window, power, and application-launcher helpers.
 - The Zsh `tp` directory-bookmark function.
 - Explicit host policy kept outside normal Stow packages.
@@ -78,7 +78,7 @@ Replace that package list with the configuration you reviewed. Do not use `all` 
 | AGS 3, Astal, GTK4, and Sass | Runtime and build packages | Build and run the active bar, launcher, sidebars, and notification UI | System packages recorded in the package manifest; no repository-local version pin | AGS desktop shell | Update the host packages, run the AGS production bundle through `./script/test.sh`, and test the shell on each display |
 | GNU Stow | Deployment tool | Preview, link, and unlink selected configuration packages with leaf symlinks | System package recorded in the package manifest; no repository-local version pin | `script/mambodot.sh link` and `unlink` | Update the system package, then run the guarded link/unlink regression suite before deployment |
 | Bash, Lua, and standard Unix utilities | Tooling | Run repository commands and tests, load the Hyprland configuration, and refresh static colour adapters | System runtimes recorded in the package manifest; no repository-local version pin | Runtime, maintenance, and tests | Update the host runtimes, then run `./script/test.sh`, Lua parsing, and the shell checks |
-| [MamboColour](https://github.com/ProjectMambo/MamboColour) | Vendored Project Mambo sibling library | Provide stable UI roles, zero-based direct colour access, and deterministic accent selection without exposing palette-private names | Exact provider 0.3 revision `c703092a619b3ee9b05503eaf2a553ae52595d35`, recorded in `vendor/mambocolour/REVISION` beside the copied Lua module, four CSV files, and upstream MIT `LICENSE`; it eagerly validates paired schemes, exposes `get(index)` with `len()`, and uses the shared `0..4294967295` (`u32`) seed domain | Hyprland reads the vendored Lua API directly; Hyprlock, Waybar, and AGS use three committed consumer adapters | Replace the source and licence snapshot from one reviewed provider commit, update `REVISION`, run `lua script/sync_mambocolour.lua`, then run `./script/test.sh` and inspect the complete diff |
+| [MamboColour](https://github.com/ProjectMambo/MamboColour) | Vendored Project Mambo sibling library | Provide stable UI roles, zero-based direct colour access, and deterministic accent selection without exposing palette-private names | Exact provider 0.3 revision `c703092a619b3ee9b05503eaf2a553ae52595d35`, recorded in `vendor/mambocolour/REVISION` beside the copied Lua module, four CSV files, and upstream MIT `LICENSE`; it eagerly validates paired schemes, exposes `get(index)` with `len()`, and uses the shared `0..4294967295` (`u32`) seed domain | Hyprland reads the vendored Lua API directly; Hyprlock and AGS use two committed consumer adapters | Replace the source and licence snapshot from one reviewed provider commit, update `REVISION`, run `lua script/sync_mambocolour.lua`, then run `./script/test.sh` and inspect the complete diff |
 | Git and the Project Mambo documentation workspace | Development tools and sibling workspace | Version source, author canonical docs, and synchronize repository/wiki snapshots | System Git plus `notes/Docs/Projects/MamboDot/` and `notes/Scripts/sync_docs.js`; no tool version pin | Maintainer workflow only | Update canonical notes first, synchronize MamboDot and MamboWiki, then validate both generated snapshots |
 
 ## Documentation
@@ -88,8 +88,8 @@ Replace that package list with the configuration you reviewed. Do not use `all` 
 | Read the published documentation | [projectmambo.org/mambodot/](https://projectmambo.org/mambodot/) |
 | Review requirements and install safely | [Installation and safety](docs/Installation%20and%20Safety.md) |
 | Learn desktop shortcuts | [Keybindings](docs/Keybinds.md) |
-| Link configuration, control or recover AGS, refresh colour adapters, or use `tp` | [Command reference](docs/Commands.md) |
-| Review implemented milestones and remaining refinements | [Roadmap](docs/Roadmap.md) |
+| Link configuration, control AGS, refresh colour adapters, or use `tp` | [Command reference](docs/Commands.md) |
+| Review implemented milestones and ownership rules | [Roadmap](docs/Roadmap.md) |
 
 ## Project structure
 
@@ -125,7 +125,7 @@ git diff --check
 git status --short
 ```
 
-The command reference documents the exit-status contract for the repository command and the separate manual workflow for updating the vendored MamboColour snapshot. `lua script/sync_mambocolour.lua --check` is read-only and fails when one of the three committed adapters is missing or stale.
+The command reference documents the exit-status contract for the repository command and the separate manual workflow for updating the vendored MamboColour snapshot. `lua script/sync_mambocolour.lua --check` is read-only and fails when one of the two committed adapters is missing or stale.
 
 ## Development
 

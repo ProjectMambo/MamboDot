@@ -44,7 +44,7 @@ The sidebars run with the active shell:
 
 The schedule reader resolves a local daily note such as `Periodic/2026-09-18-W38-D5.md`, tolerates legacy padded ISO-week filenames, reads only the exact `## Schedule` section, and accepts bullets shaped as `- HH:mm - HH:mm event`. Periodic Notes and the weekly generator both use the unpadded `W` format. The reader does not edit or index the vault.
 
-After propagating the session environment, Hyprland starts one Stow-managed systemd user target. It supervises Astal, AGS, and both Cliphist watchers, while the shell keybindings target AGS. Waybar, Rofi, and Mako remain reviewed, linked manual-recovery configuration but are absent from normal startup. Removing them is deliberately deferred until the active shell has enough daily use to make that recovery path unnecessary.
+After propagating the session environment, Hyprland starts one Stow-managed systemd user target. It supervises Astal, AGS, and both Cliphist watchers, while every shell keybinding targets AGS. The former Waybar, Rofi, and Mako packages and configuration were retired after the active shell's daily-use soak and diagnosis of the latest long resume; a physical post-fix hibernate remains an explicit manual check.
 
 ## Delivery phases
 
@@ -53,7 +53,7 @@ After propagating the session environment, Hyprland starts one Stow-managed syst
 3. **Displays — implemented:** use Hyprland's catch-all preferred-mode, automatic-placement rule for current and hot-plugged outputs, apply one Hyprpaper fallback to every output, and size floating-window helpers from the active monitor instead of a fixed resolution.
 4. **AGS core — implemented:** add a Stow-managed, hotplug-aware per-monitor bar and focused-monitor Apps/Run/Windows/Power launcher with a validated request interface; bundle-check and live-test them before session activation.
 5. **Sidebars — implemented:** add focused-monitor left laptop controls and a right quick-control, calendar, notification-history, and Obsidian day-planner overlay with visibility-scoped polling and native layer animations.
-6. **Cutover — implemented:** move notification ownership to Astal, add binary-safe Clipboard mode, switch startup and keybindings to AGS, validate the full shell under a guarded live preview, and document recovery while retaining Waybar/Rofi/Mako configuration outside normal startup.
+6. **Cutover — implemented:** move notification ownership to Astal, add binary-safe Clipboard mode, switch startup and keybindings to AGS, validate the full shell under a guarded live preview, and retain the old shell temporarily during the daily-use soak.
 7. **Shell stabilization — implemented:** make every bar group opaque, distinguish both sidebar controls, launch desktop applications with the GJS-compatible empty file list, and move clickable workspace and window focus to Hyprland's Lua dispatcher syntax.
 8. **Coverage — implemented:** add reviewed package/service manifests, a read-only machine doctor, and only the stable Code OSS, Dolphin, KDE, Fcitx5, XDG, and host settings that survive the ownership rules above.
 9. **Environment and tooling — implemented:** give Hyprland applications and every Zsh the same deduplicated user-tool path, propagate it to D-Bus and systemd, and make Code OSS extension synchronization fail visibly instead of hiding query or installation errors.
@@ -71,5 +71,6 @@ After propagating the session environment, Hyprland starts one Stow-managed syst
 21. **FeatherPad coverage — implemented:** Stow the stable editor preferences while keeping recent-file persistence disabled and guarding the leaf against session-history capture.
 22. **Final application leaves — implemented:** track the hardware-specific NordicMouse Sideway mapping and qimgv colour theme while excluding generated Input Remapper files and qimgv version, window, and cache state.
 23. **Host power cleanup — implemented:** remove the disabled `auto-cpufreq` rollback package, unsupported `thermald`, and stale TLP enablement after a twenty-day `asusd`-only soak, without claiming an unmeasured battery or performance improvement.
+24. **Fallback retirement — implemented:** guard Astal's nullable urgency event observed after resume, remove the linked Waybar/Rofi/Mako configuration and packages after the daily-use soak, and keep AGS/Astal as the single supervised shell and notification path; the next physical hibernate validates the new guard in situ.
 
-One maintenance workstream remains: retire the Waybar/Rofi/Mako recovery set after validating the latest resume cycle. Never add `auto-cpufreq`, power-profiles-daemon, or TLP alongside the selected `asusd` owner. See the [ASUS Linux Arch guide](https://asus-linux.org/guides/arch-guide/) before changing ownership.
+No broad delivery phase remains. Future coverage stays incremental: add only stable, credential-free leaves that ordinary application use does not rewrite. Never add `auto-cpufreq`, power-profiles-daemon, or TLP alongside the selected `asusd` owner. See the [ASUS Linux Arch guide](https://asus-linux.org/guides/arch-guide/) before changing ownership.

@@ -22,10 +22,10 @@ MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a L
 - An active AGS 3 per-monitor bar, Apps/Run/Windows/Power/Clipboard launcher, documentation-backed keybind sheet, two focused-monitor sidebars, and native notification popups and history.
 - Stow packages for the shell, Git defaults, terminal, editors, bar, launcher, file manager, and desktop services.
 - Reviewed package/service manifests with a read-only drift doctor.
-- Stable UI roles and zero-based direct colour access from a vendored MamboColour Lua API, plus MamboDot-owned static adapters and deterministic numbered accents for Hyprlock, Waybar, and AGS.
+- Stable UI roles and zero-based direct colour access from a vendored MamboColour Lua API, plus MamboDot-owned static adapters and deterministic numbered accents for Hyprlock and AGS.
 - Machine-specific monitor, boot, application, and filesystem assumptions.
 
-## Use and recover MamboDot
+## Use MamboDot
 
 ::children{include=["[[Installation and Safety]]","[[Commands]]","[[Keybinds]]"] view="list" sort="order" direction="asc" show=["title","description"]}
 
@@ -35,6 +35,6 @@ MamboDot is Project Mambo's active desktop configuration: GNU Stow packages, a L
 
 ## Current status
 
-The configuration is actively used on the maintainer's Arch Linux workstation. Its foundation now provides conflict-safe, explicit Stow deployment, focused Hyprland regression checks, a normalized SDDM/Hyprland session environment with one activation propagation path and a shared user-tool path, native output-agnostic display handling with monitor-relative window geometry, and an active AGS bar, five-mode launcher, laptop-control panel, general/day-planner panel, and Astal notification UI. A Stow-managed systemd user target supervises AGS, Astal, and both Cliphist watchers after Hyprland propagates the session environment. Astal owns notification delivery while AGS supplies popups, actions, do-not-disturb, and process-local history. Reviewed package/service manifests, a read-only machine doctor with bounded managed-dotfile drift checks, stable desktop leaf settings, explicit FA507XV host policy, and single-owner `asusd` power policy complete the current coverage phase. Waybar, Rofi, and Mako remain tracked for manual recovery but are no longer login processes. MamboDot is still a personal host profile, not an unattended installer or compatibility-tested desktop distribution.
+The configuration is actively used on the maintainer's Arch Linux workstation. Its foundation now provides conflict-safe, explicit Stow deployment, focused Hyprland regression checks, a normalized SDDM/Hyprland session environment with one activation propagation path and a shared user-tool path, native output-agnostic display handling with monitor-relative window geometry, and an active AGS bar, five-mode launcher, laptop-control panel, general/day-planner panel, and Astal notification UI. A Stow-managed systemd user target supervises AGS, Astal, and both Cliphist watchers after Hyprland propagates the session environment. Astal owns notification delivery while AGS supplies popups, actions, do-not-disturb, and process-local history. Reviewed package/service manifests, a read-only machine doctor with bounded managed-dotfile drift checks, stable desktop leaf settings, explicit FA507XV host policy, and single-owner `asusd` power policy complete the current coverage. The former Waybar, Rofi, and Mako fallback is retired. MamboDot is still a personal host profile, not an unattended installer or compatibility-tested desktop distribution.
 
-Further work is deliberately incremental: promote additional application settings only when they are stable and credential-free, and retire the recovery shell only after sufficient daily use. See the roadmap for the ownership rules and completed delivery phases.
+Further work is deliberately incremental: promote additional application settings only when they are stable, credential-free, and not rewritten by ordinary use. See the roadmap for the ownership rules and completed delivery phases.

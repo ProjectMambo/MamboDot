@@ -1,6 +1,6 @@
 ---
 title: Command reference
-description: Link configuration, control or recover AGS, run safe power actions, refresh colour adapters, install editor extensions, and use the Zsh directory-bookmark helper.
+description: Link configuration, control AGS, run safe power actions, refresh colour adapters, install editor extensions, and use the Zsh directory-bookmark helper.
 order: 20
 ---
 
@@ -45,12 +45,11 @@ Hyprland loads `vendor/mambocolour/lua/mambocolour.lua` directly from `variables
 
 When a semantic role is not appropriate, Lua consumers can use `theme.colour:get(index)` for a direct zero-based position or the random methods for decorative selection. Descriptive CSV keys remain private. The active window-border mappings intentionally use UI roles rather than fixed colour positions.
 
-Consumers that cannot load Lua use three committed, MamboDot-owned adapters:
+Consumers that cannot load Lua use two committed, MamboDot-owned adapters:
 
 | Consumer | Adapter |
 |---|---|
 | Hyprlock | `dot/hypr/.config/hypr/themes/mambocolour.conf` |
-| Waybar | `dot/waybar/.config/waybar/mambocolour.css` |
 | AGS | `dot/ags/.config/ags/_mambocolour.scss` |
 
 Refresh or check those adapters with the consumer-owned script:
@@ -60,7 +59,7 @@ lua script/sync_mambocolour.lua
 lua script/sync_mambocolour.lua --check
 ```
 
-The script renders the dark UI roles plus 12 deterministic numbered accents, `accent_01` through `accent_12`, selected with seeds 0 through 11. The active AGS and recovery Waybar styles use UI roles for surfaces, text, interaction, and status, then use numbered colour-palette accents for decorative widget identity such as network, audio, hardware, and battery indicators. The script does not fetch or update MamboColour, and `--check` writes nothing; it reports a missing or stale adapter and exits non-zero. The former four palette families, their 12 format-specific files, the `mbcolor` command dependency, and `mambodot.sh update` no longer exist.
+The script renders the dark UI roles plus 12 deterministic numbered accents, `accent_01` through `accent_12`, selected with seeds 0 through 11. AGS uses UI roles for surfaces, text, interaction, and status, then uses numbered colour-palette accents for decorative widget identity such as network, audio, hardware, and battery indicators. The script does not fetch or update MamboColour, and `--check` writes nothing; it reports a missing or stale adapter and exits non-zero. The former four palette families, their format-specific files, the `mbcolor` command dependency, and `mambodot.sh update` no longer exist.
 
 To update the pinned provider manually:
 
@@ -68,7 +67,7 @@ To update the pinned provider manually:
 2. Replace `vendor/mambocolour/lua/mambocolour.lua`, `vendor/mambocolour/palettes/mamboorche/*.csv`, and `vendor/mambocolour/LICENSE` with the exact files from that one commit.
 3. Replace the single hash in `vendor/mambocolour/REVISION` with that commit ID.
 4. Run `lua script/sync_mambocolour.lua` and then `./script/test.sh`.
-5. Inspect the vendored snapshot, all three adapters, and their embedded revision before committing.
+5. Inspect the vendored snapshot, both adapters, and their embedded revision before committing.
 
 Run the regression suite after changing the provider snapshot, adapter script, or its consumers:
 
@@ -76,7 +75,7 @@ Run the regression suite after changing the provider snapshot, adapter script, o
 ./script/test.sh
 ```
 
-The check verifies the exact vendored revision, rejects invalid adapter arguments, checks that all three committed adapters are current, validates stable roles and deterministic accent parity, and runs focused Hyprland Lua regressions alongside the guarded Stow suite. It is not currently run by CI.
+The check verifies the exact vendored revision, rejects invalid adapter arguments, checks that both committed adapters are current, validates stable roles and deterministic accent parity, and runs focused Hyprland Lua regressions alongside the guarded Stow suite. It is not currently run by CI.
 
 ## AGS desktop shell
 
@@ -128,38 +127,15 @@ The left panel is a two-column, no-scroll dashboard at 1080p. It shows battery h
 
 Top-right notification popups support sender actions and dismissal. Do-not-disturb suppresses and clears popups while notifications continue into active state and session history. Resolved notifications cannot be restored because their sender context may no longer exist, and history intentionally resets with AGS rather than persisting notification contents.
 
-### Manual recovery
-
-Waybar, Rofi, and Mako remain linked as a reviewed recovery shell. From `SUPER Q`, stop the managed shell target, then start the old bar and notification daemon; Rofi can be opened directly:
-
-```bash
-systemctl --user stop mambodot-shell.target
-env GDK_BACKEND=wayland waybar >/dev/null 2>&1 &
-mako >/dev/null 2>&1 &
-rofi -show drun -show-icons -terminal kitty
-```
-
-Restore the managed shell with a fresh login. For an immediate retry, stop Waybar and Mako, then start the target:
-
-```bash
-pkill -x waybar
-pkill -x mako
-systemctl --user start mambodot-shell.target
-```
-
-Mako and Astal must not compete for `org.freedesktop.Notifications`.
-
-The recovery Waybar uses its native idle inhibitor and natural widget height. It intentionally omits the tray because the installed multi-output build cannot safely parent one tray across both output bars; AGS remains the complete tray shell.
-
 ## Power actions
 
 After the `script` Stow package is linked, the shared backend accepts one fixed action:
 
 ```bash
-~/.local/bin/powermenu.sh [shutdown|hibernate|reboot|windows|suspend|logout|lock]
+~/.local/bin/powermenu.sh <shutdown|hibernate|reboot|windows|suspend|logout|lock>
 ```
 
-With no argument it preserves the current Rofi menu. Unknown or extra arguments fail with a usage error, and action strings are selected by `case` rather than evaluated. The AGS Power mode confirms suspend, hibernate, logout, restart, restart-to-Windows, and shutdown before invoking this backend; Lock runs immediately. Direct command-line action calls are immediate.
+Exactly one action is required. Missing, unknown, or extra arguments fail with a usage error, and action strings are selected by `case` rather than evaluated. The AGS Power mode confirms suspend, hibernate, logout, restart, restart-to-Windows, and shutdown before invoking this backend; Lock runs immediately. Direct command-line action calls are immediate.
 
 The `windows` action asks Polkit to run only `/usr/bin/grub-reboot` for the reviewed Windows entry, then reboots only if that command succeeds. Cancelling or failing authorization leaves the current boot target and session unchanged. If setting the one-shot entry succeeds but reboot fails, the backend clears `next_entry` before returning an error.
 

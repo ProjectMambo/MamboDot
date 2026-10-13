@@ -16,9 +16,9 @@ The active configuration references these groups of software:
 
 - Arch Linux, Hyprland with the Lua `hl` configuration API, Hypridle, Hyprlock, and Hyprpaper.
 - AGS 3 with GTK4, the Astal Hyprland, battery, network, notification, tray, and WirePlumber libraries, and the `astal-notifd` executable; its SCSS bundle also requires Sass.
-- NetworkManager, BlueZ with `bluetoothctl`, Blueman, `lm_sensors`, `nvidia-utils`, `brightnessctl` with systemd-logind support, `asusctl`, and `supergfxctl` for the current sidebar controls. Obsidian is optional unless the day planner should open the vault.
+- NetworkManager, BlueZ with `bluetoothctl`, Blueman, `lm_sensors`, `nvidia-utils`, `brightnessctl` with systemd-logind support, `asusctl`, `supergfxctl`, and Input Remapper for the current hardware controls. Obsidian is optional unless the day planner should open the vault.
 - GNU Stow, Git, Bash, Zsh, Oh My Zsh, `zsh-autosuggestions`, and `zsh-syntax-highlighting`.
-- Kitty, Dolphin, FeatherPad, Qalculate-Qt, Neovim, Code OSS, Fastfetch, and KDE/Qt desktop utilities. Waybar, Rofi, and Mako remain recovery dependencies rather than active shell processes.
+- Kitty, Dolphin, FeatherPad, qimgv, Qalculate-Qt, Neovim, Code OSS, Fastfetch, and KDE/Qt desktop utilities. Waybar, Rofi, and Mako remain recovery dependencies rather than active shell processes.
 - Fcitx5 with Pinyin and Mozc input methods.
 - Avizo volume/brightness helpers, Playerctl, Cliphist, wl-clipboard, wl-kbptr, Quickshell with HyprQuickFrame, and the screenshot tools used by that shell.
 - A Lua runtime for the vendored MamboColour API and repository checks. MamboColour itself is pinned and copied under `vendor/mambocolour/`; neither an adjacent provider checkout nor the former `mbcolor` command is an installation dependency. MamboFont is not an installation dependency.
@@ -88,10 +88,10 @@ Stow only intentional user preferences. Current ownership is deliberately narrow
 | Editors | Neovim configuration; Code OSS settings and reviewed extension IDs; FeatherPad preferences with recent-file persistence disabled | Code chat/session storage, history, logs, machine IDs, authentication, and editor session history |
 | Developer identity | Git user identity, default branch, and credential-helper choice | `.git-credentials`, `gh/hosts.yml`, tokens, SSH keys, and repository-local settings |
 | File manager and desktop integration | Dolphin preferences, metadata-field visibility, service-menu choices; KDE appearance and I/O policy; XDG MIME and portal defaults | KDE activities, global shortcuts owned by Hyprland, window/session state, trash state, and KDE Connect keys |
-| Input | Fcitx5 profile, hotkeys, Pinyin, punctuation, notifications, and conversion preferences | Mozc history/databases, cached layouts, temporary files, and learned input data |
+| Input | Fcitx5 profile, hotkeys, Pinyin, punctuation, notifications, and conversion preferences; the NordicMouse Sideway Input Remapper preset | Mozc history/databases, cached layouts, temporary files, learned input data, generated Xmodmap data, empty presets, and Input Remapper daemon state |
 | Notes | The read-only AGS schedule integration | The Obsidian vault and `.obsidian`, which remain owned by the Notes project |
 | System and hardware | Reviewed files under `system/hosts/fa507xv/`; ROG Control Center foreground and tray preferences | Generated `asusd`/`supergfxd` and ROG Aura/user state, raw sysfs controls, daemon databases, and broad `/etc` snapshots |
-| Other applications | Feh themes and visible launcher override; package presence is recorded in the manifest | Browser/Electron profiles, credentials, cookies, caches, game state, and mixed runtime preference files remain local until a stable leaf file is reviewed |
+| Other applications | Feh themes and visible launcher override; qimgv's colour theme; package presence is recorded in the manifest | qimgv version/window/cache state; browser/Electron profiles, credentials, cookies, caches, game state, and mixed runtime preference files remain local until a stable leaf file is reviewed |
 
 GTK theme selection is already owned by Hyprland's environment and KDE globals. The current GTK CSS files are stale generated Matugen output without tracked source templates, so duplicating them would make the repository less reproducible rather than more complete.
 

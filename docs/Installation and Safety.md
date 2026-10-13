@@ -85,7 +85,7 @@ Stow only intentional user preferences. Current ownership is deliberately narrow
 | Area | Tracked | Deliberately outside MamboDot |
 |---|---|---|
 | Hyprland and desktop shell | Hyprland, AGS, systemd user units for the shell lifecycle, scripts, Kitty, Avizo, HyprQuickFrame, wl-kbptr, plus Waybar/Rofi/Mako recovery settings | Runtime sockets, logs, notification bodies, clipboard contents, and generated caches |
-| Editors | Neovim configuration; Code OSS settings and reviewed extension IDs | Code chat/session storage, history, logs, machine IDs, and authentication |
+| Editors | Neovim configuration; Code OSS settings and reviewed extension IDs; FeatherPad preferences with recent-file persistence disabled | Code chat/session storage, history, logs, machine IDs, authentication, and editor session history |
 | Developer identity | Git user identity, default branch, and credential-helper choice | `.git-credentials`, `gh/hosts.yml`, tokens, SSH keys, and repository-local settings |
 | File manager and desktop integration | Dolphin preferences, metadata-field visibility, service-menu choices; KDE appearance and I/O policy; XDG MIME and portal defaults | KDE activities, global shortcuts owned by Hyprland, window/session state, trash state, and KDE Connect keys |
 | Input | Fcitx5 profile, hotkeys, Pinyin, punctuation, notifications, and conversion preferences | Mozc history/databases, cached layouts, temporary files, and learned input data |

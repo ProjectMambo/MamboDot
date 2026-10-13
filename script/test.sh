@@ -296,6 +296,8 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" link all >/dev/null 2>&1
 [[ -L "$ALL_HOME/.config/kdeglobals" ]]
 [[ -L "$ALL_HOME/.config/kiorc" ]]
 [[ -L "$ALL_HOME/.config/featherpad/fp.conf" ]]
+[[ -L "$ALL_HOME/.config/input-remapper-2/presets/Compx VXE NordicMouse 1K Dongle/Sideway.json" ]]
+[[ -L "$ALL_HOME/.config/qimgv/theme.conf" ]]
 [[ -L "$ALL_HOME/.config/nvim/init.lua" ]]
 [[ -L "$ALL_HOME/.config/waybar/config.jsonc" ]]
 [[ -L "$ALL_HOME/.gitconfig" ]]
@@ -309,6 +311,8 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" unlink all >/dev/null 2>&1
 [[ ! -e "$ALL_HOME/.gitconfig" ]]
 [[ ! -e "$ALL_HOME/.config/rog/rog-control-center.cfg" ]]
 [[ ! -e "$ALL_HOME/.config/featherpad/fp.conf" ]]
+[[ ! -e "$ALL_HOME/.config/input-remapper-2/presets/Compx VXE NordicMouse 1K Dongle/Sideway.json" ]]
+[[ ! -e "$ALL_HOME/.config/qimgv/theme.conf" ]]
 [[ ! -e "$ALL_HOME/.local/share/applications/feh.desktop" ]]
 
 grep -Fq 'run_in_background: false' \
@@ -528,6 +532,20 @@ kde_files="$(find "$PROJECT_DIR/dot/kde" -type f -printf '%P\n' | LC_ALL=C sort)
 [[ "$kde_files" == $'.config/kdeglobals\n.config/kiorc' ]]
 featherpad_files="$(find "$PROJECT_DIR/dot/featherpad" -type f -printf '%P\n' | LC_ALL=C sort)"
 [[ "$featherpad_files" == '.config/featherpad/fp.conf' ]]
+input_remapper_files="$(find "$PROJECT_DIR/dot/input-remapper" -type f -printf '%P\n' | LC_ALL=C sort)"
+[[ "$input_remapper_files" == \
+    '.config/input-remapper-2/presets/Compx VXE NordicMouse 1K Dongle/Sideway.json' ]]
+input_remapper_preset="$PROJECT_DIR/dot/input-remapper/.config/input-remapper-2/presets/Compx VXE NordicMouse 1K Dongle/Sideway.json"
+jq -e '
+    length == 2 and
+    all(.[].input_combination[]; .origin_hash == "d3dc457de382d6cab59bd8c68dda086b") and
+    .[0].output_code == 1 and .[0].gain == -0.85 and
+    .[1].output_code == 0
+' "$input_remapper_preset" >/dev/null
+qimgv_files="$(find "$PROJECT_DIR/dot/qimgv" -type f -printf '%P\n' | LC_ALL=C sort)"
+[[ "$qimgv_files" == '.config/qimgv/theme.conf' ]]
+grep -Fq '[Colors]' "$PROJECT_DIR/dot/qimgv/.config/qimgv/theme.conf"
+grep -Fq 'background=#1a1a1a' "$PROJECT_DIR/dot/qimgv/.config/qimgv/theme.conf"
 grep -Fq 'x-scheme-handler/codex=chatgpt.desktop' \
     "$PROJECT_DIR/dot/xdg/.config/mimeapps.list"
 if grep -Fq 'qmigv' "$PROJECT_DIR/dot/xdg/.config/mimeapps.list"; then

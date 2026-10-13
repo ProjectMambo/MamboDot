@@ -1,0 +1,31 @@
+[
+    {
+        "input_combination": [
+            {
+                "type": 2,
+                "code": 0,
+                "origin_hash": "d3dc457de382d6cab59bd8c68dda086b"
+            }
+        ],
+        "target_uinput": "mouse",
+        "output_type": 2,
+        "output_code": 1,
+        "mapping_type": "analog",
+        "deadzone": 0.0,
+        "gain": -0.85
+    },
+    {
+        "input_combination": [
+            {
+                "type": 2,
+                "code": 1,
+                "origin_hash": "d3dc457de382d6cab59bd8c68dda086b"
+            }
+        ],
+        "target_uinput": "mouse",
+        "output_type": 2,
+        "output_code": 0,
+        "mapping_type": "analog",
+        "deadzone": 0.0
+    }
+]

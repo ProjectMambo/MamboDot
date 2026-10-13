@@ -19,6 +19,7 @@ const [attentionWorkspaces, setAttentionWorkspaces] = createState<number[]>([])
 let idleInhibitCookie = 0
 
 hyprland.connect("urgent", (_self, client) => {
+  if (!client) return
   setAttentionWorkspaces((ids) => markAttention(
     ids,
     client.workspace.id,

@@ -60,7 +60,7 @@
     },
 
     // ==========================================
-    // 5. HYPRLAND & WAYBAR DOTFILES
+    // 5. HYPRLAND DOTFILES
     // ==========================================
     "files.associations": {
         "config": "jsonc",

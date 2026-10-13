@@ -128,11 +128,7 @@ doctor_dotfiles() (
         'hypr:.config/hypr/themes/mambooutbackdark.conf' \
         'hypr:.config/hypr/themes/mambooutbacklight.conf' \
         'hypr:.config/hypr/themes/mambooutbackdark.lua' \
-        'hypr:.config/hypr/themes/mambooutbacklight.lua' \
-        'waybar:.config/waybar/mamboorchedark.css' \
-        'waybar:.config/waybar/mamboorchelight.css' \
-        'waybar:.config/waybar/mambooutbackdark.css' \
-        'waybar:.config/waybar/mambooutbacklight.css'; do
+        'hypr:.config/hypr/themes/mambooutbacklight.lua'; do
         package="${retired%%:*}"
         relative="${retired#*:}"
         target_path="$target/$relative"

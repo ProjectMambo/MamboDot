@@ -43,6 +43,7 @@ arch	firefox
 arch	fish
 arch	flatpak
 arch	fontforge
+arch	fsearch
 arch	gamemode
 arch	gimp
 arch	git
@@ -86,7 +87,6 @@ arch	linux-headers
 arch	lm_sensors
 arch	lmms
 arch	lua
-arch	mako
 arch	mesa-utils
 arch	mousai
 arch	mpv
@@ -127,7 +127,7 @@ arch	python-pipx
 arch	qalculate-qt
 arch	qbittorrent
 arch	r
-arch	rofi
+arch	rog-control-center
 arch	rustup
 arch	samba
 arch	satty
@@ -180,7 +180,6 @@ aur	chatgpt-desktop
 aur	davinci-resolve
 aur	dropbox
 aur	forticlient-vpn
-aur	fsearch
 aur	gallery-dl-git
 aur	game-devices-udev
 aur	gitmastery-bin
@@ -212,8 +211,6 @@ aur	qimgv-git
 aur	qtspim
 aur	quickshell-git
 aur	r2modman-bin
-aur	rofi-power-menu
-aur	rog-control-center
 aur	rstudio-desktop-bin
 aur	sioyek-dev
 aur	spotify
@@ -224,7 +221,6 @@ aur	ttf-ms-fonts
 aur	ttf-vista-fonts
 aur	unityhub
 aur	upscayl-bin
-aur	waybar-git
 aur	webcord
 aur	whatsapp-for-linux-git
 aur	wl-kbptr

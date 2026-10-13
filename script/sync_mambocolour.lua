@@ -53,14 +53,6 @@ local function render_hypr()
     return table.concat(lines, "\n") .. "\n"
 end
 
-local function render_waybar()
-    local lines = { "/* " .. header .. " */", "/* Do not edit; run the sync script instead. */" }
-    for _, entry in ipairs(entries) do
-        lines[#lines + 1] = string.format("@define-color mambo_%s %s;", entry[1], entry[2])
-    end
-    return table.concat(lines, "\n") .. "\n"
-end
-
 local function render_scss()
     local lines = { "// " .. header, "// Do not edit; run the sync script instead." }
     for _, entry in ipairs(entries) do
@@ -73,10 +65,6 @@ local outputs = {
     {
         path = root .. "/dot/hypr/.config/hypr/themes/mambocolour.conf",
         content = render_hypr(),
-    },
-    {
-        path = root .. "/dot/waybar/.config/waybar/mambocolour.css",
-        content = render_waybar(),
     },
     {
         path = root .. "/dot/ags/.config/ags/_mambocolour.scss",

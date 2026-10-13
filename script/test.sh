@@ -25,21 +25,18 @@ if lua "$SCRIPT_DIR/sync_mambocolour.lua" invalid >/dev/null 2>&1; then
 fi
 for adapter in \
     "$PROJECT_DIR/dot/hypr/.config/hypr/themes/mambocolour.conf" \
-    "$PROJECT_DIR/dot/waybar/.config/waybar/mambocolour.css" \
     "$PROJECT_DIR/dot/ags/.config/ags/_mambocolour.scss"; do
     grep -Fq 'c703092a619b3ee9b05503eaf2a553ae52595d35' "$adapter"
 done
 for old_theme in mamboorchelight mamboorchedark mambooutbacklight mambooutbackdark; do
     [[ ! -e "$PROJECT_DIR/dot/hypr/.config/hypr/themes/$old_theme.lua" ]]
     [[ ! -e "$PROJECT_DIR/dot/hypr/.config/hypr/themes/$old_theme.conf" ]]
-    [[ ! -e "$PROJECT_DIR/dot/waybar/.config/waybar/$old_theme.css" ]]
 done
 if grep -ERq \
     'magma_dust|wildfire|rusty_canyon|baked_brick|crimson_creek|desert_rose|dusty_mauve|wild_plum|berry_bramble|dusk_shadow|canyon_flash|burnt_ochre|iron_oxide|ember_glow|tumbleweed|dry_straw|roasted_cumin|savannah_dusk|desert_sage|dusty_olive|lichen_crust|dry_moss|eucalyptus_leaf|overgrown_fern|swamp_murk|ancient_pine|shale_green|river_ooze|deep_teal|sunken_timber|outback_sky|eucalyptus_smoke|bluestone|storm_canopy|night_monsoon|weathered_wood|termite_mound|dried_bark|burnt_charcoal|crushed_clay' \
     "$PROJECT_DIR/dot/hypr/.config/hypr/general.lua" \
     "$PROJECT_DIR/dot/hypr/.config/hypr/windowrules.lua" \
     "$PROJECT_DIR/dot/hypr/.config/hypr/hyprlock.conf" \
-    "$PROJECT_DIR/dot/waybar/.config/waybar/style.css" \
     "$PROJECT_DIR/dot/ags/.config/ags/style.scss"; then
     echo 'active desktop configs must not use MamboColour palette keys' >&2
     exit 1
@@ -90,7 +87,7 @@ fi
 
 BOUNDED_HOME="$TEST_ROOT/bounded-home"
 mkdir -p "$BOUNDED_HOME/.config/unmanaged"
-ln -s "$PROJECT_DIR/dot/waybar/.config/waybar/mambocolour.css" \
+ln -s "$PROJECT_DIR/dot/ags/.config/ags/_mambocolour.scss" \
     "$BOUNDED_HOME/.config/unmanaged/repo-link"
 bounded_output="$(HOME="$BOUNDED_HOME" PATH="$DOCTOR_BIN:/usr/bin:/bin" \
     "$SCRIPT_DIR/mambodot.sh" doctor)"
@@ -100,7 +97,7 @@ LC_ALL=C sort -cu "$PROJECT_DIR/manifest/packages.tsv"
 LC_ALL=C sort -cu "$PROJECT_DIR/manifest/services.tsv"
 awk -F '\t' 'NF != 2 || $1 == "" || $2 == "" { exit 1 }' \
     "$PROJECT_DIR/manifest/packages.tsv" "$PROJECT_DIR/manifest/services.tsv"
-if grep -Eq $'\t(auto-cpufreq|thermald|illogical-impulse-microtex-git-debug|wl-kbptr-debug)$' \
+if grep -Eq $'\t(auto-cpufreq|mako|rofi|rofi-power-menu|thermald|waybar-git|illogical-impulse-microtex-git-debug|wl-kbptr-debug)$' \
     "$PROJECT_DIR/manifest/packages.tsv"; then
     echo 'package manifest includes a reviewed exclusion' >&2
     exit 1
@@ -158,6 +155,10 @@ for action in shutdown hibernate reboot suspend logout; do
         "$POWER_MENU" "$action"
 done
 MAMBODOT_TEST_LOG="$POWER_LOG" PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" windows
+if "$POWER_MENU" >/dev/null 2>&1 || "$POWER_MENU" shutdown extra >/dev/null 2>&1; then
+    echo 'powermenu should require exactly one action' >&2
+    exit 1
+fi
 if MAMBODOT_TEST_LOG="$POWER_LOG" PATH="$POWER_BIN:/usr/bin:/bin" \
     "$POWER_MENU" unknown >/dev/null 2>&1; then
     echo 'powermenu should reject unknown actions' >&2
@@ -257,15 +258,10 @@ fi
 grep -Fq 'Retired Stow link:' "$TEST_ROOT/upgrade-doctor.err"
 grep -Fq 'Stow package drift: ags' "$TEST_ROOT/upgrade-doctor.err"
 grep -Fq 'Stow package drift: hypr' "$TEST_ROOT/upgrade-doctor.err"
-if grep -Fq 'Stow package drift: waybar' "$TEST_ROOT/upgrade-doctor.err"; then
-    echo 'doctor should not require intentionally unlinked packages' >&2
-    exit 1
-fi
 HOME="$UPGRADE_HOME" "$SCRIPT_DIR/mambodot.sh" link hypr ags >/dev/null 2>&1
 [[ ! -L "$UPGRADE_HOME/.config/hypr/themes/mamboorchedark.conf" ]]
 [[ -L "$UPGRADE_HOME/.config/hypr/themes/mambocolour.conf" ]]
 [[ -L "$UPGRADE_HOME/.config/ags/_mambocolour.scss" ]]
-[[ ! -e "$UPGRADE_HOME/.config/waybar/mambocolour.css" ]]
 HOME="$UPGRADE_HOME" PATH="$DOCTOR_BIN:/usr/bin:/bin" \
     "$SCRIPT_DIR/mambodot.sh" doctor >/dev/null
 rm -- "$UPGRADE_HOME/.config/hypr/themes/mambocolour.conf"
@@ -299,7 +295,6 @@ HOME="$ALL_HOME" "$SCRIPT_DIR/mambodot.sh" link all >/dev/null 2>&1
 [[ -L "$ALL_HOME/.config/input-remapper-2/presets/Compx VXE NordicMouse 1K Dongle/Sideway.json" ]]
 [[ -L "$ALL_HOME/.config/qimgv/theme.conf" ]]
 [[ -L "$ALL_HOME/.config/nvim/init.lua" ]]
-[[ -L "$ALL_HOME/.config/waybar/config.jsonc" ]]
 [[ -L "$ALL_HOME/.gitconfig" ]]
 [[ -L "$ALL_HOME/.local/share/applications/feh.desktop" ]]
 [[ ! -e "$ALL_HOME/.git-credentials" ]]
@@ -358,6 +353,7 @@ grep -Fq "hl.dsp.focus({ window = \"address:0x\${client.address}\" })" \
     "$ags_config/widgets/Launcher.tsx"
 grep -Fq "hl.dsp.focus({ workspace = \${id} })" "$ags_config/widgets/Bar.tsx"
 grep -Fq 'hyprland.connect("urgent"' "$ags_config/widgets/Bar.tsx"
+grep -Fq 'if (!client) return' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'hyprland.connect("notify::focused-workspace"' "$ags_config/widgets/Bar.tsx"
 grep -Fq '.workspaces button.attention' "$ags_config/style.scss"
 grep -Fq 'Gtk.ApplicationInhibitFlags.IDLE' "$ags_config/widgets/Bar.tsx"
@@ -452,6 +448,7 @@ grep -Fq 'TimeoutStopSec=3' "$shell_units/mambodot-ags.service"
 grep -Fq 'BusName=org.freedesktop.Notifications' "$shell_units/mambodot-notifd.service"
 grep -Fq 'ExecStart=/usr/bin/astal-notifd daemon' "$shell_units/mambodot-notifd.service"
 grep -Fq 'StandardOutput=null' "$shell_units/mambodot-notifd.service"
+grep -Fq 'Conflicts=mako.service' "$shell_units/mambodot-notifd.service"
 grep -Fq 'ExecStart=/usr/bin/wl-paste --type %i --watch /usr/bin/cliphist -max-items 5000 store' \
     "$shell_units/mambodot-cliphist@.service"
 for unit in "$shell_units"/*.service; do
@@ -485,17 +482,6 @@ grep -Fq 'ags toggle sidebar-left' "$session_keys"
 grep -Fq 'ags toggle sidebar-right' "$session_keys"
 grep -Fq 'ags toggle keybinds' "$session_keys"
 grep -Fq 'Toggle keybind sheet' "$PROJECT_DIR/docs/Keybinds.md"
-recovery_bar="$PROJECT_DIR/dot/waybar/.config/waybar/config.jsonc"
-grep -Fq '"idle_inhibitor"' "$recovery_bar"
-if grep -Fq '"tray"' "$recovery_bar"; then
-    echo 'Waybar recovery cannot share one tray across multiple output bars' >&2
-    exit 1
-fi
-if grep -REq 'custom/uptime|pkill[[:space:]]+(-x[[:space:]]+)?hypridle' \
-    "$PROJECT_DIR/dot/waybar"; then
-    echo 'Waybar recovery must use its native idle inhibitor' >&2
-    exit 1
-fi
 
 if grep -Eq 'systemctl --user import-environment|hyprland-session.target' "$session_exec" ||
     grep -Eq '\b(mako|makoctl|waybar|rofi)\b' "$session_exec" "$session_keys" "$session_refresh" ||

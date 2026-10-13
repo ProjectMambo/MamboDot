@@ -7,6 +7,7 @@ arch	adobe-source-han-serif-jp-fonts
 arch	amd-ucode
 arch	archlinux-xdg-menu
 arch	ark
+arch	asusctl
 arch	audacity
 arch	awww
 arch	base
@@ -170,9 +171,7 @@ arch	zram-generator
 arch	zsh
 arch	zsh-autosuggestions
 aur	anaconda
-aur	asusctl
 aur	atlauncher-bin
-aur	auto-cpufreq
 aur	avizo
 aur	aylurs-gtk-shell-git
 aur	balena-etcher

@@ -100,7 +100,7 @@ LC_ALL=C sort -cu "$PROJECT_DIR/manifest/packages.tsv"
 LC_ALL=C sort -cu "$PROJECT_DIR/manifest/services.tsv"
 awk -F '\t' 'NF != 2 || $1 == "" || $2 == "" { exit 1 }' \
     "$PROJECT_DIR/manifest/packages.tsv" "$PROJECT_DIR/manifest/services.tsv"
-if grep -Eq $'\t(thermald|illogical-impulse-microtex-git-debug|wl-kbptr-debug)$' \
+if grep -Eq $'\t(auto-cpufreq|thermald|illogical-impulse-microtex-git-debug|wl-kbptr-debug)$' \
     "$PROJECT_DIR/manifest/packages.tsv"; then
     echo 'package manifest includes a reviewed exclusion' >&2
     exit 1

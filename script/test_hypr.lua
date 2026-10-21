@@ -78,6 +78,23 @@ assert(configurations[1].general.col.active_border == "rgb(64705e)")
 assert(configurations[1].general.col.inactive_border == "rgb(3d3633)")
 assert(window_rules[1].border_color == "rgb(7a8574)")
 assert(window_rules[2].border_color == "rgb(d3a774)")
+local zoom_annotation_rule
+for _, rule in ipairs(window_rules) do
+    if rule.name == "zoom-annotation-toolbars" then
+        zoom_annotation_rule = rule
+    end
+end
+assert(zoom_annotation_rule ~= nil)
+assert(zoom_annotation_rule.match.initial_class == "^zoom$")
+assert(zoom_annotation_rule.match.initial_title == "^annotate_(main_|sub_)?toolbar(_[a-z_]+)?$")
+assert(zoom_annotation_rule.match.xwayland == true)
+assert(zoom_annotation_rule.float == true)
+assert(zoom_annotation_rule.no_focus == nil)
+assert(zoom_annotation_rule.no_initial_focus == nil)
+assert(zoom_annotation_rule.no_follow_mouse == nil)
+assert(zoom_annotation_rule.stay_focused == nil)
+assert(zoom_annotation_rule.size == nil)
+assert(zoom_annotation_rule.move == nil)
 assert(dark:colour():get(0):hex() == "#ff6b57")
 assert(light:colour():get(0):hex() == "#b84233")
 assert(dark:colour():get(dark:colour():len()) == nil)

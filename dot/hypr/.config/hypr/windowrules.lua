@@ -21,6 +21,17 @@ hl.window_rule({
     border_color = rgb(ui:warning()),
 })
 
+-- --- ZOOM ANNOTATION TOOLBARS ---
+hl.window_rule({
+    name = "zoom-annotation-toolbars",
+    match = {
+        initial_class = "^zoom$",
+        initial_title = "^annotate_(main_|sub_)?toolbar(_[a-z_]+)?$",
+        xwayland = true,
+    },
+    float = true,
+})
+
 -- --- FLOATING ---
 local default = { 1100, 700 }
 hl.window_rule({

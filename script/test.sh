@@ -357,10 +357,15 @@ grep -Fq 'if (!client) return' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'hyprland.connect("notify::focused-workspace"' "$ags_config/widgets/Bar.tsx"
 grep -Fq '.workspaces button.attention' "$ags_config/style.scss"
 grep -Fq 'focusable={false}' "$ags_config/widgets/Bar.tsx"
-grep -Fq '"/usr/bin/systemd-inhibit"' "$ags_config/lib/idle.ts"
-grep -Fq '"--what=idle"' "$ags_config/lib/idle.ts"
-grep -Fq 'child.wait_async' "$ags_config/lib/idle.ts"
-grep -Fq 'child?.force_exit()' "$ags_config/lib/idle.ts"
+grep -Fq 'Gio.BusType.SYSTEM' "$ags_config/lib/idle.ts"
+grep -Fq '"org.freedesktop.login1.Manager"' "$ags_config/lib/idle.ts"
+grep -Fq 'new GLib.Variant("(ssss)"' "$ags_config/lib/idle.ts"
+grep -Fq 'inhibitorFd = fds.get(handle)' "$ags_config/lib/idle.ts"
+grep -Fq 'GLib.close(fd)' "$ags_config/lib/idle.ts"
+if grep -Eq 'systemd-inhibit|sleep.*infinity|force_exit' "$ags_config/lib/idle.ts"; then
+    echo 'idle inhibition should own the logind descriptor directly' >&2
+    exit 1
+fi
 grep -Fq 'enableIdleInhibitor()' "$ags_config/app.tsx"
 grep -Fq 'disableIdleInhibitor()' "$ags_config/app.tsx"
 grep -Fq 'startBatteryMonitor()' "$ags_config/app.tsx"

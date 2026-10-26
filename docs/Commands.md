@@ -137,6 +137,8 @@ After the `script` Stow package is linked, the shared backend accepts one fixed 
 
 Exactly one action is required. Missing, unknown, or extra arguments fail with a usage error, and action strings are selected by `case` rather than evaluated. The AGS Power mode confirms suspend, hibernate, logout, restart, restart-to-Windows, and shutdown before invoking this backend; Lock runs immediately. Direct command-line action calls are immediate.
 
+The Hibernate action closes the Bitwarden Flatpak before asking logind to hibernate. Bitwarden's current `memfd_secret` key container deliberately removes kernel hibernation support while the app is running; closing it releases that protection without moving vault keys into this host's unencrypted swap. Bitwarden remains closed after resume and must be reopened. A direct `systemctl hibernate` still fails while Bitwarden is running.
+
 The `windows` action asks Polkit to run only `/usr/bin/grub-reboot` for the reviewed Windows entry, then reboots only if that command succeeds. Cancelling or failing authorization leaves the current boot target and session unchanged. If setting the one-shot entry succeeds but reboot fails, the backend clears `next_entry` before returning an error.
 
 ## Code OSS extensions

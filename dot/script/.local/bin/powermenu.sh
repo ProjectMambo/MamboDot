@@ -10,7 +10,11 @@ usage() {
 run_action() {
     case "$1" in
         shutdown) systemctl poweroff ;;
-        hibernate) systemctl hibernate ;;
+        hibernate)
+            # Bitwarden's memfd_secret backend disables kernel hibernation while running.
+            flatpak kill com.bitwarden.desktop 2>/dev/null || true
+            systemctl hibernate
+            ;;
         reboot) systemctl reboot ;;
         windows)
             pkexec /usr/bin/grub-reboot "$WINDOWS_ENTRY"

@@ -80,7 +80,7 @@ const modifierMask =
 const powerActions = [
   ["lock", "Lock", "Lock this session", "system-lock-screen-symbolic", ""],
   ["suspend", "Suspend", "Suspend this computer", "media-playback-pause-symbolic", "Suspend now?"],
-  ["hibernate", "Hibernate", "Hibernate this computer", "drive-harddisk-symbolic", "Hibernate now?"],
+  ["hibernate", "Hibernate", "Close Bitwarden and hibernate this computer", "drive-harddisk-symbolic", "Close Bitwarden and hibernate now?"],
   ["logout", "Log out", "End this Hyprland session", "system-log-out-symbolic", "Log out now?"],
   ["reboot", "Restart", "Restart this computer", "system-reboot-symbolic", "Restart now?"],
   ["windows", "Restart to Windows", "Select Windows for the next boot", "computer-symbolic", "Restart into Windows now?"],

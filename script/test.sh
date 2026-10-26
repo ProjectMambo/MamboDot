@@ -146,7 +146,7 @@ printf '%s\n' \
     '[[ ${MAMBODOT_TEST_FAIL:-} != "${0##*/}" ]]' \
     > "$POWER_BIN/mock"
 chmod +x "$POWER_BIN/mock"
-for command in hyprshutdown pkexec systemctl; do
+for command in flatpak hyprshutdown pkexec systemctl; do
     ln -s mock "$POWER_BIN/$command"
 done
 
@@ -167,6 +167,7 @@ fi
 mapfile -t power_calls < "$POWER_LOG"
 expected_power_calls=(
     'systemctl|poweroff'
+    'flatpak|kill|com.bitwarden.desktop'
     'systemctl|hibernate'
     'systemctl|reboot'
     'systemctl|suspend'
@@ -175,6 +176,10 @@ expected_power_calls=(
     'systemctl|reboot'
 )
 [[ "${power_calls[*]}" == "${expected_power_calls[*]}" ]]
+FAILED_FLATPAK_LOG="$TEST_ROOT/power-failed-flatpak.log"
+MAMBODOT_TEST_LOG="$FAILED_FLATPAK_LOG" MAMBODOT_TEST_FAIL=flatpak \
+    PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" hibernate
+[[ "$(cat "$FAILED_FLATPAK_LOG")" == $'flatpak|kill|com.bitwarden.desktop\nsystemctl|hibernate' ]]
 FAILED_POWER_LOG="$TEST_ROOT/power-failed.log"
 if MAMBODOT_TEST_LOG="$FAILED_POWER_LOG" MAMBODOT_TEST_FAIL=pkexec \
     PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" windows >/dev/null 2>&1; then
@@ -395,6 +400,7 @@ fi
 for action in lock suspend hibernate logout reboot windows shutdown; do
     grep -Fq "[\"$action\"," "$ags_config/widgets/Launcher.tsx"
 done
+grep -Fq 'Close Bitwarden and hibernate now?' "$ags_config/widgets/Launcher.tsx"
 if grep -Fq 'hyprland.dispatch(' "$ags_config/widgets/Bar.tsx" ||
     grep -Fq 'client.focus()' "$ags_config/widgets/Launcher.tsx"; then
     echo 'AGS must use Hyprland Lua dispatch syntax' >&2

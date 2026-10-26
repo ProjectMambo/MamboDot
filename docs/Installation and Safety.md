@@ -90,7 +90,7 @@ Stow only intentional user preferences. Current ownership is deliberately narrow
 | File manager and desktop integration | Dolphin preferences, metadata-field visibility, service-menu choices; KDE appearance and I/O policy; XDG MIME and portal defaults | KDE activities, global shortcuts owned by Hyprland, window/session state, trash state, and KDE Connect keys |
 | Input | Fcitx5 profile, hotkeys, Pinyin, punctuation, notifications, and conversion preferences; the NordicMouse Sideway Input Remapper preset | Mozc history/databases, cached layouts, temporary files, learned input data, generated Xmodmap data, empty presets, and Input Remapper daemon state |
 | Notes | The read-only AGS schedule integration | The Obsidian vault and `.obsidian`, which remain owned by the Notes project |
-| System and hardware | Reviewed files under `system/hosts/fa507xv/`; ROG Control Center foreground and tray preferences | Generated `asusd`/`supergfxd` and ROG Aura/user state, raw sysfs controls, daemon databases, and broad `/etc` snapshots |
+| System and hardware | Reviewed files under `system/hosts/fa507xv/`, including the NetworkManager Wi-Fi power policy; ROG Control Center foreground and tray preferences | Wi-Fi credentials and connection profiles, generated `asusd`/`supergfxd` and ROG Aura/user state, raw sysfs controls, daemon databases, and broad `/etc` snapshots |
 | Other applications | Feh themes and visible launcher override; qimgv's colour theme; package presence is recorded in the manifest | qimgv version/window/cache state; browser/Electron profiles, credentials, cookies, caches, game state, and mixed runtime preference files remain local until a stable leaf file is reviewed |
 
 GTK theme selection is already owned by Hyprland's environment and KDE globals. The current GTK CSS files are stale generated Matugen output without tracked source templates, so duplicating them would make the repository less reproducible rather than more complete.
@@ -132,12 +132,14 @@ The adapter script emits the dark UI roles and 12 deterministic numbered accents
 
 ## Apply host-specific system policy
 
-Files below `system/hosts/` are root-owned machine policy, not Stow packages. Inspect and apply them individually. The FA507XV profile records SDDM autologin, Fcitx environment variables, and the Hyprlock PAM addition:
+Files below `system/hosts/` are root-owned machine policy, not Stow packages. Inspect and apply them individually. The FA507XV profile records SDDM autologin, Fcitx environment variables, the Hyprlock PAM addition, and a NetworkManager default that disables Wi-Fi power saving:
 
 ```bash
 diff -u /etc/sddm.conf system/hosts/fa507xv/etc/sddm.conf
 diff -u /etc/environment system/hosts/fa507xv/etc/environment
 diff -u /etc/pam.d/hyprlock system/hosts/fa507xv/etc/pam.d/hyprlock
+sed -n '1,80p' \
+    system/hosts/fa507xv/etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf
 ```
 
 After reviewing each diff, apply only the intended files:
@@ -149,11 +151,24 @@ sudo install --backup=numbered -D -m 0644 \
     system/hosts/fa507xv/etc/environment /etc/environment
 sudo install --backup=numbered -D -m 0644 \
     system/hosts/fa507xv/etc/pam.d/hyprlock /etc/pam.d/hyprlock
+sudo install --backup=numbered -D -m 0644 \
+    system/hosts/fa507xv/etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf \
+    /etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf
 ```
 
 The FA507XV profile keeps SDDM autologin and starts Hyprlock immediately. Autologin cannot provide a password to GNOME Keyring, so the first secret-using application otherwise opens a second password dialog. The tracked PAM file reuses the password already authenticated by Hyprlock.
 
 Each install command leaves a numbered backup beside the target. Restore the appropriate backup from a TTY if login or Hyprlock authentication fails. Changes to SDDM and `/etc/environment` require a fresh login, preferably a reboot. Package upgrades may provide a `.pacnew`; compare it with the tracked policy before replacing either file.
+
+The Wi-Fi policy applies NetworkManager's documented numeric value `2` to profiles that retain their default power setting. It was added after the RTL8852BE link showed power saving enabled, locally generated reason-4 reassociations, and gateway latency spikes, without driver crashes or packet loss in the sampled check. This is a reliability preference, not proof that every slowdown came from power saving, and it may use slightly more battery. After installation, apply it without storing any SSID, UUID, or credential in MamboDot:
+
+```bash
+nmcli general reload conf
+nmcli device reapply wlp4s0
+iw dev wlp4s0 get power_save
+```
+
+Expect `Power save: off`. Reconnect once if the live device cannot reapply the setting. Remove the drop-in, reload NetworkManager, and reconnect to restore NetworkManager's default.
 
 ## Session environment
 
@@ -204,7 +219,7 @@ Display-brightness controls explicitly target the FA507XV's `nvidia_wmi_ec_backl
 
 The Power launcher uses the fixed `powermenu.sh` action interface. AGS confirms every disruptive action; the direct backend is immediate. Restart to Windows is the only path that explicitly invokes `pkexec`, and reboot proceeds only after `grub-reboot` succeeds. If reboot fails after the one-shot entry is set, the backend clears that entry before reporting failure.
 
-The eye button in the bar's right status group uses GTK's application idle inhibitor, which Hypridle honors while remaining active. A warm button background means inhibition is on. The inhibitor defaults to on at every AGS start, including resume; click it off to restore automatic idle locking. That choice lasts only until AGS restarts. Explicit lock, suspend, and hibernate actions still lock the session.
+The eye button in the bar's right status group owns a supervised `systemd-inhibit --what=idle` process, which Hypridle honors while remaining active. A warm button background means that process is alive, not merely that an earlier request returned a cookie. The inhibitor defaults to on at every AGS start, including resume, and retries an unexpected exit; click it off to restore automatic idle locking. That choice lasts only until AGS restarts. Explicit lock, suspend, and hibernate actions still lock the session.
 
 The launcher exposes every visible desktop application and the complete newest-first Cliphist database through a virtualized scrolling list. The text and image watchers raise Cliphist's retention ceiling from its 750-item default to 5,000 entries; the limit is applied by newly started watchers, not by AGS. Clipboard bodies remain in Cliphist's untracked cache database and can contain credentials or other sensitive material, so do not commit, sync, or back up that database without reviewing the privacy impact.
 
@@ -233,8 +248,10 @@ Hyprland --verify-config --config "$PWD/dot/hypr/.config/hypr/hyprland.lua"
 diff -u system/hosts/fa507xv/etc/sddm.conf /etc/sddm.conf
 diff -u system/hosts/fa507xv/etc/environment /etc/environment
 diff -u system/hosts/fa507xv/etc/pam.d/hyprlock /etc/pam.d/hyprlock
+diff -u system/hosts/fa507xv/etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf \
+    /etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf
 git diff --check
 git status --short
 ```
 
-The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, the exact vendored MamboColour revision, both semantic adapters, stable UI roles and deterministic accents, strict Code OSS extension synchronization, the shared user-tool path, an AGS production bundle, all seven fixed power-action mappings and both restart-to-Windows failure paths, default idle-inhibitor activation, the pre-sleep/post-resume AGS lifecycle, Hyprlock clock refresh, monitor-added workspace initialization, background-workspace attention state, multi-output launcher backdrop and mode-shortcut contracts, hardware telemetry parsers, AGS request grammar, the keybind, schedule, and binary-safe clipboard parser self-checks, systemd shell-unit ownership, monitor-relative sizing, the catch-all display and wallpaper rules, the focused Zoom annotation-toolbar rule, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Physically connect an external display and confirm it opens its first workspace while the original output retains focus and pointer position; then trigger an external browser sign-in, confirm the destination workspace stays highlighted, and visit it to clear the state. In Zoom, open the annotation or highlighter tools and hover their toolbars; confirm the auxiliary toolbar floats above the tiled meeting without reflowing it or losing clicks. Also test display removal, the keybind sheet, both AGS sidebars, all launcher modes, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them. A real hibernate remains deliberate manual validation: after resume, confirm the lock shows current time, the bar and `ags request` respond without a refresh, and exactly one AGS instance is active. Logout, sleep, restart, Windows boot selection, and shutdown are not triggered by the suite.
+The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, the exact vendored MamboColour revision, both semantic adapters, stable UI roles and deterministic accents, strict Code OSS extension synchronization, the shared user-tool path, an AGS production bundle, all seven fixed power-action mappings and both restart-to-Windows failure paths, process-owned default idle inhibition, battery-alert state transitions, the persistent full-charge action, the FA507XV Wi-Fi power policy, the pre-sleep/post-resume AGS lifecycle, Hyprlock clock refresh, monitor-added workspace initialization, background-workspace attention state, multi-output launcher backdrop and mode-shortcut contracts, hardware telemetry parsers, AGS request grammar, the keybind, schedule, and binary-safe clipboard parser self-checks, systemd shell-unit ownership, monitor-relative sizing, the catch-all display and wallpaper rules, the focused Zoom annotation-toolbar rule, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Physically connect an external display and confirm it opens its first workspace while the original output retains focus and pointer position; then trigger an external browser sign-in, confirm the destination workspace stays highlighted, and visit it to clear the state. In Zoom, open the annotation or highlighter tools and hover their toolbars; confirm the auxiliary toolbar floats above the tiled meeting without reflowing it or losing clicks. Also test display removal, workspace hover/focus restoration, the keybind sheet, both AGS sidebars, all launcher modes, low-battery and rapid-AC warnings, idle inhibition in `systemd-inhibit --list`, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them. A real hibernate remains deliberate manual validation: after resume, confirm the lock shows current time, the bar and `ags request` respond without a refresh, and exactly one AGS instance is active. Logout, sleep, restart, Windows boot selection, and shutdown are not triggered by the suite.

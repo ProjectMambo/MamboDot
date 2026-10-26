@@ -384,29 +384,19 @@ export default function LeftSidebar(): PanelContent {
                   xalign={0}
                 />
                 <box class="button-row compact" spacing={5}>
-                  {["60", "80"].map((limit) => (
+                  {["60", "80", "100"].map((limit) => (
                     <button
                       hexpand
                       class={chargeLimit((value) => (value === limit ? "active" : ""))}
                       sensitive={busy((value) => !value)}
                       onClicked={() => void action(
                         ["asusctl", "battery", "limit", limit],
-                        `${limit}% care enabled`,
+                        limit === "100" ? "Full charging enabled" : `${limit}% care enabled`,
                       )}
                     >
-                      <label label={`${limit}%`} />
+                      <label label={limit === "100" ? "Full" : `${limit}%`} />
                     </button>
                   ))}
-                  <button
-                    hexpand
-                    sensitive={busy((value) => !value)}
-                    onClicked={() => void action(
-                      ["asusctl", "battery", "oneshot"],
-                      "Full charge enabled once",
-                    )}
-                  >
-                    <label label="Full once" />
-                  </button>
                 </box>
               </box>
 

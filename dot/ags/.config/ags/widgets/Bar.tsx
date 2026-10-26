@@ -1,7 +1,6 @@
 import { For, createBinding, createComputed, createState, onCleanup } from "ags"
 import app from "ags/gtk4/app"
 import { Astal, Gdk, Gtk } from "ags/gtk4"
-import { execAsync } from "ags/process"
 import { createPoll } from "ags/time"
 import AstalBattery from "gi://AstalBattery"
 import AstalHyprland from "gi://AstalHyprland"
@@ -11,12 +10,14 @@ import AstalWp from "gi://AstalWp"
 import GLib from "gi://GLib"
 import Pango from "gi://Pango"
 import { launchScoped } from "../lib/launch"
+import {
+  idleInhibited,
+  toggleIdleInhibitor,
+} from "../lib/idle"
 import { clearAttention, markAttention, workspaceClass } from "../lib/workspace"
 
 const hyprland = AstalHyprland.get_default()!
-const [idleInhibited, setIdleInhibited] = createState(false)
 const [attentionWorkspaces, setAttentionWorkspaces] = createState<number[]>([])
-let idleInhibitCookie = 0
 
 hyprland.connect("urgent", (_self, client) => {
   if (!client) return
@@ -35,37 +36,14 @@ hyprland.connect("workspace-removed", (_self, id) => {
   setAttentionWorkspaces((ids) => clearAttention(ids, id))
 })
 
-export function enableIdleInhibitor() {
-  if (idleInhibitCookie) return
-  idleInhibitCookie = app.inhibit(
-    null,
-    Gtk.ApplicationInhibitFlags.IDLE,
-    "Keep the session awake",
-  )
-  setIdleInhibited(idleInhibitCookie !== 0)
-  if (!idleInhibitCookie) {
-    void execAsync(["notify-send", "MamboDot", "Could not enable idle inhibitor"])
-  }
-}
-
 function IdleInhibitor() {
-  function toggle() {
-    if (idleInhibitCookie) {
-      app.uninhibit(idleInhibitCookie)
-      idleInhibitCookie = 0
-      setIdleInhibited(false)
-    } else {
-      enableIdleInhibitor()
-    }
-  }
-
   return (
     <button
       class={idleInhibited((active) => `status-button idle-inhibitor${active ? " active" : ""}`)}
       tooltipText={idleInhibited((active) => active
         ? "Idle inhibitor on · click to allow automatic locking"
         : "Idle inhibitor off · click to keep the session awake")}
-      onClicked={toggle}
+      onClicked={toggleIdleInhibitor}
     >
       <label label={idleInhibited((active) => active ? "" : "")} />
     </button>
@@ -86,6 +64,7 @@ function Workspaces({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
         return (
           <button
             class={createComputed(() => workspaceClass(id, active(), attentionWorkspaces()))}
+            focusable={false}
             tooltipText={`Workspace ${index + 1}`}
             onClicked={() => void hyprland.message(
               `dispatch hl.dsp.focus({ workspace = ${id} })`,

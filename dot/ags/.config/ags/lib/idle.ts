@@ -2,22 +2,13 @@ import { createState } from "ags"
 import { execAsync } from "ags/process"
 import { timeout } from "ags/time"
 import Gio from "gi://Gio"
-
-const command = [
-  "/usr/bin/systemd-inhibit",
-  "--what=idle",
-  "--who=MamboDot",
-  "--why=Keep the session awake",
-  "--mode=block",
-  "/usr/bin/sleep",
-  "infinity",
-]
+import GLib from "gi://GLib"
 
 const [inhibited, setIdleInhibited] = createState(false)
 export const idleInhibited = inhibited
 
 let desired = false
-let process: Gio.Subprocess | null = null
+let inhibitorFd: number | null = null
 let retry: ReturnType<typeof timeout> | null = null
 let failureNotified = false
 
@@ -28,7 +19,7 @@ function notifyFailure() {
     "notify-send",
     "--urgency=critical",
     "MamboDot idle inhibitor",
-    "The inhibitor stopped unexpectedly; retrying.",
+    "Could not acquire the logind inhibitor; retrying.",
   ]).catch(() => {})
 }
 
@@ -41,26 +32,31 @@ function scheduleRetry() {
 }
 
 function start() {
-  if (!desired || process) return
+  if (!desired || inhibitorFd !== null) return
 
   try {
-    const child = Gio.Subprocess.new(command, Gio.SubprocessFlags.NONE)
-    process = child
+    const bus = Gio.bus_get_sync(Gio.BusType.SYSTEM, null)
+    const [reply, fds] = bus.call_with_unix_fd_list_sync(
+      "org.freedesktop.login1",
+      "/org/freedesktop/login1",
+      "org.freedesktop.login1.Manager",
+      "Inhibit",
+      new GLib.Variant("(ssss)", [
+        "idle",
+        "MamboDot",
+        "Keep the session awake",
+        "block",
+      ]),
+      new GLib.VariantType("(h)"),
+      Gio.DBusCallFlags.NONE,
+      5000,
+      null,
+      null,
+    )
+    if (!fds) throw new Error("logind returned no inhibitor descriptor")
+    const [handle] = reply.deepUnpack<[number]>()
+    inhibitorFd = fds.get(handle)
     setIdleInhibited(true)
-    child.wait_async(null, (_source, result) => {
-      try {
-        child.wait_finish(result)
-      } catch {
-        // The process lifetime, not its exit code, owns the displayed state.
-      }
-      if (process !== child) return
-      process = null
-      setIdleInhibited(false)
-      if (desired) {
-        notifyFailure()
-        scheduleRetry()
-      }
-    })
   } catch {
     setIdleInhibited(false)
     notifyFailure()
@@ -78,10 +74,10 @@ export function disableIdleInhibitor() {
   desired = false
   retry?.cancel()
   retry = null
-  const child = process
-  process = null
+  const fd = inhibitorFd
+  inhibitorFd = null
   setIdleInhibited(false)
-  child?.force_exit()
+  if (fd !== null) GLib.close(fd)
 }
 
 export function toggleIdleInhibitor() {

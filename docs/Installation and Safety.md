@@ -20,7 +20,7 @@ The active configuration references these groups of software:
 - GNU Stow, Git, Bash, Zsh, Oh My Zsh, `zsh-autosuggestions`, and `zsh-syntax-highlighting`.
 - Kitty, Dolphin, FeatherPad, qimgv, Qalculate-Qt, Neovim, Code OSS, Fastfetch, and KDE/Qt desktop utilities.
 - Fcitx5 with Pinyin and Mozc input methods.
-- The Bitwarden Flatpak, `hyprpolkitagent`, Polkit, and Howdy for optional vault unlock through system authentication.
+- Bitwarden Desktop Flatpak 2026.2.1 or newer, `hyprpolkitagent`, Polkit, and Howdy for optional vault unlock through system authentication.
 - Avizo volume/brightness helpers, Playerctl, Cliphist, wl-clipboard, wl-kbptr, Quickshell with HyprQuickFrame, and the screenshot tools used by that shell.
 - A Lua runtime for the vendored MamboColour API and repository checks. MamboColour itself is pinned and copied under `vendor/mambocolour/`; neither an adjacent provider checkout nor the former `mbcolor` command is an installation dependency. MamboFont is not an installation dependency.
 
@@ -173,7 +173,7 @@ sudo systemctl daemon-reload
 
 The FA507XV profile keeps SDDM autologin and starts Hyprlock immediately. Autologin cannot provide a password to GNOME Keyring, so the first secret-using application otherwise opens a second password dialog. The tracked PAM file reuses the password already authenticated by Hyprlock.
 
-Bitwarden's Flatpak requires its official host Polkit action before **Unlock with system authentication** can work. The tracked action grants only active local users an `auth_self` challenge. The `polkit-1` PAM override tries Howdy first and falls back to the normal password stack, while the systemd drop-in exposes only Video4Linux devices to Polkit's sandboxed helper instead of the former unrestricted device policy.
+Bitwarden's Flatpak requires its official host Polkit action before **Unlock with system authentication** can work. Use Bitwarden Desktop 2026.2.1 or newer: version 2026.1.0 submitted a Polkit process subject without a UID and failed before PAM or Howdy could open the camera; the upstream fix shipped in 2026.2.1. The tracked action grants only active local users an `auth_self` challenge. The `polkit-1` PAM override tries Howdy first and falls back to the normal password stack, while the systemd drop-in exposes only Video4Linux devices to Polkit's sandboxed helper instead of the former unrestricted device policy. See [Bitwarden issue 14263](https://github.com/bitwarden/clients/issues/14263) for the Flatpak failure and fix.
 
 > [!WARNING]
 > Polkit uses one PAM service for every action. Enabling Howdy here therefore permits face authentication for every Polkit prompt, not only Bitwarden. This host already trusts Howdy for `sudo`; do not apply the PAM file on a machine where face recognition should not authorize administrative desktop actions.

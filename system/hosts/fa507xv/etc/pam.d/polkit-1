@@ -1,0 +1,8 @@
+#%PAM-1.0
+
+# Polkit has one PAM service, so Howdy applies to every Polkit prompt.
+auth       sufficient   pam_howdy.so
+auth       include      system-auth
+account    include      system-auth
+password   include      system-auth
+session    include      system-auth

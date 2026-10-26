@@ -20,6 +20,7 @@ The active configuration references these groups of software:
 - GNU Stow, Git, Bash, Zsh, Oh My Zsh, `zsh-autosuggestions`, and `zsh-syntax-highlighting`.
 - Kitty, Dolphin, FeatherPad, qimgv, Qalculate-Qt, Neovim, Code OSS, Fastfetch, and KDE/Qt desktop utilities.
 - Fcitx5 with Pinyin and Mozc input methods.
+- The Bitwarden Flatpak, `hyprpolkitagent`, Polkit, and Howdy for optional vault unlock through system authentication.
 - Avizo volume/brightness helpers, Playerctl, Cliphist, wl-clipboard, wl-kbptr, Quickshell with HyprQuickFrame, and the screenshot tools used by that shell.
 - A Lua runtime for the vendored MamboColour API and repository checks. MamboColour itself is pinned and copied under `vendor/mambocolour/`; neither an adjacent provider checkout nor the former `mbcolor` command is an installation dependency. MamboFont is not an installation dependency.
 
@@ -90,8 +91,8 @@ Stow only intentional user preferences. Current ownership is deliberately narrow
 | File manager and desktop integration | Dolphin preferences, metadata-field visibility, service-menu choices; KDE appearance and I/O policy; XDG MIME and portal defaults | KDE activities, global shortcuts owned by Hyprland, window/session state, trash state, and KDE Connect keys |
 | Input | Fcitx5 profile, hotkeys, Pinyin, punctuation, notifications, and conversion preferences; the NordicMouse Sideway Input Remapper preset | Mozc history/databases, cached layouts, temporary files, learned input data, generated Xmodmap data, empty presets, and Input Remapper daemon state |
 | Notes | The read-only AGS schedule integration | The Obsidian vault and `.obsidian`, which remain owned by the Notes project |
-| System and hardware | Reviewed files under `system/hosts/fa507xv/`, including the NetworkManager Wi-Fi power policy; ROG Control Center foreground and tray preferences | Wi-Fi credentials and connection profiles, generated `asusd`/`supergfxd` and ROG Aura/user state, raw sysfs controls, daemon databases, and broad `/etc` snapshots |
-| Other applications | Feh themes and visible launcher override; qimgv's colour theme; package presence is recorded in the manifest | qimgv version/window/cache state; browser/Electron profiles, credentials, cookies, caches, game state, and mixed runtime preference files remain local until a stable leaf file is reviewed |
+| System and hardware | Reviewed files under `system/hosts/fa507xv/`, including the NetworkManager Wi-Fi policy and narrow Bitwarden/Howdy Polkit policy; ROG Control Center foreground and tray preferences | Wi-Fi credentials and connection profiles, generated `asusd`/`supergfxd` and ROG Aura/user state, raw sysfs controls, daemon databases, and broad `/etc` snapshots |
+| Other applications | Feh themes and visible launcher override; qimgv's colour theme; package presence is recorded in the manifest | Bitwarden vault/account state; qimgv version/window/cache state; browser/Electron profiles, credentials, cookies, caches, game state, and mixed runtime preference files remain local until a stable leaf file is reviewed |
 
 GTK theme selection is already owned by Hyprland's environment and KDE globals. The current GTK CSS files are stale generated Matugen output without tracked source templates, so duplicating them would make the repository less reproducible rather than more complete.
 
@@ -132,14 +133,19 @@ The adapter script emits the dark UI roles and 12 deterministic numbered accents
 
 ## Apply host-specific system policy
 
-Files below `system/hosts/` are root-owned machine policy, not Stow packages. Inspect and apply them individually. The FA507XV profile records SDDM autologin, Fcitx environment variables, the Hyprlock PAM addition, and a NetworkManager default that disables Wi-Fi power saving:
+Files below `system/hosts/` are root-owned machine policy, not Stow packages. Inspect and apply them individually. The FA507XV profile records SDDM autologin, Fcitx environment variables, the Hyprlock PAM addition, NetworkManager's Wi-Fi power policy, and the Bitwarden/Howdy system-authentication path:
 
 ```bash
 diff -u /etc/sddm.conf system/hosts/fa507xv/etc/sddm.conf
 diff -u /etc/environment system/hosts/fa507xv/etc/environment
 diff -u /etc/pam.d/hyprlock system/hosts/fa507xv/etc/pam.d/hyprlock
+diff -u /usr/lib/pam.d/polkit-1 system/hosts/fa507xv/etc/pam.d/polkit-1
+diff -u /etc/systemd/system/polkit-agent-helper@.service.d/override.conf \
+    system/hosts/fa507xv/etc/systemd/system/polkit-agent-helper@.service.d/override.conf
 sed -n '1,80p' \
     system/hosts/fa507xv/etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf
+sed -n '1,80p' \
+    system/hosts/fa507xv/usr/share/polkit-1/actions/com.bitwarden.Bitwarden.policy
 ```
 
 After reviewing each diff, apply only the intended files:
@@ -154,9 +160,25 @@ sudo install --backup=numbered -D -m 0644 \
 sudo install --backup=numbered -D -m 0644 \
     system/hosts/fa507xv/etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf \
     /etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf
+sudo install --backup=numbered -D -m 0644 \
+    system/hosts/fa507xv/etc/pam.d/polkit-1 /etc/pam.d/polkit-1
+sudo install --backup=numbered -D -m 0644 \
+    system/hosts/fa507xv/etc/systemd/system/polkit-agent-helper@.service.d/override.conf \
+    /etc/systemd/system/polkit-agent-helper@.service.d/override.conf
+sudo install --backup=numbered -D -m 0644 \
+    system/hosts/fa507xv/usr/share/polkit-1/actions/com.bitwarden.Bitwarden.policy \
+    /usr/share/polkit-1/actions/com.bitwarden.Bitwarden.policy
+sudo systemctl daemon-reload
 ```
 
 The FA507XV profile keeps SDDM autologin and starts Hyprlock immediately. Autologin cannot provide a password to GNOME Keyring, so the first secret-using application otherwise opens a second password dialog. The tracked PAM file reuses the password already authenticated by Hyprlock.
+
+Bitwarden's Flatpak requires its official host Polkit action before **Unlock with system authentication** can work. The tracked action grants only active local users an `auth_self` challenge. The `polkit-1` PAM override tries Howdy first and falls back to the normal password stack, while the systemd drop-in exposes only Video4Linux devices to Polkit's sandboxed helper instead of the former unrestricted device policy.
+
+> [!WARNING]
+> Polkit uses one PAM service for every action. Enabling Howdy here therefore permits face authentication for every Polkit prompt, not only Bitwarden. This host already trusts Howdy for `sudo`; do not apply the PAM file on a machine where face recognition should not authorize administrative desktop actions.
+
+After applying the policy, fully restart Bitwarden, unlock once with the master password or PIN, then enable **File → Settings → Security → Unlock with system authentication** for each account. Bitwarden generates and stores the account-specific unlock material itself; never copy or track its Flatpak data directory. On later locks, choose **Unlock with system authentication**. Password authentication remains available when Howdy fails. See Bitwarden's [Linux biometric-unlock instructions](https://bitwarden.com/help/biometrics/).
 
 Each install command leaves a numbered backup beside the target. Restore the appropriate backup from a TTY if login or Hyprlock authentication fails. Changes to SDDM and `/etc/environment` require a fresh login, preferably a reboot. Package upgrades may provide a `.pacnew`; compare it with the tracked policy before replacing either file.
 
@@ -248,10 +270,15 @@ Hyprland --verify-config --config "$PWD/dot/hypr/.config/hypr/hyprland.lua"
 diff -u system/hosts/fa507xv/etc/sddm.conf /etc/sddm.conf
 diff -u system/hosts/fa507xv/etc/environment /etc/environment
 diff -u system/hosts/fa507xv/etc/pam.d/hyprlock /etc/pam.d/hyprlock
+diff -u system/hosts/fa507xv/etc/pam.d/polkit-1 /etc/pam.d/polkit-1
+diff -u system/hosts/fa507xv/etc/systemd/system/polkit-agent-helper@.service.d/override.conf \
+    /etc/systemd/system/polkit-agent-helper@.service.d/override.conf
+diff -u system/hosts/fa507xv/usr/share/polkit-1/actions/com.bitwarden.Bitwarden.policy \
+    /usr/share/polkit-1/actions/com.bitwarden.Bitwarden.policy
 diff -u system/hosts/fa507xv/etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf \
     /etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf
 git diff --check
 git status --short
 ```
 
-The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, the exact vendored MamboColour revision, both semantic adapters, stable UI roles and deterministic accents, strict Code OSS extension synchronization, the shared user-tool path, an AGS production bundle, all seven fixed power-action mappings and both restart-to-Windows failure paths, process-owned default idle inhibition, battery-alert state transitions, the persistent full-charge action, the FA507XV Wi-Fi power policy, the pre-sleep/post-resume AGS lifecycle, Hyprlock clock refresh, monitor-added workspace initialization, background-workspace attention state, multi-output launcher backdrop and mode-shortcut contracts, hardware telemetry parsers, AGS request grammar, the keybind, schedule, and binary-safe clipboard parser self-checks, systemd shell-unit ownership, monitor-relative sizing, the catch-all display and wallpaper rules, the focused Zoom annotation-toolbar rule, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Physically connect an external display and confirm it opens its first workspace while the original output retains focus and pointer position; then trigger an external browser sign-in, confirm the destination workspace stays highlighted, and visit it to clear the state. In Zoom, open the annotation or highlighter tools and hover their toolbars; confirm the auxiliary toolbar floats above the tiled meeting without reflowing it or losing clicks. Also test display removal, workspace hover/focus restoration, the keybind sheet, both AGS sidebars, all launcher modes, low-battery and rapid-AC warnings, idle inhibition in `systemd-inhibit --list`, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, input methods, screenshots, media controls, and power actions individually before relying on them. A real hibernate remains deliberate manual validation: after resume, confirm the lock shows current time, the bar and `ags request` respond without a refresh, and exactly one AGS instance is active. Logout, sleep, restart, Windows boot selection, and shutdown are not triggered by the suite.
+The regression suite tests safe linking and unlinking, including the reviewed desktop packages, conflict handling, hostile Stow resource files, sorted machine manifests and doctor drift, the exact vendored MamboColour revision, both semantic adapters, stable UI roles and deterministic accents, strict Code OSS extension synchronization, the shared user-tool path, an AGS production bundle, all seven fixed power-action mappings and both restart-to-Windows failure paths, process-owned default idle inhibition, battery-alert state transitions, the persistent full-charge action, the FA507XV Wi-Fi and Bitwarden/Howdy host policies, the pre-sleep/post-resume AGS lifecycle, Hyprlock clock refresh, monitor-added workspace initialization, background-workspace attention state, multi-output launcher backdrop and mode-shortcut contracts, hardware telemetry parsers, AGS request grammar, the keybind, schedule, and binary-safe clipboard parser self-checks, systemd shell-unit ownership, monitor-relative sizing, the catch-all display and wallpaper rules, the focused Zoom annotation-toolbar rule, and key Lua helpers. The Hyprland command validates the complete configuration without changing the live session. Physically connect an external display and confirm it opens its first workspace while the original output retains focus and pointer position; then trigger an external browser sign-in, confirm the destination workspace stays highlighted, and visit it to clear the state. In Zoom, open the annotation or highlighter tools and hover their toolbars; confirm the auxiliary toolbar floats above the tiled meeting without reflowing it or losing clicks. Also test display removal, workspace hover/focus restoration, the keybind sheet, both AGS sidebars, all launcher modes, low-battery and rapid-AC warnings, idle inhibition in `systemd-inhibit --list`, notification popups/actions/do-not-disturb/history, text and image clipboard restoration, Howdy-backed Bitwarden unlock with password fallback, input methods, screenshots, media controls, and power actions individually before relying on them. A real hibernate remains deliberate manual validation: after resume, confirm the lock shows current time, the bar and `ags request` respond without a refresh, and exactly one AGS instance is active. Logout, sleep, restart, Windows boot selection, and shutdown are not triggered by the suite.

@@ -356,9 +356,14 @@ grep -Fq 'hyprland.connect("urgent"' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'if (!client) return' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'hyprland.connect("notify::focused-workspace"' "$ags_config/widgets/Bar.tsx"
 grep -Fq '.workspaces button.attention' "$ags_config/style.scss"
-grep -Fq 'Gtk.ApplicationInhibitFlags.IDLE' "$ags_config/widgets/Bar.tsx"
-grep -Fq 'app.uninhibit(idleInhibitCookie)' "$ags_config/widgets/Bar.tsx"
+grep -Fq 'focusable={false}' "$ags_config/widgets/Bar.tsx"
+grep -Fq '"/usr/bin/systemd-inhibit"' "$ags_config/lib/idle.ts"
+grep -Fq '"--what=idle"' "$ags_config/lib/idle.ts"
+grep -Fq 'child.wait_async' "$ags_config/lib/idle.ts"
+grep -Fq 'child?.force_exit()' "$ags_config/lib/idle.ts"
 grep -Fq 'enableIdleInhibitor()' "$ags_config/app.tsx"
+grep -Fq 'disableIdleInhibitor()' "$ags_config/app.tsx"
+grep -Fq 'startBatteryMonitor()' "$ags_config/app.tsx"
 grep -Fq 'execAsync([powerScript, id])' "$ags_config/widgets/Launcher.tsx"
 # shellcheck disable=SC2016 # Match the literal Gnim template expression.
 grep -Fq 'Alt+Shift+${index + 1}' "$ags_config/widgets/Launcher.tsx"
@@ -394,6 +399,11 @@ grep -Fq -- '--device=nvidia_wmi_ec_backlight' "$ags_config/widgets/LeftSidebar.
 grep -Fq '["asusctl", "leds", "set"' "$ags_config/widgets/LeftSidebar.tsx"
 grep -Fq '"panel_overdrive"' "$ags_config/widgets/LeftSidebar.tsx"
 grep -Fq '"rog-control-center"' "$ags_config/widgets/LeftSidebar.tsx"
+grep -Fq '["60", "80", "100"]' "$ags_config/widgets/LeftSidebar.tsx"
+if grep -Fq 'battery", "oneshot"' "$ags_config/widgets/LeftSidebar.tsx"; then
+    echo 'battery dashboard should use the persistent full-charge setting' >&2
+    exit 1
+fi
 grep -Fq 'ags request bar toggle | launcher apps [prime]|run|windows|power|clipboard' \
     "$ags_config/app.tsx"
 ags bundle "$ags_config/lib/launch.ts" "$TEST_ROOT/mambodot-launch-test" \
@@ -414,6 +424,9 @@ XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-keybin
 ags bundle "$ags_config/lib/hardware.ts" "$TEST_ROOT/mambodot-hardware-test" \
     --root "$ags_config" --gtk 4 >/dev/null
 XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-hardware-test"
+ags bundle "$ags_config/lib/battery.ts" "$TEST_ROOT/mambodot-battery-test" \
+    --root "$ags_config" --gtk 4 >/dev/null
+XDG_RUNTIME_DIR="$TEST_ROOT/runtime" MAMBODOT_TEST=1 "$TEST_ROOT/mambodot-battery-test"
 
 lua "$SCRIPT_DIR/test_hypr.lua" "$PROJECT_DIR"
 
@@ -542,5 +555,7 @@ grep -Eq '^GTK_IM_MODULE=fcitx$' \
     "$PROJECT_DIR/system/hosts/fa507xv/etc/environment"
 grep -Eq '^Session=hyprland$' \
     "$PROJECT_DIR/system/hosts/fa507xv/etc/sddm.conf"
+grep -Eq '^wifi\.powersave=2$' \
+    "$PROJECT_DIR/system/hosts/fa507xv/etc/NetworkManager/conf.d/20-mambodot-wifi-powersave.conf"
 
 echo 'MamboDot checks passed'

@@ -520,6 +520,21 @@ grep -Eq '^auth[[:space:]]+include[[:space:]]+login$' \
     "$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/hyprlock"
 grep -Eq '^-auth[[:space:]]+optional[[:space:]]+pam_gnome_keyring\.so$' \
     "$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/hyprlock"
+polkit_pam="$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/polkit-1"
+bitwarden_policy="$PROJECT_DIR/system/hosts/fa507xv/usr/share/polkit-1/actions/com.bitwarden.Bitwarden.policy"
+polkit_helper="$PROJECT_DIR/system/hosts/fa507xv/etc/systemd/system/polkit-agent-helper@.service.d/override.conf"
+grep -Eq '^auth[[:space:]]+sufficient[[:space:]]+pam_howdy\.so$' "$polkit_pam"
+grep -Eq '^auth[[:space:]]+include[[:space:]]+system-auth$' "$polkit_pam"
+grep -Fq '<action id="com.bitwarden.Bitwarden.unlock">' "$bitwarden_policy"
+grep -Fq '<allow_any>no</allow_any>' "$bitwarden_policy"
+grep -Fq '<allow_inactive>no</allow_inactive>' "$bitwarden_policy"
+grep -Fq '<allow_active>auth_self</allow_active>' "$bitwarden_policy"
+grep -Fq 'PrivateDevices=no' "$polkit_helper"
+grep -Fq 'DeviceAllow=char-video4linux rw' "$polkit_helper"
+if grep -Eq 'DevicePolicy=auto|DeviceAllow=/dev/uinput' "$polkit_helper"; then
+    echo 'Polkit helper device access should stay limited to video devices' >&2
+    exit 1
+fi
 
 LC_ALL=C sort -cu "$PROJECT_DIR/dot/code-oss/.config/Code - OSS/User/extensions.txt"
 grep -Fq 'ms-python.python' \

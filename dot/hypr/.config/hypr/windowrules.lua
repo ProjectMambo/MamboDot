@@ -40,6 +40,7 @@ hl.window_rule({
     match = {
         initial_class = "^obsidian$",
     },
+    maximize = true,
     fullscreen_state = "1 2",
 })
 

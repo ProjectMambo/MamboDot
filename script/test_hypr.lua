@@ -103,6 +103,7 @@ for _, rule in ipairs(window_rules) do
 end
 assert(obsidian_rule ~= nil)
 assert(obsidian_rule.match.initial_class == "^obsidian$")
+assert(obsidian_rule.maximize == true)
 assert(obsidian_rule.fullscreen_state == "1 2")
 assert(dark:colour():get(0):hex() == "#ff6b57")
 assert(light:colour():get(0):hex() == "#b84233")

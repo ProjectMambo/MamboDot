@@ -89,7 +89,7 @@ The AGS keybind sheet renders the tables on this page. `dot/hypr/.config/hypr/ke
 | `SUPER` `SHIFT` `C`        | Force close window |
 | `SUPER` `O`                | Toggle floating    |
 | `SUPER` `D`                | Toggle maximize    |
-| `SUPER` `F`                | Toggle IME-safe fullscreen |
+| `SUPER` `F`                | Toggle fullscreen  |
 | `SUPER` `P`                | Pin window         |
 | `SUPER` `Middle Mouse`     | Toggle floating    |
 | `SUPER` `Alt` `Middle Mouse` | Pin window       |

@@ -95,6 +95,15 @@ assert(zoom_annotation_rule.no_follow_mouse == nil)
 assert(zoom_annotation_rule.stay_focused == nil)
 assert(zoom_annotation_rule.size == nil)
 assert(zoom_annotation_rule.move == nil)
+local obsidian_rule
+for _, rule in ipairs(window_rules) do
+    if rule.name == "obsidian-ime-safe-fullscreen" then
+        obsidian_rule = rule
+    end
+end
+assert(obsidian_rule ~= nil)
+assert(obsidian_rule.match.initial_class == "^obsidian$")
+assert(obsidian_rule.fullscreen_state == "1 2")
 assert(dark:colour():get(0):hex() == "#ff6b57")
 assert(light:colour():get(0):hex() == "#b84233")
 assert(dark:colour():get(dark:colour():len()) == nil)

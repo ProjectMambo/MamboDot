@@ -32,6 +32,17 @@ hl.window_rule({
     float = true,
 })
 
+-- --- OBSIDIAN ---
+-- Internal fullscreen hides Wayland IME popups, so maximize in Hyprland while
+-- letting Obsidian use its fullscreen UI.
+hl.window_rule({
+    name = "obsidian-ime-safe-fullscreen",
+    match = {
+        initial_class = "^obsidian$",
+    },
+    fullscreen_state = "1 2",
+})
+
 -- --- FLOATING ---
 local default = { 1100, 700 }
 hl.window_rule({

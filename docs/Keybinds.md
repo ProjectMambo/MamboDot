@@ -97,6 +97,8 @@ The AGS keybind sheet renders the tables on this page. `dot/hypr/.config/hypr/ke
 | `SUPER` `Mouse Wheel Up/Down` | Move a floating window clockwise/anticlockwise between corners |
 | `SUPER` `SHIFT` `Mouse Wheel Up/Down` | Shrink/enlarge a floating window |
 
+Obsidian opens in IME-safe fullscreen: Hyprland maximizes it internally while reporting fullscreen to Obsidian. This avoids Hyprland's internal-fullscreen rendering bug that hides the Fcitx candidate window, so Pinyin and Mozc candidates remain visible.
+
 ### Layout navigation and adjustments
 
 | Keybinding | Description |

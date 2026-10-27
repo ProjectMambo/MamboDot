@@ -505,6 +505,7 @@ grep -Fq 'ags request launcher clipboard' "$session_keys"
 grep -Fq 'ags toggle sidebar-left' "$session_keys"
 grep -Fq 'ags toggle sidebar-right' "$session_keys"
 grep -Fq 'ags toggle keybinds' "$session_keys"
+grep -Fq 'hl.dsp.window.fullscreen_state({ internal = 1, client = 2,' "$session_keys"
 grep -Fq 'Toggle keybind sheet' "$PROJECT_DIR/docs/Keybinds.md"
 
 if grep -Eq 'systemctl --user import-environment|hyprland-session.target' "$session_exec" ||

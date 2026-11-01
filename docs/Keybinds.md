@@ -97,7 +97,9 @@ The AGS keybind sheet renders the tables on this page. `dot/hypr/.config/hypr/ke
 | `SUPER` `Mouse Wheel Up/Down` | Move a floating window clockwise/anticlockwise between corners |
 | `SUPER` `SHIFT` `Mouse Wheel Up/Down` | Shrink/enlarge a floating window |
 
-Obsidian opens in IME-safe fullscreen: Hyprland maximizes it internally while reporting fullscreen to Obsidian. This avoids Hyprland's internal-fullscreen rendering bug that hides the Fcitx candidate window, so Pinyin and Mozc candidates remain visible.
+`SUPER D` is the IME-safe choice while entering Pinyin or Mozc text. Maximized workspaces drop their gaps, border, and AGS bar, so this mode is still edge-to-edge. `SUPER F` remains true compositor fullscreen for games and media, where Hyprland 0.55 can hide Fcitx Wayland candidate popups; this is an [upstream compositor limitation](https://github.com/hyprwm/Hyprland/issues/16010), not an Fcitx window-rule target.
+
+Obsidian opens in IME-safe fullscreen: Hyprland maximizes it internally, reports fullscreen to Obsidian, and suppresses later client fullscreen requests. AGS unmaps its bar on that workspace, so Obsidian fills the display while Pinyin and Mozc candidates remain visible.
 
 ### Layout navigation and adjustments
 

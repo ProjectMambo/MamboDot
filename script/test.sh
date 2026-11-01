@@ -343,6 +343,9 @@ grep -Fq 'behaviourOnLaunch=alwaysAsk' \
 ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null
 [[ -x "$TEST_ROOT/mambodot-ags" ]]
+grep -Fq 'barsEnabled() && !workspaceFullscreen()' "$ags_config/widgets/Bar.tsx"
+grep -Fq 'notify::has-fullscreen' "$ags_config/widgets/Bar.tsx"
+grep -Fq 'toggleBars()' "$ags_config/app.tsx"
 grep -Fq 'GLib.shell_parse_argv' "$ags_config/widgets/Launcher.tsx"
 grep -Fq '["/usr/bin/gtk4-launch", id]' "$ags_config/widgets/Launcher.tsx"
 grep -Fq 'launchScoped(argv)' "$ags_config/widgets/Launcher.tsx"
@@ -492,6 +495,8 @@ grep -Fq 'before_sleep_cmd = loginctl lock-session; systemctl --user stop mambod
     "$idle_config"
 grep -Fq 'after_sleep_cmd = systemctl --user start mambodot-ags.service' "$idle_config"
 grep -Fq 'cmd[update:1000]' "$lock_config"
+grep -Fq 'ignore_empty_input = true' "$lock_config"
+grep -Fq 'PASSWORD · FACE: SPACE + ENTER' "$lock_config"
 if grep -Fq 'cmd[update:0]' "$lock_config" ||
     grep -Fq 'Restart=on-failure' "$shell_units/mambodot-ags.service"; then
     echo 'hibernate recovery policy regressed' >&2
@@ -522,6 +527,8 @@ monitor_config="$PROJECT_DIR/dot/hypr/.config/hypr/hyprland.lua"
 grep -Fq 'output = ""' "$monitor_config"
 grep -Fq 'position = "auto"' "$monitor_config"
 
+grep -Eq '^auth[[:space:]]+sufficient[[:space:]]+pam_howdy\.so$' \
+    "$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/hyprlock"
 grep -Eq '^auth[[:space:]]+include[[:space:]]+login$' \
     "$PROJECT_DIR/system/hosts/fa507xv/etc/pam.d/hyprlock"
 grep -Eq '^-auth[[:space:]]+optional[[:space:]]+pam_gnome_keyring\.so$' \

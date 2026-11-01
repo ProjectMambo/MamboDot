@@ -4,7 +4,7 @@ import Gtk from "gi://Gtk?version=4.0"
 import style from "./style.scss"
 import { startBatteryMonitor } from "./lib/battery"
 import { disableIdleInhibitor, enableIdleInhibitor } from "./lib/idle"
-import Bar from "./widgets/Bar"
+import Bar, { toggleBars } from "./widgets/Bar"
 import Keybinds from "./widgets/Keybinds"
 import Launcher, {
   LauncherBackdrop,
@@ -23,9 +23,7 @@ app.start({
   requestHandler(argv, respond) {
     const [command, requestedMode, option] = argv
     if (command === "bar" && requestedMode === "toggle" && argv.length === 2) {
-      const bars = app.windows.filter(({ name }) => name.startsWith("bar-"))
-      const visible = bars.some((bar) => bar.visible)
-      bars.forEach((bar) => (bar.visible = !visible))
+      toggleBars()
       respond("ok")
       return
     }

@@ -7,6 +7,7 @@ local queried_workspaces = {}
 local environment = {}
 local configurations = {}
 local window_rules = {}
+local workspace_rules = {}
 local events = {}
 
 hl = {
@@ -22,6 +23,9 @@ hl = {
     end,
     window_rule = function(value)
         table.insert(window_rules, value)
+    end,
+    workspace_rule = function(value)
+        table.insert(workspace_rules, value)
     end,
     dispatch = function(command)
         table.insert(commands, command)
@@ -76,6 +80,10 @@ require("general")
 require("windowrules")
 assert(configurations[1].general.col.active_border == "rgb(64705e)")
 assert(configurations[1].general.col.inactive_border == "rgb(3d3633)")
+assert(workspace_rules[1].workspace == "f[1]s[false]")
+assert(workspace_rules[1].gaps_in == 0)
+assert(workspace_rules[1].gaps_out == 0)
+assert(workspace_rules[1].no_border == true)
 assert(window_rules[1].border_color == "rgb(7a8574)")
 assert(window_rules[2].border_color == "rgb(d3a774)")
 local zoom_annotation_rule
@@ -105,6 +113,7 @@ assert(obsidian_rule ~= nil)
 assert(obsidian_rule.match.initial_class == "^obsidian$")
 assert(obsidian_rule.maximize == true)
 assert(obsidian_rule.fullscreen_state == "1 2")
+assert(obsidian_rule.suppress_event == "fullscreen")
 assert(dark:colour():get(0):hex() == "#ff6b57")
 assert(light:colour():get(0):hex() == "#b84233")
 assert(dark:colour():get(dark:colour():len()) == nil)

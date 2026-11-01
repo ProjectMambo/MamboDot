@@ -42,6 +42,7 @@ hl.window_rule({
     },
     maximize = true,
     fullscreen_state = "1 2",
+    suppress_event = "fullscreen",
 })
 
 -- --- FLOATING ---

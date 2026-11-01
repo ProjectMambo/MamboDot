@@ -66,6 +66,14 @@ hl.config({
     },
 })
 
+-- Maximized is the IME-safe fullscreen state; make it visually edge-to-edge.
+hl.workspace_rule({
+    workspace = "f[1]s[false]",
+    gaps_in = 0,
+    gaps_out = 0,
+    no_border = true,
+})
+
 hl.layer_rule({
     name = "mambodot-sidebar-left",
     match = { namespace = "^mambodot-sidebar-left$" },

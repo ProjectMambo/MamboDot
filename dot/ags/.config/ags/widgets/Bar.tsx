@@ -18,6 +18,11 @@ import { clearAttention, markAttention, workspaceClass } from "../lib/workspace"
 
 const hyprland = AstalHyprland.get_default()!
 const [attentionWorkspaces, setAttentionWorkspaces] = createState<number[]>([])
+const [barsEnabled, setBarsEnabled] = createState(true)
+
+export function toggleBars() {
+  setBarsEnabled((enabled) => !enabled)
+}
 
 hyprland.connect("urgent", (_self, client) => {
   if (!client) return
@@ -164,16 +169,37 @@ function Clock() {
 export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   let win: Astal.Window
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
+  const monitor = hyprland.get_monitor_by_name(gdkmonitor.connector ?? "")
+  const [workspaceFullscreen, setWorkspaceFullscreen] = createState(
+    monitor?.activeWorkspace.hasFullscreen ?? false,
+  )
   const title = createBinding(hyprland, "focusedClient", "title")(
     (value) => value || "Hyprland",
   )
 
-  onCleanup(() => win.destroy())
+  let workspace = monitor?.activeWorkspace
+  let workspaceSignal = workspace?.connect("notify::has-fullscreen", () => {
+    setWorkspaceFullscreen(workspace?.hasFullscreen ?? false)
+  })
+  const monitorSignal = monitor?.connect("notify::active-workspace", () => {
+    if (workspace && workspaceSignal) workspace.disconnect(workspaceSignal)
+    workspace = monitor.activeWorkspace
+    setWorkspaceFullscreen(workspace.hasFullscreen)
+    workspaceSignal = workspace.connect("notify::has-fullscreen", () => {
+      setWorkspaceFullscreen(workspace?.hasFullscreen ?? false)
+    })
+  })
+
+  onCleanup(() => {
+    if (workspace && workspaceSignal) workspace.disconnect(workspaceSignal)
+    if (monitor && monitorSignal) monitor.disconnect(monitorSignal)
+    win.destroy()
+  })
 
   return (
     <window
       $={(self) => (win = self)}
-      visible
+      visible={createComputed(() => barsEnabled() && !workspaceFullscreen())}
       name={`bar-${gdkmonitor.connector ?? "unknown"}`}
       class="Bar"
       namespace="mambodot-shell"

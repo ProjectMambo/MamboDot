@@ -175,29 +175,26 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   let win: Astal.Window
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
   const monitor = hyprland.get_monitor_by_name(gdkmonitor.connector ?? "")
+  const fullscreenActive = () => monitor?.activeWorkspace.clients.some(
+    (client) => client.fullscreen !== AstalHyprland.Fullscreen.NONE,
+  ) ?? false
   const [workspaceFullscreen, setWorkspaceFullscreen] = createState(
-    monitor?.activeWorkspace.hasFullscreen ?? false,
+    fullscreenActive(),
   )
   const title = createBinding(hyprland, "focusedClient", "title")(
     (value) => value || "Hyprland",
   )
 
-  let workspace = monitor?.activeWorkspace
-  let workspaceSignal = workspace?.connect("notify::has-fullscreen", () => {
-    setWorkspaceFullscreen(workspace?.hasFullscreen ?? false)
-  })
   const monitorSignal = monitor?.connect("notify::active-workspace", () => {
-    if (workspace && workspaceSignal) workspace.disconnect(workspaceSignal)
-    workspace = monitor.activeWorkspace
-    setWorkspaceFullscreen(workspace.hasFullscreen)
-    workspaceSignal = workspace.connect("notify::has-fullscreen", () => {
-      setWorkspaceFullscreen(workspace?.hasFullscreen ?? false)
-    })
+    setWorkspaceFullscreen(fullscreenActive())
+  })
+  const eventSignal = hyprland.connect("event", () => {
+    setWorkspaceFullscreen(fullscreenActive())
   })
 
   onCleanup(() => {
-    if (workspace && workspaceSignal) workspace.disconnect(workspaceSignal)
     if (monitor && monitorSignal) monitor.disconnect(monitorSignal)
+    hyprland.disconnect(eventSignal)
     win.destroy()
   })
 

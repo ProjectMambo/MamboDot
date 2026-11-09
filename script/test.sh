@@ -360,7 +360,9 @@ ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null
 [[ -x "$TEST_ROOT/mambodot-ags" ]]
 grep -Fq 'barsEnabled() && !workspaceFullscreen()' "$ags_config/widgets/Bar.tsx"
-grep -Fq 'notify::has-fullscreen' "$ags_config/widgets/Bar.tsx"
+grep -Fq 'client.fullscreen !== AstalHyprland.Fullscreen.NONE' \
+    "$ags_config/widgets/Bar.tsx"
+grep -Fq 'hyprland.connect("event"' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'toggleBars()' "$ags_config/app.tsx"
 grep -Fq 'GLib.shell_parse_argv' "$ags_config/widgets/Launcher.tsx"
 grep -Fq '["/usr/bin/gtk4-launch", id]' "$ags_config/widgets/Launcher.tsx"

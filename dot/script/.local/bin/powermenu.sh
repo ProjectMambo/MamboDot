@@ -2,6 +2,7 @@
 set -euo pipefail
 
 readonly WINDOWS_ENTRY="Windows Boot Manager (on /dev/nvme1n1p1)"
+readonly HIBERNATE_STATE_FILE="${MAMBODOT_HIBERNATE_STATE_FILE:-/sys/power/disk}"
 
 usage() {
     printf 'Usage: %s <shutdown|hibernate|reboot|windows|suspend|logout|lock>\n' "${0##*/}"
@@ -13,7 +14,15 @@ run_action() {
         hibernate)
             # Bitwarden's memfd_secret backend disables kernel hibernation while running.
             flatpak kill com.bitwarden.desktop 2>/dev/null || true
-            systemctl hibernate
+            for _ in {1..40}; do
+                if [[ -r $HIBERNATE_STATE_FILE ]] && ! grep -qw disabled "$HIBERNATE_STATE_FILE"; then
+                    systemctl hibernate
+                    return
+                fi
+                sleep 0.25
+            done
+            printf 'Hibernate is still unavailable after closing Bitwarden.\n' >&2
+            return 1
             ;;
         reboot) systemctl reboot ;;
         windows)

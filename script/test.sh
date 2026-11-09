@@ -180,6 +180,21 @@ FAILED_FLATPAK_LOG="$TEST_ROOT/power-failed-flatpak.log"
 MAMBODOT_TEST_LOG="$FAILED_FLATPAK_LOG" MAMBODOT_TEST_FAIL=flatpak \
     PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" hibernate
 [[ "$(cat "$FAILED_FLATPAK_LOG")" == $'flatpak|kill|com.bitwarden.desktop\nsystemctl|hibernate' ]]
+BLOCKED_DISK="$TEST_ROOT/power-disk"
+printf '[disabled]\n' > "$BLOCKED_DISK"
+# shellcheck disable=SC2016 # This line forms a generated test double.
+printf '%s\n' \
+    '#!/usr/bin/env bash' \
+    'printf "[platform] shutdown reboot suspend test_resume\n" > "$MAMBODOT_TEST_POWER_DISK"' \
+    > "$POWER_BIN/sleep"
+chmod +x "$POWER_BIN/sleep"
+WAITED_POWER_LOG="$TEST_ROOT/power-waited.log"
+MAMBODOT_TEST_LOG="$WAITED_POWER_LOG" \
+    MAMBODOT_TEST_POWER_DISK="$BLOCKED_DISK" \
+    MAMBODOT_HIBERNATE_STATE_FILE="$BLOCKED_DISK" \
+    PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" hibernate
+[[ "$(cat "$WAITED_POWER_LOG")" == $'flatpak|kill|com.bitwarden.desktop\nsystemctl|hibernate' ]]
+grep -Fq '[platform]' "$BLOCKED_DISK"
 FAILED_POWER_LOG="$TEST_ROOT/power-failed.log"
 if MAMBODOT_TEST_LOG="$FAILED_POWER_LOG" MAMBODOT_TEST_FAIL=pkexec \
     PATH="$POWER_BIN:/usr/bin:/bin" "$POWER_MENU" windows >/dev/null 2>&1; then
@@ -198,6 +213,7 @@ mapfile -t failed_reboot_calls < "$FAILED_REBOOT_LOG"
 [[ "${failed_reboot_calls[1]}" == 'systemctl|reboot' ]]
 [[ "${failed_reboot_calls[2]}" == 'pkexec|/usr/bin/grub-editenv|/boot/grub/grubenv|unset|next_entry' ]]
 grep -Fq 'lock) /usr/bin/hyprlock ;;' "$POWER_MENU"
+grep -Fq 'Hibernate is still unavailable after closing Bitwarden.' "$POWER_MENU"
 "$POWER_MENU" --help | grep -q 'shutdown|hibernate|reboot|windows|suspend|logout|lock'
 if grep -Eq '(^|[[:space:]])eval([[:space:]]|$)' "$POWER_MENU"; then
     echo 'powermenu should not evaluate action strings' >&2
@@ -517,6 +533,7 @@ grep -Fq 'Toggle keybind sheet' "$PROJECT_DIR/docs/Keybinds.md"
 grep -Fq 'hl.dsp.group.lock({ action = "toggle" })' "$session_keys"
 grep -Fq 'hl.dsp.window.fullscreen_state({' "$session_keys"
 grep -Fq 'internal = 1, client = 2, action = "toggle"' "$session_keys"
+grep -Fq 'key = { "super_l" }, dsp = hl.dsp.exec_cmd("ags request launcher apps"), rules = { release = true }' "$session_keys"
 [[ "$(grep -Fc 'hyprland.focusedWorkspace?.id' "$ags_config/widgets/Bar.tsx")" -eq 2 ]]
 
 if grep -Eq 'systemctl --user import-environment|hyprland-session.target' "$session_exec" ||

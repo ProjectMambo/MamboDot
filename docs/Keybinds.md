@@ -14,8 +14,8 @@ The AGS keybind sheet renders the tables on this page. `dot/hypr/.config/hypr/ke
 
 | Keybinding | Description |
 |---|---|
-| `SUPER`                    | Open AGS Apps                 |
-| `CTRL` `SUPER`             | Open AGS Apps (dedicated GPU) |
+| Tap `SUPER`                | Open AGS Apps                 |
+| Hold `CTRL`, tap `SUPER`   | Open AGS Apps (dedicated GPU) |
 | `SUPER` `Space`            | Select English input          |
 | `SUPER` `Alt` `Space`      | Select Mandarin (`pinyin`)    |
 | `SUPER` `SHIFT` `Space`    | Select Japanese (`mozc`)      |
@@ -26,6 +26,8 @@ The AGS keybind sheet renders the tables on this page. `dot/hypr/.config/hypr/ke
 | `SUPER` `Slash (/)`        | Toggle keybind sheet          |
 | `SUPER` `Bracket Left ([)` | Toggle laptop controls        |
 | `SUPER` `Bracket Right (])` | Toggle desktop/day planner   |
+
+The two launcher shortcuts run when `SUPER` is released. Holding `SUPER` for another chord does not open the launcher on key-down.
 
 ## System hardware utilities
 

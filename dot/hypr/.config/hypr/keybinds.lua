@@ -25,18 +25,19 @@ keybind:bind({ mod = { mod } })
     :temp({ key = { "bracketleft" }, dsp = hl.dsp.exec_cmd("ags toggle sidebar-left") })                -- Laptop Controls
     :temp({ key = { "bracketright" }, dsp = hl.dsp.exec_cmd("ags toggle sidebar-right") })              -- Desktop Controls
     :temp({ key = { "slash" }, dsp = hl.dsp.exec_cmd("ags toggle keybinds") })                           -- Keybind Cheatsheet
-    :temp({ key = { "super_l" }, dsp = hl.dsp.exec_cmd("ags request launcher apps") })                  -- App Launcher
-    :append({ mod = { c } })
-    :temp({                                                                                                            -- Prime-run App Launcher
-        key = { "super_l" },
+    :append({ mod = { c, s }, key = { "R" }, dsp = ref.refresh() })                                  -- Refresh Configs
+    :bind({ mod = { mod }, key = { "delete" }, dsp = hl.dsp.exec_cmd("ags request launcher power") }) -- Power Menu
+    :append({ mod = { s }, dsp = hl.dsp.exec_cmd("hyprlock") })                                      -- Lock
+
+-- A modifier-only launcher must run on release so SUPER remains usable for chords.
+keybind:bind({ key = { "super_l" }, dsp = hl.dsp.exec_cmd("ags request launcher apps"), rules = { release = true } })
+    :temp({
+        mod = { c },
         dsp = f.new()
             :notify("Prime-Run")
             :exec("ags request launcher apps prime")
             :done()
     })
-    :append({ mod = { s }, key = { "R" }, dsp = ref.refresh() })                                     -- Refresh Configs
-    :bind({ mod = { mod }, key = { "delete" }, dsp = hl.dsp.exec_cmd("ags request launcher power") }) -- Power Menu
-    :append({ mod = { s }, dsp = hl.dsp.exec_cmd("hyprlock") })                                      -- Lock
 
 -- --- UTILITIES ---
 keybind:bind()

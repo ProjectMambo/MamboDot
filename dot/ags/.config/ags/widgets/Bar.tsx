@@ -26,15 +26,20 @@ export function toggleBars() {
 
 hyprland.connect("urgent", (_self, client) => {
   if (!client) return
+  const focused = hyprland.focusedWorkspace?.id
+  if (focused === undefined) return
   setAttentionWorkspaces((ids) => markAttention(
     ids,
     client.workspace.id,
-    hyprland.focusedWorkspace.id,
+    focused,
   ))
 })
 
 hyprland.connect("notify::focused-workspace", () => {
-  setAttentionWorkspaces((ids) => clearAttention(ids, hyprland.focusedWorkspace.id))
+  const focused = hyprland.focusedWorkspace?.id
+  if (focused !== undefined) {
+    setAttentionWorkspaces((ids) => clearAttention(ids, focused))
+  }
 })
 
 hyprland.connect("workspace-removed", (_self, id) => {

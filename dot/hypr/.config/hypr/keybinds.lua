@@ -99,7 +99,9 @@ local directions = { H = "l", L = "r", K = "u", J = "d" }
 keybind:bind({ mod = { mod } })
 -- Float to Corner
     :temp({ key = { "D" }, dsp = hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }) })  -- Maximized
-    :temp({ key = { "F" }, dsp = hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }) }) -- Fullscreen
+    :temp({ key = { "F" }, dsp = hl.dsp.window.fullscreen_state({
+        internal = 1, client = 2, action = "toggle"
+    }) }) -- IME-safe fullscreen
     :temp({ key = { "mouse:272" }, dsp = hl.dsp.window.drag(), rules = { mouse = true } })               -- Drag
     :temp({ key = { "mouse:273" }, dsp = hl.dsp.window.resize() })                                       -- Resize
     :temp({ key = { "C" }, dsp = hl.dsp.window.close(), rules = { mouse = false } })                     -- Close
@@ -130,7 +132,7 @@ keybind:bind({ mod = { mod, a } })
     :temp({ key = { "backslash" }, dsp = hl.dsp.group.toggle() })
     :temp({ key = { "bracketleft" }, dsp = hl.dsp.group.prev() })
     :temp({ key = { "bracketright" }, dsp = hl.dsp.group.next() })
-    :temp({ key = { "backspace" }, dsp = hl.dsp.group.lock("toggle") })
+    :temp({ key = { "backspace" }, dsp = hl.dsp.group.lock({ action = "toggle" }) })
 for key, val in pairs(directions) do
     keybind:temp({ key = { key }, dsp = hl.dsp.window.move({ direction = val, group_aware = true }) })
 end

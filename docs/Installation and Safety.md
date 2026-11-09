@@ -26,6 +26,16 @@ The active configuration references these groups of software:
 
 The repository does not install system packages or enable services. `manifest/packages.tsv` records the reviewed Arch, foreign/AUR, and Flatpak applications for this workstation; `manifest/services.tsv` records intended system and user enablement. They are a host profile, not an unattended bootstrap or a minimal dependency list.
 
+The host profile follows the official `xdg-desktop-portal-hyprland` Arch package. Do not reinstall the retired AUR `-git` package merely to match an older manifest.
+
+Howdy's AUR `python-dlib` dependency links native image libraries. After a full system upgrade changes one of those ABIs, verify it before relying on face unlock:
+
+```bash
+python -c 'import dlib; print(dlib.__version__)'
+```
+
+If the import names a missing shared library, rebuild `python-dlib` against the upgraded system before testing Howdy again. Do not weaken the Hyprlock or Polkit PAM fallback to work around a broken native module.
+
 ## Audit machine state
 
 Run the read-only doctor before linking or after a system change:

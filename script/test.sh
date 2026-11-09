@@ -465,7 +465,7 @@ if grep -Eq 'astal-notifd daemon|ags run|wl-paste .*cliphist' "$session_exec"; t
     exit 1
 fi
 shell_units="$PROJECT_DIR/dot/hypr/.config/systemd/user"
-grep -Fq 'Wants=mambodot-notifd.service mambodot-ags.service' \
+grep -Fq 'Wants=mambodot-notifd.service mambodot-ags.service mambodot-fcitx5.service' \
     "$shell_units/mambodot-shell.target"
 grep -Fq 'Wants=mambodot-cliphist@text.service mambodot-cliphist@image.service' \
     "$shell_units/mambodot-shell.target"
@@ -478,11 +478,14 @@ grep -Fq 'StandardOutput=null' "$shell_units/mambodot-notifd.service"
 grep -Fq 'Conflicts=mako.service' "$shell_units/mambodot-notifd.service"
 grep -Fq 'ExecStart=/usr/bin/wl-paste --type %i --watch /usr/bin/cliphist -max-items 5000 store' \
     "$shell_units/mambodot-cliphist@.service"
+grep -Fq 'ExecStart=/usr/bin/fcitx5 --keep --replace' \
+    "$shell_units/mambodot-fcitx5.service"
 for unit in "$shell_units"/*.service; do
     grep -Fq 'PartOf=mambodot-shell.target' "$unit"
 done
 grep -Fq 'Restart=on-failure' "$shell_units/mambodot-notifd.service"
 grep -Fq 'Restart=on-failure' "$shell_units/mambodot-cliphist@.service"
+grep -Fq 'Restart=on-failure' "$shell_units/mambodot-fcitx5.service"
 if grep -Rq '^\[Install\]' "$shell_units" ||
     grep -Fq 'mambodot-shell' "$PROJECT_DIR/manifest/services.tsv"; then
     echo 'session shell units must be started after Hyprland environment propagation, not enabled' >&2
@@ -511,6 +514,10 @@ grep -Fq 'ags toggle sidebar-left' "$session_keys"
 grep -Fq 'ags toggle sidebar-right' "$session_keys"
 grep -Fq 'ags toggle keybinds' "$session_keys"
 grep -Fq 'Toggle keybind sheet' "$PROJECT_DIR/docs/Keybinds.md"
+grep -Fq 'hl.dsp.group.lock({ action = "toggle" })' "$session_keys"
+grep -Fq 'hl.dsp.window.fullscreen_state({' "$session_keys"
+grep -Fq 'internal = 1, client = 2, action = "toggle"' "$session_keys"
+[[ "$(grep -Fc 'hyprland.focusedWorkspace?.id' "$ags_config/widgets/Bar.tsx")" -eq 2 ]]
 
 if grep -Eq 'systemctl --user import-environment|hyprland-session.target' "$session_exec" ||
     grep -Eq '\b(mako|makoctl|waybar|rofi)\b' "$session_exec" "$session_keys" "$session_refresh" ||

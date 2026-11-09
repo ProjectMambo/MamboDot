@@ -163,6 +163,7 @@ arch	wpa_supplicant
 arch	wqy-microhei
 arch	xdg-desktop-portal
 arch	xdg-desktop-portal-gtk
+arch	xdg-desktop-portal-hyprland
 arch	xmlstarlet
 arch	xorg-xhost
 arch	yazi
@@ -224,7 +225,6 @@ aur	upscayl-bin
 aur	webcord
 aur	whatsapp-for-linux-git
 aur	wl-kbptr
-aur	xdg-desktop-portal-hyprland-git
 aur	yay
 aur	zen-browser-bin
 aur	zoom

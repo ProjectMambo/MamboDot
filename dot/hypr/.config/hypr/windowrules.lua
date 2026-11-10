@@ -38,7 +38,7 @@ hl.window_rule({
 hl.window_rule({
     name = "obsidian-ime-safe-fullscreen",
     match = {
-        initial_class = "^obsidian$",
+        initial_class = "^md\\.obsidian\\.Obsidian$",
     },
     maximize = true,
     fullscreen_state = "1 2",

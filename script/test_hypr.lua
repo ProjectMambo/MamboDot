@@ -104,16 +104,30 @@ assert(zoom_annotation_rule.stay_focused == nil)
 assert(zoom_annotation_rule.size == nil)
 assert(zoom_annotation_rule.move == nil)
 local obsidian_rule
+local obsidian_modal_rule
 for _, rule in ipairs(window_rules) do
     if rule.name == "obsidian-ime-safe-fullscreen" then
         obsidian_rule = rule
+    elseif rule.name == "obsidian-modal-dialogs" then
+        obsidian_modal_rule = rule
     end
 end
 assert(obsidian_rule ~= nil)
 assert(obsidian_rule.match.initial_class == "^md\\.obsidian\\.Obsidian$")
+assert(obsidian_rule.match.initial_title == "^notes - Obsidian .+$")
+assert(obsidian_rule.match.modal == false)
 assert(obsidian_rule.maximize == true)
 assert(obsidian_rule.fullscreen_state == "1 2")
 assert(obsidian_rule.suppress_event == "fullscreen")
+assert(obsidian_modal_rule ~= nil)
+assert(obsidian_modal_rule.match.initial_class == "^md\\.obsidian\\.Obsidian$")
+assert(obsidian_modal_rule.match.modal == true)
+assert(obsidian_modal_rule.float == true)
+assert(obsidian_modal_rule.center == true)
+assert(obsidian_modal_rule.size[1] == 1100)
+assert(obsidian_modal_rule.size[2] == 700)
+assert(obsidian_modal_rule.fullscreen_state == "0 0")
+assert(obsidian_modal_rule.suppress_event == "fullscreen maximize")
 assert(dark:colour():get(0):hex() == "#ff6b57")
 assert(light:colour():get(0):hex() == "#b84233")
 assert(dark:colour():get(dark:colour():len()) == nil)

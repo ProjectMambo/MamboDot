@@ -355,6 +355,8 @@ grep -Fq 'BrowserApplication=zen.desktop' \
     "$PROJECT_DIR/dot/kde/.config/kdeglobals"
 grep -Fq 'behaviourOnLaunch=alwaysAsk' \
     "$PROJECT_DIR/dot/kde/.config/kiorc"
+grep -Fq 'remember_window_size no' \
+    "$PROJECT_DIR/dot/kitty/.config/kitty/kitty.conf"
 
 ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null

@@ -9,7 +9,7 @@ M.default = {
     { ws = "minimized", app = "spotify",     check = "Spotify" },
     -- { ws = "minimized", app = "prime-run steam", check = "steam" },
     { ws = 1,           app = "zen-browser", check = "zen" },
-    { ws = 10,          app = "obsidian" },
+    { ws = 10,          app = "obsidian",    check = "md.obsidian.Obsidian" },
     { ws = 3,           app = "chatgpt",     check = "Chatgpt" },
     { ws = 4,           app = "Telegram",    check = "org.telegram.desktop" },
     { ws = 2,           app = "code-oss" },

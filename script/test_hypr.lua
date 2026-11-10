@@ -110,7 +110,7 @@ for _, rule in ipairs(window_rules) do
     end
 end
 assert(obsidian_rule ~= nil)
-assert(obsidian_rule.match.initial_class == "^obsidian$")
+assert(obsidian_rule.match.initial_class == "^md\\.obsidian\\.Obsidian$")
 assert(obsidian_rule.maximize == true)
 assert(obsidian_rule.fullscreen_state == "1 2")
 assert(obsidian_rule.suppress_event == "fullscreen")
@@ -189,7 +189,9 @@ end
 hl.dsp.focus = function(rules)
     return "focus:" .. rules.workspace.id
 end
-require("script.preset").launch({
+local preset = require("script.preset")
+assert(preset.default[3].check == "md.obsidian.Obsidian")
+preset.launch({
     { ws = "minimized", app = "slow-app", check = "SlowApp" },
     { ws = 2, app = "running-app", check = "AlreadyRunning" },
     { ws = 3, app = "next-app", check = "NextApp" },

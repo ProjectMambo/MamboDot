@@ -4,6 +4,7 @@
 local theme = require("variables").theme
 local ui = theme.ui
 local rgb = theme.hypr
+local default = { 1100, 700 }
 
 -- --- FLOATING ---
 hl.window_rule({
@@ -39,14 +40,28 @@ hl.window_rule({
     name = "obsidian-ime-safe-fullscreen",
     match = {
         initial_class = "^md\\.obsidian\\.Obsidian$",
+        initial_title = "^notes - Obsidian .+$",
+        modal = false,
     },
     maximize = true,
     fullscreen_state = "1 2",
     suppress_event = "fullscreen",
 })
 
+hl.window_rule({
+    name = "obsidian-modal-dialogs",
+    match = {
+        initial_class = "^md\\.obsidian\\.Obsidian$",
+        modal = true,
+    },
+    float = true,
+    center = true,
+    size = default,
+    fullscreen_state = "0 0",
+    suppress_event = "fullscreen maximize",
+})
+
 -- --- FLOATING ---
-local default = { 1100, 700 }
 hl.window_rule({
     match = {
         class = "kitty"

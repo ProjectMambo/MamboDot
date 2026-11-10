@@ -101,7 +101,7 @@ The two launcher shortcuts run when `SUPER` is released. Holding `SUPER` for ano
 
 `SUPER D` toggles ordinary maximization. `SUPER F` asks the client for fullscreen UI while keeping Hyprland in its maximized state, because true compositor fullscreen can hide Fcitx Wayland candidate popups. Both modes drop workspace gaps, borders, and the AGS bar, but `SUPER F` also gives applications their fullscreen interface while keeping Pinyin and Mozc candidates visible.
 
-Obsidian opens in IME-safe fullscreen: Hyprland maximizes it internally, reports fullscreen to Obsidian, and suppresses later client fullscreen requests. AGS unmaps its bar on that workspace, so Obsidian fills the display while Pinyin and Mozc candidates remain visible.
+Obsidian's primary `notes` vault window opens in IME-safe fullscreen: Hyprland maximizes it internally, reports fullscreen to Obsidian, and suppresses later client fullscreen requests. Separate native modal windows are centered and floated above it with fullscreen requests suppressed. Settings and Community Plugins are views inside the primary Obsidian surface rather than separate compositor windows, so Hyprland cannot float them independently. AGS unmaps its bar on that workspace, while Pinyin and Mozc candidates and genuine floating windows remain visible above it.
 
 ### Layout navigation and adjustments
 

@@ -1,0 +1,35 @@
+# Maintainer: Project Mambo <kohkohnut-juice@users.noreply.github.com>
+
+pkgname=appmenu-glib-translator-git
+pkgver=25.04.r8.gaea4ea3
+pkgrel=2
+pkgdesc="GLib DBusMenu translator with tolerant nested-layout parsing"
+arch=(x86_64)
+url="https://gitlab.com/vala-panel-project/vala-panel-appmenu"
+license=(LGPL-3.0-or-later)
+depends=(glib2)
+makedepends=(git glib2-devel gobject-introspection meson vala)
+provides=(appmenu-glib-translator)
+conflicts=(appmenu-glib-translator)
+source=(
+  "git+https://gitlab.com/vala-panel-project/vala-panel-appmenu.git#commit=aea4ea398b7c75494f23f5e5bdb4f495d615059f"
+  "proton-nested-layout.patch"
+)
+sha256sums=(
+  SKIP
+  4e7ab811ab38bb020266ef219de37ab268483ccbb92bd9aff4df766d9d966e1f
+)
+
+prepare() {
+  patch -d vala-panel-appmenu -Np1 -i "$srcdir/proton-nested-layout.patch"
+}
+
+build() {
+  arch-meson build vala-panel-appmenu/subprojects/appmenu-glib-translator \
+    --libexecdir=lib
+  meson compile -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" meson install -C build --no-rebuild
+}

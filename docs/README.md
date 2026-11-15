@@ -105,7 +105,7 @@ script/mambodot.sh            safe link/unlink and machine doctor command
 script/sync_mambocolour.lua   consumer-owned semantic adapter generator/checker
 script/test.sh                deployment, provider, and Hyprland regression checks
 script/code-oss/              editor extension installer
-system/hosts/<host>/          reviewed root-owned host policy, applied explicitly
+system/hosts/<host>/          reviewed host policy and patched package recipes, applied explicitly
 vendor/mambocolour/           exact Lua API and palette snapshot plus provider revision
 docs/                         operating documentation
 ```

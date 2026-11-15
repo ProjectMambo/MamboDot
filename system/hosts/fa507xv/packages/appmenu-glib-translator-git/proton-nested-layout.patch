@@ -1,0 +1,36 @@
+diff --git a/subprojects/appmenu-glib-translator/model.c b/subprojects/appmenu-glib-translator/model.c
+index a3f0038..623d20c 100644
+--- a/subprojects/appmenu-glib-translator/model.c
++++ b/subprojects/appmenu-glib-translator/model.c
+@@ -213,0 +214,19 @@ static void menu_item_copy_and_load(DBusMenuModel *menu, DBusMenuItem *old, DBus
++static bool layout_item_get(GVariant *value, guint *id, GVariant **props)
++{
++	if (!g_variant_is_container(value) || g_variant_n_children(value) < 2)
++		return false;
++
++	g_autoptr(GVariant) item_id = g_variant_get_child_value(value, 0);
++	GVariant *item_props = g_variant_get_child_value(value, 1);
++	if (!g_variant_is_of_type(item_id, G_VARIANT_TYPE_INT32) ||
++	    !g_variant_is_of_type(item_props, G_VARIANT_TYPE_VARDICT))
++	{
++		g_variant_unref(item_props);
++		return false;
++	}
++
++	*id = (guint)g_variant_get_int32(item_id);
++	*props = item_props;
++	return true;
++}
++
+@@ -251,3 +270,8 @@ static void layout_parse(DBusMenuModel *menu, GVariant *layout)
+-		GVariant *citems;
+-		g_variant_get(value, "(i@a{sv}@av)", &cid, &cprops, &citems);
+-		g_variant_unref(citems);
++		if (!layout_item_get(value, &cid, &cprops))
++		{
++			g_warning("Ignoring malformed DBusMenu child of type '%s'",
++			          g_variant_get_type_string(value));
++			g_variant_unref(value);
++			g_variant_unref(child);
++			continue;
++		}

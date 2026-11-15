@@ -361,6 +361,14 @@ grep -Fq 'remember_window_size no' \
 ags_config="$PROJECT_DIR/dot/ags/.config/ags"
 ags bundle "$ags_config/app.tsx" "$TEST_ROOT/mambodot-ags" --root "$ags_config" >/dev/null
 [[ -x "$TEST_ROOT/mambodot-ags" ]]
+appmenu_recipe="$PROJECT_DIR/system/hosts/fa507xv/packages/appmenu-glib-translator-git"
+grep -Fq '#commit=aea4ea398b7c75494f23f5e5bdb4f495d615059f' \
+    "$appmenu_recipe/PKGBUILD"
+grep -Fq 'g_variant_get_child_value(value, 1)' \
+    "$appmenu_recipe/proton-nested-layout.patch"
+grep -Fq 'G_VARIANT_TYPE_VARDICT' \
+    "$appmenu_recipe/proton-nested-layout.patch"
+grep -Fq '<Tray />' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'barsEnabled() && !workspaceFullscreen()' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'client.fullscreen !== AstalHyprland.Fullscreen.NONE' \
     "$ags_config/widgets/Bar.tsx"

@@ -1,11 +1,10 @@
-import { For, createBinding, createComputed, createState, onCleanup } from "ags"
+import { createBinding, createComputed, createState, onCleanup } from "ags"
 import app from "ags/gtk4/app"
-import { Astal, Gdk, Gtk } from "ags/gtk4"
+import { Astal, Gdk } from "ags/gtk4"
 import { createPoll } from "ags/time"
 import AstalBattery from "gi://AstalBattery"
 import AstalHyprland from "gi://AstalHyprland"
 import AstalNetwork from "gi://AstalNetwork"
-import AstalTray from "gi://AstalTray"
 import AstalWp from "gi://AstalWp"
 import GLib from "gi://GLib"
 import Pango from "gi://Pango"
@@ -84,31 +83,6 @@ function Workspaces({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           </button>
         )
       })}
-    </box>
-  )
-}
-
-function Tray() {
-  const tray = AstalTray.get_default()
-  const items = createBinding(tray, "items")
-
-  function setup(button: Gtk.MenuButton, item: AstalTray.TrayItem) {
-    button.menuModel = item.menuModel
-    button.insert_action_group("dbusmenu", item.actionGroup)
-    item.connect("notify::action-group", () => {
-      button.insert_action_group("dbusmenu", item.actionGroup)
-    })
-  }
-
-  return (
-    <box class="tray">
-      <For each={items}>
-        {(item) => (
-          <menubutton class="tray-item" $={(button) => setup(button, item)}>
-            <image gicon={createBinding(item, "gicon")} />
-          </menubutton>
-        )}
-      </For>
     </box>
   )
 }
@@ -240,7 +214,7 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
         </box>
         <box $type="end" class="bar-section status" spacing={2}>
           <IdleInhibitor />
-          <Tray />
+          {/* shortcut: AstalTray crashes on Proton VPN's D-Bus menu, restore after the translator handles it safely. */}
           <Network />
           <Audio />
           <Battery />

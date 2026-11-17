@@ -20,7 +20,7 @@ MamboDot keeps one reviewable source for the maintainer's intentional workstatio
 
 ## Status
 
-MamboDot is active on the maintainer's Arch Linux workstation. It is a personal workstation profile rather than a portable distribution or unattended installer. Review its paths, hardware identifiers, and applications before using it. Linking is previewed as one operation and stops on existing-file conflicts; MamboDot never adopts home-directory files into the repository.
+MamboDot is in active maintenance on the maintainer's Arch Linux workstation; its intended workstation scope is implemented, and further work is incident-driven or backed by observed compatibility and configuration evidence. It is a personal workstation profile rather than a portable distribution or unattended installer. Review its paths, hardware identifiers, and applications before using it. Linking is previewed as one operation and stops on existing-file conflicts; MamboDot never adopts home-directory files into the repository.
 
 ### Machine assumptions
 
@@ -89,7 +89,8 @@ Replace that package list with the configuration you reviewed. Do not use `all` 
 | Review requirements and install safely | [Installation and safety](docs/Installation%20and%20Safety.md) |
 | Learn desktop shortcuts | [Keybindings](docs/Keybinds.md) |
 | Link configuration, control AGS, refresh colour adapters, or use `tp` | [Command reference](docs/Commands.md) |
-| Review implemented milestones and ownership rules | [Roadmap](docs/Roadmap.md) |
+| Follow the current maintenance order, exit gates, and evidence triggers | [Development plan](docs/Development%20Plan.md) |
+| Review the completed implementation history and ownership rules | [Roadmap](docs/Roadmap.md) |
 
 ## Project structure
 

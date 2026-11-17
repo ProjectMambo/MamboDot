@@ -221,6 +221,7 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           </button>
           <button
             class="sidebar-button laptop-control"
+            focusable={false}
             tooltipText="Laptop controls"
             onClicked={() => app.toggle_window("sidebar-left")}
           >
@@ -246,6 +247,7 @@ export default function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           <Battery />
           <button
             class="sidebar-button quick-controls"
+            focusable={false}
             tooltipText="Today and quick controls"
             onClicked={() => app.toggle_window("sidebar-right")}
           >

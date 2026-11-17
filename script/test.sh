@@ -392,7 +392,7 @@ grep -Fq 'hyprland.connect("urgent"' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'if (!client) return' "$ags_config/widgets/Bar.tsx"
 grep -Fq 'hyprland.connect("notify::focused-workspace"' "$ags_config/widgets/Bar.tsx"
 grep -Fq '.workspaces button.attention' "$ags_config/style.scss"
-grep -Fq 'focusable={false}' "$ags_config/widgets/Bar.tsx"
+[[ "$(grep -Fc 'focusable={false}' "$ags_config/widgets/Bar.tsx")" -eq 3 ]]
 grep -Fq 'Gio.BusType.SYSTEM' "$ags_config/lib/idle.ts"
 grep -Fq '"org.freedesktop.login1.Manager"' "$ags_config/lib/idle.ts"
 grep -Fq 'new GLib.Variant("(ssss)"' "$ags_config/lib/idle.ts"
